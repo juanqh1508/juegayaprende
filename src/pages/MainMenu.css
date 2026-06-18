@@ -1,0 +1,84 @@
+.main-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.menu-header {
+  margin-bottom: 4rem;
+}
+
+.title {
+  font-size: 4rem;
+  color: var(--panama-red);
+  text-shadow: 2px 2px 0px white, 4px 4px 0px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  color: var(--panama-blue);
+  font-weight: bold;
+}
+
+.games-grid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.game-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  width: 300px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+}
+
+.game-card.active {
+  border-color: var(--ocean-cyan);
+  cursor: pointer;
+}
+
+.game-card.active:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 188, 212, 0.3);
+}
+
+.game-card.locked {
+  opacity: 0.6;
+  filter: grayscale(80%);
+}
+
+.card-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.game-card h2 {
+  font-size: 1.8rem;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.game-card p {
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+.btn-locked {
+  background: #ccc;
+  color: #666;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+}
