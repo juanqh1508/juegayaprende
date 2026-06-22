@@ -130,14 +130,23 @@ export function WateringLevel({ targets, totalTasks, onProgress }) {
   const [hoveredId, setHoveredId] = useState(null);
   
   useEffect(() => {
-    const newPlants = Array.from({ length: totalTasks }, (_, i) => ({
-      id: i,
-      targetEmoji: targets[i % targets.length] || '🌻',
-      watered: false,
-      progress: 0,
-      x: 15 + Math.random() * 70, 
-      y: 25 + Math.random() * 50  
-    }));
+    const cols = Math.ceil(Math.sqrt(totalTasks * 1.5));
+    const rows = Math.ceil(totalTasks / cols);
+    const cellWidth = 80 / cols;
+    const cellHeight = 60 / rows;
+    
+    const newPlants = Array.from({ length: totalTasks }, (_, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      return {
+        id: i,
+        targetEmoji: targets[i % targets.length] || '🌻',
+        watered: false,
+        progress: 0,
+        x: 10 + col * cellWidth + Math.random() * (cellWidth * 0.5), 
+        y: 20 + row * cellHeight + Math.random() * (cellHeight * 0.5)  
+      };
+    });
     setPlants(newPlants);
   }, [targets, totalTasks]);
 
@@ -163,7 +172,7 @@ export function WateringLevel({ targets, totalTasks, onProgress }) {
   }, [hoveredId, onProgress]);
 
   return (
-    <div className="mechanic-container hover-bg" style={{ cursor: 'url("https://cdn-icons-png.flaticon.com/64/636/636040.png") 16 16, auto' }}>
+    <div className="mechanic-container hover-bg" style={{ cursor: 'url("/watering-can.svg") 16 16, auto' }}>
       <InlineTutorial type="hover" title="¡Riega las plantas!" subtitle="Mueve la jarra sobre cada planta por 2 segundos." />
       {plants.map(p => (
         <div key={p.id} 
@@ -229,7 +238,7 @@ export function FallingApplesLevel({ target, totalTasks, onProgress }) {
   const caughtCount = apples.filter(a => a.caught).length;
 
   return (
-    <div className="mechanic-container hover-bg" style={{ overflow: 'hidden', cursor: 'url("https://cdn-icons-png.flaticon.com/64/2913/2913520.png") 32 32, auto' }}>
+    <div className="mechanic-container hover-bg" style={{ overflow: 'hidden', cursor: 'url("/basket.svg") 24 24, auto' }}>
       <InlineTutorial type="hover" title="¡Atrapa las manzanas!" subtitle="Pasa el mouse sobre ellas antes de que toquen el suelo." />
       
       <div style={{ position: 'absolute', top: '-25%', left: '50%', transform: 'translateX(-50%)', fontSize: '30rem', opacity: 0.15, pointerEvents: 'none', userSelect: 'none' }}>🌳</div>
