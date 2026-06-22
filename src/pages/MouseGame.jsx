@@ -248,9 +248,14 @@ function MouseGame({ difficulty = 1, onNavigate, onFinish }) {
           <div className="success-stats">
             <span>✅ {totalTasksPerLevel} {totalTasksPerLevel === 1 ? 'ejercicio completado' : 'ejercicios completados'}</span>
           </div>
-          <button className="btn-primary btn-next" onClick={() => { sounds.click(); nextLevel(); }}>
-            {currentLevelIndex + 1 === levelData.length ? '🏅 Reclamar Diploma' : 'Siguiente Nivel ➡'}
-          </button>
+          <div className="success-buttons" style={{ display: 'flex', gap: '20px', marginTop: '20px', justifyContent: 'center' }}>
+            <button className="btn-secondary" onClick={() => { sounds.click(); setShowSuccess(false); setTasksCompleted(0); }} style={{ fontSize: '1.2rem', padding: '12px 28px', borderRadius: '50px', border: '3px solid var(--violet)', background: 'white', color: 'var(--violet)', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', transition: 'all 0.3s' }}>
+              🔁 Repetir Nivel
+            </button>
+            <button className="btn-primary btn-next" onClick={() => { sounds.click(); nextLevel(); }}>
+              {currentLevelIndex + 1 === levelData.length ? '🏅 Reclamar Diploma' : 'Siguiente Nivel ➡'}
+            </button>
+          </div>
         </div>
       )}
     </div>
