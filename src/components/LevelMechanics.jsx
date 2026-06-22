@@ -114,8 +114,15 @@ export function ClickLevel({ target, moving, onComplete }) {
       />
 
       <div
-        className={`target-emoji target-clickable ${clicked ? 'burst' : 'idle-pulse'}`}
-        style={{ top: position.top, left: position.left, position: 'absolute', transform: 'translate(-50%, -50%)', transition: moving ? 'top 0.4s, left 0.4s' : 'none' }}
+        className={`target-emoji ${moving ? 'target-clickable' : ''} ${clicked ? 'burst' : 'idle-pulse'}`}
+        style={{ 
+          top: position.top, 
+          left: position.left, 
+          position: 'absolute', 
+          transform: 'translate(-50%, -50%)', 
+          transition: moving ? 'top 0.4s, left 0.4s' : 'none',
+          cursor: 'pointer'
+        }}
         onClick={handleClick}
       >
         {target}
@@ -634,7 +641,7 @@ export function SequenceClickLevel({ sequenceLength = 3, onComplete }) {
 }
 
 // --- BALLOON POPPING LEVEL ---
-export function BalloonPoppingLevel({ target, onProgress, totalTasks }) {
+export function BalloonPoppingLevel({ target, difficulty, onProgress, totalTasks }) {
   const [balloons, setBalloons] = useState([]);
   
   useEffect(() => {
@@ -654,6 +661,10 @@ export function BalloonPoppingLevel({ target, onProgress, totalTasks }) {
     onProgress();
   };
 
+  let animDuration = '6s';
+  if (difficulty === 2) animDuration = '4s';
+  if (difficulty === 3) animDuration = '2.5s';
+
   return (
     <div className="mechanic-container balloons-bg" style={{ position: 'relative', overflow: 'hidden', cursor: 'crosshair' }}>
       <InlineTutorial 
@@ -665,7 +676,7 @@ export function BalloonPoppingLevel({ target, onProgress, totalTasks }) {
         <div
           key={b.id}
           className="balloon"
-          style={{ left: `${b.left}%` }}
+          style={{ left: `${b.left}%`, animationDuration: animDuration }}
           onMouseDown={() => handlePop(b.id)}
         >
           {target}
@@ -676,7 +687,7 @@ export function BalloonPoppingLevel({ target, onProgress, totalTasks }) {
 }
 
 // --- WHACK-A-MOLE LEVEL ---
-export function WhackAMoleLevel({ target, onProgress, totalTasks }) {
+export function WhackAMoleLevel({ target, difficulty, onProgress, totalTasks }) {
   const [activeMole, setActiveMole] = useState(null);
 
   useEffect(() => {
@@ -696,7 +707,7 @@ export function WhackAMoleLevel({ target, onProgress, totalTasks }) {
   };
 
   return (
-    <div className="mechanic-container mole-bg" style={{ cursor: 'crosshair' }}>
+    <div className="mechanic-container mole-bg" style={{ cursor: 'url("https://cdn-icons-png.flaticon.com/64/8892/8892110.png") 16 16, auto' }}>
       <InlineTutorial 
         type="click" 
         title="¡Juego del Topo!" 
@@ -709,7 +720,7 @@ export function WhackAMoleLevel({ target, onProgress, totalTasks }) {
               className={`mole-character ${activeMole === index ? 'up' : 'down'}`}
               onMouseDown={() => handleWhack(index)}
             >
-              {target}
+              <img src="https://cdn-icons-png.flaticon.com/512/5165/5165842.png" alt="Topo" style={{ width: '80px', height: '80px' }} />
             </div>
             <div className="mole-dirt"></div>
           </div>

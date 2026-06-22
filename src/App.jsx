@@ -7,6 +7,7 @@ function App() {
   const [currentView, setCurrentView] = useState('menu'); // 'menu', 'mouse-game', 'certificate'
   const [userName, setUserName] = useState('');
   const [difficulty, setDifficulty] = useState(1); // 1: Fácil, 2: Medio, 3: Difícil
+  const [startLevel, setStartLevel] = useState(0);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const audioRef = useRef(null);
 
@@ -18,9 +19,10 @@ function App() {
     }
   }, [isMusicPlaying]);
 
-  const navigateTo = (view, selectedDifficulty = 1) => {
+  const navigateTo = (view, selectedDifficulty = 1, selectedLevel = 0) => {
     if (view === 'mouse-game') {
       setDifficulty(selectedDifficulty);
+      setStartLevel(selectedLevel);
       setIsMusicPlaying(true); // Auto-play music when game starts
     } else if (view === 'menu' || view === 'certificate') {
       setIsMusicPlaying(false);
@@ -48,7 +50,7 @@ function App() {
       )}
 
       {currentView === 'menu' && <MainMenu onNavigate={navigateTo} />}
-      {currentView === 'mouse-game' && <MouseGame difficulty={difficulty} onNavigate={navigateTo} onFinish={(name) => { setUserName(name); navigateTo('certificate'); }} />}
+      {currentView === 'mouse-game' && <MouseGame difficulty={difficulty} startLevel={startLevel} onNavigate={navigateTo} onFinish={(name) => { setUserName(name); navigateTo('certificate'); }} />}
       {currentView === 'certificate' && <Certificate userName={userName} onNavigate={navigateTo} />}
     </div>
   );

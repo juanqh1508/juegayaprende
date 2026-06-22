@@ -107,11 +107,12 @@ function Confetti() {
   );
 }
 
-function MouseGame({ difficulty = 1, onNavigate, onFinish }) {
-  const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
+function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
+  const [currentLevelIndex, setCurrentLevelIndex] = useState(startLevel);
   const [tasksCompleted, setTasksCompleted] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showInfographic, setShowInfographic] = useState(true);
+  const [isLevelStarted, setIsLevelStarted] = useState(false);
   const [currentTarget, setCurrentTarget] = useState(null);
 
   const level = levelData[currentLevelIndex];
@@ -164,6 +165,7 @@ function MouseGame({ difficulty = 1, onNavigate, onFinish }) {
   const nextLevel = () => {
     setShowSuccess(false);
     setTasksCompleted(0);
+    setIsLevelStarted(false);
     if (currentLevelIndex + 1 < levelData.length) {
       setCurrentLevelIndex(currentLevelIndex + 1);
     } else {
@@ -186,9 +188,9 @@ function MouseGame({ difficulty = 1, onNavigate, onFinish }) {
       case 'click':
         return <ClickLevel key={tasksCompleted} target={currentTarget} moving={level.moving} onComplete={() => handleTaskComplete(1)} />;
       case 'balloons':
-        return <BalloonPoppingLevel key={currentLevelIndex} target={level.target} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
+        return <BalloonPoppingLevel key={currentLevelIndex} target={level.target} difficulty={difficulty} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'whack_a_mole':
-        return <WhackAMoleLevel key={currentLevelIndex} target={level.target} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
+        return <WhackAMoleLevel key={currentLevelIndex} target={level.target} difficulty={difficulty} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'doubleclick':
         return <DoubleClickLevel key={tasksCompleted} target={currentTarget} onComplete={() => handleTaskComplete(1)} />;
       case 'drag':
@@ -244,7 +246,21 @@ function MouseGame({ difficulty = 1, onNavigate, onFinish }) {
           )}
 
           <div className="level-mechanic-box">
-            {renderLevelComponent()}
+            {!isLevelStarted ? (
+              <div style={{ textAlign: 'center', background: 'rgba(255,255,255,0.95)', padding: '3rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)', maxWidth: '500px', animation: 'popIn 0.4s ease-out' }}>
+                <h2 style={{ fontSize: '2.5rem', marginBottom: '1rem', color: 'var(--panama-blue)' }}>{level.title}</h2>
+                <p style={{ fontSize: '1.3rem', marginBottom: '2rem', color: '#555' }}>{level.description}</p>
+                <button 
+                  className="btn-primary" 
+                  onClick={() => { sounds.click(); setIsLevelStarted(true); }}
+                  style={{ fontSize: '1.5rem', padding: '15px 40px' }}
+                >
+                  ¡Empezar Nivel!
+                </button>
+              </div>
+            ) : (
+              renderLevelComponent()
+            )}
           </div>
         </div>
       ) : (
@@ -259,7 +275,7 @@ function MouseGame({ difficulty = 1, onNavigate, onFinish }) {
             <span>✅ {totalTasksPerLevel} {totalTasksPerLevel === 1 ? 'ejercicio completado' : 'ejercicios completados'}</span>
           </div>
           <div className="success-buttons" style={{ display: 'flex', gap: '20px', marginTop: '20px', justifyContent: 'center' }}>
-            <button className="btn-secondary" onClick={() => { sounds.click(); setShowSuccess(false); setTasksCompleted(0); }} style={{ fontSize: '1.2rem', padding: '12px 28px', borderRadius: '50px', border: '3px solid var(--violet)', background: 'white', color: 'var(--violet)', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', transition: 'all 0.3s' }}>
+            <button className="btn-secondary" onClick={() => { sounds.click(); setShowSuccess(false); setTasksCompleted(0); setIsLevelStarted(false); }} style={{ fontSize: '1.2rem', padding: '12px 28px', borderRadius: '50px', border: '3px solid var(--violet)', background: 'white', color: 'var(--violet)', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', transition: 'all 0.3s' }}>
               🔁 Repetir Nivel
             </button>
             <button className="btn-primary btn-next" onClick={() => { sounds.click(); nextLevel(); }}>

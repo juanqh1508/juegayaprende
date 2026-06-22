@@ -14,11 +14,22 @@ function MainMenu({ onNavigate }) {
         <div className="game-card active">
           <div className="card-icon">🖱️</div>
           <h2>Aventura del Mouse</h2>
-          <p>Elige tu nivel de dificultad para comenzar:</p>
+          <p>Elige tu nivel inicial y dificultad:</p>
+          <div style={{ margin: '1rem 0' }}>
+            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>Nivel de Inicio:</label>
+            <select 
+              id="startLevelSelect" 
+              style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '2px solid var(--ocean-cyan)', fontSize: '1.1rem', fontFamily: 'var(--font-heading)', cursor: 'pointer' }}
+            >
+              {[...Array(19)].map((_, i) => (
+                <option key={i} value={i}>Reto {i + 1}</option>
+              ))}
+            </select>
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
-            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 1)}>🟢 Nivel 1 (Fácil)</button>
-            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 2)} style={{ background: 'var(--panama-blue)' }}>🟡 Nivel 2 (Medio)</button>
-            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 3)} style={{ background: 'var(--panama-red)' }}>🔴 Nivel 3 (Difícil)</button>
+            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 1, parseInt(document.getElementById('startLevelSelect').value))}>🟢 Dificultad Fácil</button>
+            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 2, parseInt(document.getElementById('startLevelSelect').value))} style={{ background: 'var(--panama-blue)' }}>🟡 Dificultad Media</button>
+            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 3, parseInt(document.getElementById('startLevelSelect').value))} style={{ background: 'var(--panama-red)' }}>🔴 Dificultad Difícil</button>
           </div>
         </div>
         

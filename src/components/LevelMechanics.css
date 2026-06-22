@@ -652,8 +652,8 @@
    ============================================= */
 .balloon {
   position: absolute;
-  bottom: -100px;
-  font-size: 4.5rem;
+  bottom: -200px;
+  font-size: 13.5rem;
   animation: floatUp 4s linear forwards;
   user-select: none;
   filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2));
