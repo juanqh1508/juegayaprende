@@ -35,6 +35,7 @@ function MouseInfographic({ onComplete }) {
               <div className="info-text">
                 <h3>Postura de la Mano</h3>
                 <p>Descansa tu palma suavemente sobre el ratón. Tu <strong>dedo índice</strong> va en el botón izquierdo y tu <strong>dedo medio</strong> en el derecho.</p>
+                <img src="/hand_on_mouse.png" alt="Cómo colocar la mano" style={{ width: '100%', maxWidth: '250px', borderRadius: '15px', marginTop: '15px', display: 'block', border: '3px solid #eee', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }} />
               </div>
             </div>
 
