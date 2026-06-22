@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { HoverLevel, ClickLevel, DoubleClickLevel, DragDropLevel, ScrollLevel, CheckboxLevel, RadioLevel, SequenceClickLevel } from '../components/LevelMechanics';
+import { 
+  HoverLevel, ClickLevel, DoubleClickLevel, 
+  DragDropLevel, ScrollLevel, CheckboxLevel, 
+  RadioLevel, SequenceClickLevel,
+  WateringLevel, FallingApplesLevel
+} from '../components/LevelMechanics';
 import MouseInfographic from '../components/MouseInfographic';
 import { sounds } from '../utils/sounds';
 import './MouseGame.css';
@@ -9,12 +14,12 @@ const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const levelData = [
   // MOVER EL MOUSE
-  { id: 1, type: 'hover', title: 'Nivel 1', targets: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'], bg: 'bg-classroom', totalTasks: 10,
+  { id: 1, type: 'hover', title: 'Nivel 1', targets: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'], bg: 'bg-classroom', totalTasks: 10, isStatic: true,
     description: 'Posiciónate sobre los números para atraparlos.', msg: '¡Excelente! Atrapaste los números.' },
-  { id: 2, type: 'hover', title: 'Nivel 2', targets: ['🌻', '🌹', '🌷', '🌼', '🌺', '🌸', '🪴', '🌵', '🌾', '🌴'], bg: 'bg-park', totalTasks: 10,
-    description: 'Riega las plantas pasando el mouse por encima de ellas.', msg: '¡Muy bien! Las plantas están felices.' },
-  { id: 3, type: 'hover', title: 'Nivel 3', targets: ['🍎', '🍏'], bg: 'bg-forest', totalTasks: 10,
-    description: 'Atrapa las manzanas pasando el mouse sobre ellas.', msg: '¡Fantástico! Tienes un pulso muy firme.' },
+  { id: 2, type: 'watering', title: 'Nivel 2', targets: ['🌻', '🌹', '🌷', '🌼', '🌺', '🌸', '🪴', '🌵', '🌾', '🌴'], bg: 'bg-park', totalTasks: 10,
+    description: 'Riega las plantas pasando el mouse por encima de ellas por dos segundos.', msg: '¡Muy bien! Las plantas están felices.' },
+  { id: 3, type: 'falling_apples', title: 'Nivel 3', target: '🍎', bg: 'bg-forest', totalTasks: 10,
+    description: 'Atrapa las manzanas pasando el mouse sobre ellas antes de que caigan.', msg: '¡Fantástico! Tienes unos reflejos geniales.' },
 
   // CLICK
   { id: 4, type: 'click', title: 'Nivel 4', targets: ['🚗', '🎈', '⭐', '💎'], bg: 'bg-classroom', totalTasks: 10,
@@ -156,7 +161,11 @@ function MouseGame({ difficulty = 1, onNavigate, onFinish }) {
   const renderLevelComponent = () => {
     switch (level.type) {
       case 'hover':
-        return <HoverLevel key={tasksCompleted} target={currentTarget} onComplete={() => handleTaskComplete(1)} />;
+        return <HoverLevel key={tasksCompleted} target={currentTarget} isStatic={level.isStatic} onComplete={() => handleTaskComplete(1)} />;
+      case 'watering':
+        return <WateringLevel key={currentLevelIndex} targets={level.targets} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
+      case 'falling_apples':
+        return <FallingApplesLevel key={currentLevelIndex} target={level.target} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'click':
         return <ClickLevel key={tasksCompleted} target={currentTarget} moving={level.moving} onComplete={() => handleTaskComplete(1)} />;
       case 'doubleclick':

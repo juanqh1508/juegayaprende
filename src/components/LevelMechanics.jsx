@@ -38,7 +38,7 @@ function InlineTutorial({ type, title, subtitle }) {
 
 
 // --- HOVER LEVEL ---
-export function HoverLevel({ target, onComplete }) {
+export function HoverLevel({ target, isStatic, onComplete }) {
   const [hovered, setHovered] = useState(false);
   const [position] = useState(getRandomPosition);
   const [burst, setBurst] = useState(false);
@@ -63,7 +63,7 @@ export function HoverLevel({ target, onComplete }) {
       />
 
       <div
-        className={`target-emoji ${hovered ? 'hovering' : 'idle-float'} ${burst ? 'burst' : ''}`}
+        className={`target-emoji ${hovered ? 'hovering' : (isStatic ? '' : 'idle-float')} ${burst ? 'burst' : ''}`}
         style={{ position: 'absolute', top: position.top, left: position.left, transform: 'translate(-50%, -50%)' }}
         onMouseEnter={() => { setHovered(true); sounds.hover(); }}
         onMouseLeave={() => setHovered(false)}
@@ -120,6 +120,131 @@ export function ClickLevel({ target, moving, onComplete }) {
       >
         {target}
       </div>
+    </div>
+  );
+}
+
+// --- WATERING LEVEL ---
+export function WateringLevel({ targets, totalTasks, onProgress }) {
+  const [plants, setPlants] = useState([]);
+  const [hoveredId, setHoveredId] = useState(null);
+  
+  useEffect(() => {
+    const newPlants = Array.from({ length: totalTasks }, (_, i) => ({
+      id: i,
+      targetEmoji: targets[i % targets.length] || '🌻',
+      watered: false,
+      progress: 0,
+      x: 15 + Math.random() * 70, 
+      y: 25 + Math.random() * 50  
+    }));
+    setPlants(newPlants);
+  }, [targets, totalTasks]);
+
+  useEffect(() => {
+    if (hoveredId === null) return;
+    
+    const interval = setInterval(() => {
+      setPlants(prev => prev.map(p => {
+        if (p.id === hoveredId && !p.watered) {
+          const newProgress = p.progress + 5; 
+          if (newProgress >= 100) {
+            sounds.taskComplete();
+            onProgress();
+            return { ...p, progress: 100, watered: true }; 
+          }
+          return { ...p, progress: newProgress };
+        }
+        return p;
+      }));
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [hoveredId, onProgress]);
+
+  return (
+    <div className="mechanic-container hover-bg" style={{ cursor: 'url("https://cdn-icons-png.flaticon.com/64/3039/3039401.png") 32 32, auto' }}>
+      <InlineTutorial type="hover" title="¡Riega las plantas!" subtitle="Mueve la jarra sobre cada planta por 2 segundos." />
+      {plants.map(p => (
+        <div key={p.id} 
+             style={{ position: 'absolute', left: `${p.x}%`, top: `${p.y}%`, transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+             onMouseEnter={() => setHoveredId(p.id)}
+             onMouseLeave={() => setHoveredId(null)}>
+           <div className={`target-emoji ${p.watered ? 'burst' : 'idle-pulse'}`} style={{ filter: p.watered ? 'none' : 'grayscale(0.8) opacity(0.8)' }}>
+             {p.watered ? p.targetEmoji : '🌱'}
+           </div>
+           {!p.watered && p.progress > 0 && (
+             <div className="scroll-progress-bar" style={{ width: '80px', height: '12px', marginTop: '15px', border: '2px solid rgba(0,0,0,0.2)' }}>
+               <div className="scroll-progress-fill" style={{ width: `${p.progress}%`, background: '#2196F3' }} />
+             </div>
+           )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// --- FALLING APPLES LEVEL ---
+export function FallingApplesLevel({ target, totalTasks, onProgress }) {
+  const [apples, setApples] = useState([]);
+  
+  useEffect(() => {
+    let idCounter = 0;
+    const spawnInterval = setInterval(() => {
+      if (idCounter >= totalTasks) return;
+      setApples(prev => [...prev, {
+        id: idCounter++,
+        x: 15 + Math.random() * 70,
+        y: -15, 
+        caught: false,
+        missed: false
+      }]);
+    }, 1200); 
+    return () => clearInterval(spawnInterval);
+  }, [totalTasks]);
+
+  useEffect(() => {
+    const fallInterval = setInterval(() => {
+      setApples(prev => prev.map(a => {
+        if (a.caught || a.missed) return a;
+        const newY = a.y + 1.2;
+        if (newY > 110) return { ...a, missed: true };
+        return { ...a, y: newY };
+      }));
+    }, 50);
+    return () => clearInterval(fallInterval);
+  }, []);
+
+  const handleHover = (id) => {
+    setApples(prev => prev.map(a => {
+      if (a.id === id && !a.caught && !a.missed) {
+        sounds.taskComplete();
+        onProgress();
+        return { ...a, caught: true };
+      }
+      return a;
+    }));
+  };
+
+  const caughtCount = apples.filter(a => a.caught).length;
+
+  return (
+    <div className="mechanic-container hover-bg" style={{ overflow: 'hidden' }}>
+      <InlineTutorial type="hover" title="¡Atrapa las manzanas!" subtitle="Pasa el mouse sobre ellas antes de que toquen el suelo." />
+      
+      <div style={{ position: 'absolute', top: '-25%', left: '50%', transform: 'translateX(-50%)', fontSize: '30rem', opacity: 0.15, pointerEvents: 'none', userSelect: 'none' }}>🌳</div>
+
+      <div style={{ position: 'absolute', bottom: '20px', left: '30px', fontSize: '5rem', display: 'flex', alignItems: 'center', gap: '15px' }}>
+        🧺 <span style={{ fontSize: '2rem', fontWeight: 'bold', background: 'rgba(255,255,255,0.8)', padding: '5px 15px', borderRadius: '20px' }}>{caughtCount} / {totalTasks}</span>
+      </div>
+
+      {apples.map(a => !a.caught && !a.missed && (
+        <div key={a.id}
+             onMouseEnter={() => handleHover(a.id)}
+             style={{ position: 'absolute', left: `${a.x}%`, top: `${a.y}%`, fontSize: '4.5rem', cursor: 'crosshair', transition: 'top 0.05s linear', transform: 'translateX(-50%)' }}>
+          {target}
+        </div>
+      ))}
     </div>
   );
 }
