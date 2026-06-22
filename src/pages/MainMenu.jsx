@@ -11,11 +11,15 @@ function MainMenu({ onNavigate }) {
       </header>
 
       <div className="games-grid">
-        <div className="game-card active" onClick={() => onNavigate('mouse-game')}>
+        <div className="game-card active">
           <div className="card-icon">🖱️</div>
           <h2>Aventura del Mouse</h2>
-          <p>Domina el ratón superando divertidos retos interactivos.</p>
-          <button className="btn-primary">¡Jugar Ahora!</button>
+          <p>Elige tu nivel de dificultad para comenzar:</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 1)}>🟢 Nivel 1 (Fácil)</button>
+            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 2)} style={{ background: 'var(--panama-blue)' }}>🟡 Nivel 2 (Medio)</button>
+            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 3)} style={{ background: 'var(--panama-red)' }}>🔴 Nivel 3 (Difícil)</button>
+          </div>
         </div>
         
         <div className="game-card locked">

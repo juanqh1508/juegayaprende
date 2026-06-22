@@ -30,6 +30,14 @@ function MouseInfographic({ onComplete }) {
           </div>
 
           <div className="info-sections">
+            <div className="info-item" style={{ borderLeftColor: '#9C27B0' }}>
+              <div className="info-icon">✋</div>
+              <div className="info-text">
+                <h3>Postura de la Mano</h3>
+                <p>Descansa tu palma suavemente sobre el ratón. Tu <strong>dedo índice</strong> va en el botón izquierdo y tu <strong>dedo medio</strong> en el derecho.</p>
+              </div>
+            </div>
+
             <div className="info-item">
               <div className="info-icon click-anim">👆</div>
               <div className="info-text">

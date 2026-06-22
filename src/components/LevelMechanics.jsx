@@ -161,21 +161,30 @@ export function DoubleClickLevel({ target, onComplete }) {
 }
 
 // --- DRAG & DROP LEVEL ---
-export function DragDropLevel({ targets, bin, totalTasks, onProgress }) {
+export function DragDropLevel({ targets, bin, totalTasks, onProgress, onComplete }) {
   const [items, setItems] = useState([]);
   const [draggedId, setDraggedId] = useState(null);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    // Generate items scattered on the left/center of the container
-    const newItems = Array.from({ length: totalTasks }, (_, i) => ({
-      id: i,
-      emoji: targets[i % targets.length],
-      // random position avoiding the extreme edges and right bin area
-      x: 50 + Math.random() * (window.innerWidth * 0.4),
-      y: 100 + Math.random() * (window.innerHeight * 0.4),
-      dropped: false
-    }));
+    // Generate items scattered around the center (bin)
+    const newItems = Array.from({ length: totalTasks }, (_, i) => {
+      // Angle from 0 to 2PI
+      const angle = Math.random() * Math.PI * 2;
+      // Distance from center (avoiding the exact center where the bin is)
+      const radius = 150 + Math.random() * 200; 
+      
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+
+      return {
+        id: i,
+        emoji: targets[i % targets.length],
+        x: cx + Math.cos(angle) * radius,
+        y: cy + Math.sin(angle) * radius,
+        dropped: false
+      };
+    });
     setItems(newItems);
   }, [targets, totalTasks]);
 
@@ -197,8 +206,12 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress }) {
   const handleMouseUp = () => {
     if (draggedId !== null) {
       const item = items.find(i => i.id === draggedId);
-      // The bin is on the right side. We check if the item's x coordinate is far right enough.
-      if (item.x > window.innerWidth * 0.5) {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      // Check distance to center bin
+      const dist = Math.sqrt(Math.pow(item.x - cx, 2) + Math.pow(item.y - cy, 2));
+      
+      if (dist < 100) { // Dropped close enough to the bin
         sounds.drop();
         setItems(prev => prev.map(i => i.id === draggedId ? { ...i, dropped: true } : i));
         onProgress();
@@ -213,15 +226,15 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress }) {
     <div className="mechanic-container drag-container drag-bg" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       <InlineTutorial 
         type="drag" 
-        title="¡Limpia la pantalla!" 
-        subtitle="Arrastra todos los objetos hacia la zona de la derecha." 
+        title="¡Guarda los objetos en el centro!" 
+        subtitle="Arrastra todos los objetos dispersos hacia el contenedor en el centro." 
       />
 
-      <div className="drag-area" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
+      <div className="drag-area" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, border: 'none', background: 'transparent' }}>
         {items.map(item => !item.dropped && (
           <div
             key={item.id}
-            className={`target-emoji draggable ${draggedId === item.id ? 'grabbing' : ''}`}
+            className={`target-emoji draggable idle-float ${draggedId === item.id ? 'grabbing' : ''}`}
             style={{ position: 'absolute', left: 0, top: 0, transform: `translate(${item.x}px, ${item.y}px)`, zIndex: draggedId === item.id ? 100 : 10 }}
             onMouseDown={(e) => handleMouseDown(e, item)}
           >
@@ -229,7 +242,7 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress }) {
           </div>
         ))}
 
-        <div className="bin-emoji" style={{ position: 'absolute', right: '10%', top: '50%', transform: 'translateY(-50%)', fontSize: '10rem', opacity: 0.8, zIndex: 1 }}>
+        <div className="bin-emoji" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: '10rem', opacity: 0.8, zIndex: 1 }}>
           {bin}
         </div>
       </div>
@@ -238,9 +251,10 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress }) {
 }
 
 // --- SCROLL LEVEL ---
-export function ScrollLevel({ target, onComplete }) {
-  const [scrolled, setScrolled] = useState(false);
+export function ScrollLevel({ target, multiple, onComplete }) {
+  const [scrolledCount, setScrolledCount] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const requiredScrolls = multiple ? 3 : 1;
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -248,9 +262,16 @@ export function ScrollLevel({ target, onComplete }) {
     setScrollProgress(Math.min(progress, 100));
 
     if (scrollTop + clientHeight >= scrollHeight - 5) {
-      if (!scrolled) {
+      if (scrolledCount < requiredScrolls) {
         sounds.taskComplete();
-        setScrolled(true);
+        setScrolledCount(prev => prev + 1);
+        if (scrolledCount + 1 === requiredScrolls) {
+           // Wait a bit, then finish
+        } else {
+           // Reset scroll to top for next exercise
+           e.target.scrollTop = 0;
+           setScrollProgress(0);
+        }
       }
     }
   };
@@ -260,7 +281,7 @@ export function ScrollLevel({ target, onComplete }) {
       <InlineTutorial 
         type="scroll" 
         title="¡Rueda del mouse hacia abajo!" 
-        subtitle="Usa la ruedita del mouse para bajar hasta el final." 
+        subtitle={multiple ? `¡Baja hasta el final ${requiredScrolls} veces!` : "Usa la ruedita del mouse para bajar hasta el final."} 
       />
 
       <div className="scroll-progress-bar">
@@ -276,15 +297,15 @@ export function ScrollLevel({ target, onComplete }) {
           <div className="scroll-end">
             <div className="target-emoji animate-bounce" style={{ fontSize: '5rem' }}>{target}</div>
             <p style={{ fontSize: '1.3rem', fontWeight: 'bold', color: 'var(--tropical-green)', margin: '1rem 0' }}>
-              {scrolled ? '¡Llegaste al final! 🎉' : '¡Aquí está el destino! 🏁'}
+              {scrolledCount >= requiredScrolls ? '¡Llegaste al final! 🎉' : `¡Aquí está el destino! (${scrolledCount}/${requiredScrolls})`}
             </p>
             <button
               className="btn-primary"
               onClick={() => { sounds.click(); onComplete(); }}
-              disabled={!scrolled}
-              style={{ opacity: scrolled ? 1 : 0.5 }}
+              disabled={scrolledCount < requiredScrolls}
+              style={{ opacity: scrolledCount >= requiredScrolls ? 1 : 0.5 }}
             >
-              {scrolled ? '✅ ¡Lo lograste! Clic aquí' : '⬇️ Sigue bajando...'}
+              {scrolledCount >= requiredScrolls ? '✅ ¡Lo lograste! Clic aquí' : '⬇️ Sigue bajando...'}
             </button>
           </div>
         </div>
@@ -294,7 +315,7 @@ export function ScrollLevel({ target, onComplete }) {
 }
 
 // --- CHECKBOX LEVEL ---
-export function CheckboxLevel({ options, requiredCount, onComplete }) {
+export function CheckboxLevel({ options, requiredCount, question, onComplete }) {
   const [checkedItems, setCheckedItems] = useState([]);
 
   const toggleCheck = (id) => {
@@ -312,18 +333,18 @@ export function CheckboxLevel({ options, requiredCount, onComplete }) {
   };
 
   return (
-    <div className="mechanic-container checkbox-bg">
+    <div className="mechanic-container checkbox-bg" style={{ position: 'relative' }}>
       <InlineTutorial 
         type="click" 
-        title="¡Selecciona las opciones!" 
-        subtitle={`Haz clic en las casillas para marcar ${requiredCount} opciones correctas.`} 
+        title="Uso del CheckBox" 
+        subtitle={`Los CheckBox (cuadraditos) te permiten seleccionar MÚLTIPLES opciones a la vez.`} 
       />
 
       <div className="checkbox-grid">
         {options.map((opt) => (
           <div 
             key={opt.id} 
-            className={`checkbox-item ${checkedItems.includes(opt.id) ? 'checked' : ''}`}
+            className={`checkbox-item ${checkedItems.includes(opt.id) ? 'checked' : ''} idle-float`}
             onClick={() => toggleCheck(opt.id)}
           >
             <div className="checkbox-emoji">{opt.emoji}</div>
@@ -334,12 +355,18 @@ export function CheckboxLevel({ options, requiredCount, onComplete }) {
           </div>
         ))}
       </div>
+
+      {question && (
+        <div className="question-panel" style={{ position: 'absolute', bottom: '20px', background: 'rgba(255,255,255,0.9)', padding: '15px 30px', borderRadius: '50px', boxShadow: '0 5px 15px rgba(0,0,0,0.1)', fontSize: '1.3rem', fontWeight: 'bold' }}>
+          ❓ {question}
+        </div>
+      )}
     </div>
   );
 }
 
 // --- RADIO LEVEL ---
-export function RadioLevel({ options, correctId, onComplete }) {
+export function RadioLevel({ options, correctId, question, onComplete }) {
   const [selectedId, setSelectedId] = useState(null);
 
   const handleSelect = (id) => {
@@ -354,18 +381,18 @@ export function RadioLevel({ options, correctId, onComplete }) {
   };
 
   return (
-    <div className="mechanic-container radio-bg">
+    <div className="mechanic-container radio-bg" style={{ position: 'relative' }}>
       <InlineTutorial 
         type="click" 
-        title="¡Elige solo una opción!" 
-        subtitle="Haz clic en el círculo de la respuesta correcta." 
+        title="Uso del Radio Button" 
+        subtitle="Los Radio Buttons (círculos) te permiten seleccionar SOLO UNA opción." 
       />
 
       <div className="radio-grid">
         {options.map((opt) => (
           <div 
             key={opt.id} 
-            className={`radio-item ${selectedId === opt.id ? 'selected' : ''}`}
+            className={`radio-item ${selectedId === opt.id ? 'selected' : ''} idle-float`}
             onClick={() => handleSelect(opt.id)}
           >
             <div className="checkbox-emoji" style={{fontSize: '3.5rem'}}>{opt.emoji}</div>
@@ -376,6 +403,12 @@ export function RadioLevel({ options, correctId, onComplete }) {
           </div>
         ))}
       </div>
+
+      {question && (
+        <div className="question-panel" style={{ position: 'absolute', bottom: '20px', background: 'rgba(255,255,255,0.9)', padding: '15px 30px', borderRadius: '50px', boxShadow: '0 5px 15px rgba(0,0,0,0.1)', fontSize: '1.3rem', fontWeight: 'bold' }}>
+          ❓ {question}
+        </div>
+      )}
     </div>
   );
 }
