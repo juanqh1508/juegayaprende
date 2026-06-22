@@ -228,14 +228,18 @@ export function FallingApplesLevel({ target, totalTasks, onProgress }) {
   useEffect(() => {
     let idCounter = 0;
     const spawnInterval = setInterval(() => {
-      if (idCounter >= totalTasks) return;
-      setApples(prev => [...prev, {
-        id: idCounter++,
-        x: 15 + Math.random() * 70,
-        y: -15, 
-        caught: false,
-        missed: false
-      }]);
+      setApples(prev => {
+        const caughtCount = prev.filter(a => a.caught).length;
+        if (caughtCount >= totalTasks) return prev;
+        
+        return [...prev, {
+          id: idCounter++,
+          x: 15 + Math.random() * 70,
+          y: -15, 
+          caught: false,
+          missed: false
+        }];
+      });
     }, 1200); 
     return () => clearInterval(spawnInterval);
   }, [totalTasks]);
