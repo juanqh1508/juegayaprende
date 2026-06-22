@@ -295,7 +295,6 @@
 .level-mechanic-box {
   flex-grow: 1;
   width: 100%;
-  background: url('/cartoon_mouse_bg.png') center/cover no-repeat;
   border-radius: 24px;
   position: relative;
   overflow: hidden;

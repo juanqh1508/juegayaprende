@@ -211,7 +211,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
 
   const progressPercent = ((currentLevelIndex) / levelData.length) * 100;
   const taskProgressPercent = (tasksCompleted / totalTasksPerLevel) * 100;
-  const containerClass = `mouse-game-container ${level.bg || 'bg-park'}`;
+  const containerClass = `mouse-game-container`;
 
   return (
     <div className={containerClass}>
