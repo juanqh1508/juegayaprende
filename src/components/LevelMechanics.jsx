@@ -163,14 +163,14 @@ export function WateringLevel({ targets, totalTasks, onProgress }) {
   }, [hoveredId, onProgress]);
 
   return (
-    <div className="mechanic-container hover-bg" style={{ cursor: 'url("https://cdn-icons-png.flaticon.com/64/3141/3141991.png") 16 16, auto' }}>
+    <div className="mechanic-container hover-bg" style={{ cursor: 'url("https://cdn-icons-png.flaticon.com/64/636/636040.png") 16 16, auto' }}>
       <InlineTutorial type="hover" title="¡Riega las plantas!" subtitle="Mueve la jarra sobre cada planta por 2 segundos." />
       {plants.map(p => (
         <div key={p.id} 
              style={{ position: 'absolute', left: `${p.x}%`, top: `${p.y}%`, transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
              onMouseEnter={() => setHoveredId(p.id)}
              onMouseLeave={() => setHoveredId(null)}>
-           <div className={`target-emoji ${p.watered ? 'burst' : 'idle-pulse'}`} style={{ filter: p.watered ? 'none' : 'grayscale(0.8) opacity(0.8)' }}>
+           <div className={`target-emoji ${p.watered ? 'happy-pop' : 'idle-pulse'}`} style={{ filter: p.watered ? 'none' : 'grayscale(0.8) opacity(0.8)' }}>
              {p.watered ? p.targetEmoji : '🌱'}
            </div>
            {!p.watered && p.progress > 0 && (
