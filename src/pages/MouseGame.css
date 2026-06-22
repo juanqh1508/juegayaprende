@@ -295,13 +295,14 @@
 .level-mechanic-box {
   flex-grow: 1;
   width: 100%;
-  background: transparent;
+  background: url('/cartoon_mouse_bg.png') center/cover no-repeat;
   border-radius: 24px;
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1) inset;
 }
 
 /* =============================================
