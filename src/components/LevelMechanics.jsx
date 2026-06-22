@@ -124,6 +124,33 @@ export function ClickLevel({ target, moving, onComplete }) {
   );
 }
 
+function CustomCursor({ image, size = 100, offsetX = 50, offsetY = 50 }) {
+  const [pos, setPos] = useState({ x: -1000, y: -1000 });
+  
+  useEffect(() => {
+    const handleMouseMove = (e) => setPos({ x: e.clientX, y: e.clientY });
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  return (
+    <div style={{
+      position: 'fixed',
+      left: pos.x,
+      top: pos.y,
+      width: size,
+      height: size,
+      transform: `translate(-${offsetX}px, -${offsetY}px)`,
+      pointerEvents: 'none',
+      zIndex: 9999,
+      backgroundImage: `url(${image})`,
+      backgroundSize: 'contain',
+      backgroundRepeat: 'no-repeat',
+      filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))'
+    }} />
+  );
+}
+
 // --- WATERING LEVEL ---
 export function WateringLevel({ targets, totalTasks, onProgress }) {
   const [plants, setPlants] = useState([]);
@@ -172,14 +199,15 @@ export function WateringLevel({ targets, totalTasks, onProgress }) {
   }, [hoveredId, onProgress]);
 
   return (
-    <div className="mechanic-container hover-bg" style={{ cursor: 'url("/watering-can.svg") 24 24, auto' }}>
+    <div className="mechanic-container hover-bg" style={{ cursor: 'none' }}>
+      <CustomCursor image="/watering-can.svg" size={140} offsetX={70} offsetY={70} />
       <InlineTutorial type="hover" title="¡Riega las plantas!" subtitle="Mueve la jarra sobre cada planta por 2 segundos." />
       {plants.map(p => (
         <div key={p.id} 
              style={{ position: 'absolute', cursor: 'inherit', left: `${p.x}%`, top: `${p.y}%`, transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
              onMouseEnter={() => setHoveredId(p.id)}
              onMouseLeave={() => setHoveredId(null)}>
-           <div className={`target-emoji ${p.watered ? 'happy-pop' : 'idle-pulse'}`} style={{ filter: p.watered ? 'none' : 'grayscale(0.8) opacity(0.8)' }}>
+           <div className={`target-emoji ${p.watered ? 'happy-pop' : ''}`} style={{ filter: p.watered ? 'none' : 'grayscale(0.8) opacity(0.8)', transition: 'filter 0.5s' }}>
              {p.watered ? p.targetEmoji : '🌱'}
            </div>
            {!p.watered && p.progress > 0 && (
@@ -238,7 +266,8 @@ export function FallingApplesLevel({ target, totalTasks, onProgress }) {
   const caughtCount = apples.filter(a => a.caught).length;
 
   return (
-    <div className="mechanic-container hover-bg" style={{ overflow: 'hidden', cursor: 'url("/basket.svg") 24 24, auto' }}>
+    <div className="mechanic-container hover-bg" style={{ overflow: 'hidden', cursor: 'none' }}>
+      <CustomCursor image="/basket.svg" size={120} offsetX={60} offsetY={60} />
       <InlineTutorial type="hover" title="¡Atrapa las manzanas!" subtitle="Pasa el mouse sobre ellas antes de que toquen el suelo." />
       
       <div style={{ position: 'absolute', top: '-25%', left: '50%', transform: 'translateX(-50%)', fontSize: '30rem', opacity: 0.15, pointerEvents: 'none', userSelect: 'none' }}>🌳</div>
