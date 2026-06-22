@@ -632,3 +632,90 @@ export function SequenceClickLevel({ sequenceLength = 3, onComplete }) {
     </div>
   );
 }
+
+// --- BALLOON POPPING LEVEL ---
+export function BalloonPoppingLevel({ target, onProgress, totalTasks }) {
+  const [balloons, setBalloons] = useState([]);
+  
+  useEffect(() => {
+    const spawnInterval = setInterval(() => {
+      setBalloons(prev => {
+        if (prev.length > 6) return prev;
+        return [...prev, { id: Date.now() + Math.random(), left: 10 + Math.random() * 80 }];
+      });
+    }, 800);
+    return () => clearInterval(spawnInterval);
+  }, []);
+
+  const handlePop = (id) => {
+    sounds.click();
+    sounds.taskComplete();
+    setBalloons(prev => prev.filter(b => b.id !== id));
+    onProgress();
+  };
+
+  return (
+    <div className="mechanic-container balloons-bg" style={{ position: 'relative', overflow: 'hidden', cursor: 'crosshair' }}>
+      <InlineTutorial 
+        type="click" 
+        title="¡Pincha los globos!" 
+        subtitle="Haz clic sobre los globos antes de que se escapen." 
+      />
+      {balloons.map(b => (
+        <div
+          key={b.id}
+          className="balloon"
+          style={{ left: `${b.left}%` }}
+          onMouseDown={() => handlePop(b.id)}
+        >
+          {target}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// --- WHACK-A-MOLE LEVEL ---
+export function WhackAMoleLevel({ target, onProgress, totalTasks }) {
+  const [activeMole, setActiveMole] = useState(null);
+
+  useEffect(() => {
+    const moveInterval = setInterval(() => {
+      setActiveMole(Math.floor(Math.random() * 6));
+    }, 900);
+    return () => clearInterval(moveInterval);
+  }, []);
+
+  const handleWhack = (index) => {
+    if (activeMole === index) {
+      sounds.click();
+      sounds.taskComplete();
+      setActiveMole(null);
+      onProgress();
+    }
+  };
+
+  return (
+    <div className="mechanic-container mole-bg" style={{ cursor: 'crosshair' }}>
+      <InlineTutorial 
+        type="click" 
+        title="¡Juego del Topo!" 
+        subtitle="Haz clic rápido en el topo cuando se asome por un agujero." 
+      />
+      <div className="mole-grid">
+        {[0, 1, 2, 3, 4, 5].map(index => (
+          <div key={index} className="mole-hole">
+            <div 
+              className={`mole-character ${activeMole === index ? 'up' : 'down'}`}
+              onMouseDown={() => handleWhack(index)}
+            >
+              {target}
+            </div>
+            <div className="mole-dirt"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+

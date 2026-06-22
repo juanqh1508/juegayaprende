@@ -3,7 +3,8 @@ import {
   HoverLevel, ClickLevel, DoubleClickLevel, 
   DragDropLevel, ScrollLevel, CheckboxLevel, 
   RadioLevel, SequenceClickLevel,
-  WateringLevel, FallingApplesLevel
+  WateringLevel, FallingApplesLevel,
+  BalloonPoppingLevel, WhackAMoleLevel
 } from '../components/LevelMechanics';
 import MouseInfographic from '../components/MouseInfographic';
 import { sounds } from '../utils/sounds';
@@ -23,11 +24,11 @@ const levelData = [
 
   // CLICK
   { id: 4, type: 'click', title: 'Nivel 4', targets: ['🚗', '🎈', '⭐', '💎'], bg: 'bg-classroom', totalTasks: 10,
-    description: 'Haz clic sobre los objetos para recogerlos.', msg: '¡Correcto! Clic dominado.' },
-  { id: 5, type: 'click', title: 'Nivel 5', targets: ['🦡', '🐹'], moving: true, bg: 'bg-park', totalTasks: 10,
-    description: '¡Juego del Topo! Haz clic sobre ellos antes de que se escondan.', msg: '¡Buen trabajo! Eres muy veloz.' },
-  { id: 6, type: 'click', title: 'Nivel 6', targets: ['🎈', '🎈', '🎈'], moving: true, bg: 'bg-forest', totalTasks: 10,
-    description: '¡Pincha los globos voladores haciéndoles clic!', msg: '¡Excelente reflejo!' },
+    description: 'Haz clic rápido sobre los objetos que aparecen.', msg: '¡Correcto! Clic dominado.' },
+  { id: 5, type: 'balloons', title: 'Nivel 5', target: '🎈', bg: 'bg-park', totalTasks: 10,
+    description: '¡Pincha los globos flotantes haciéndoles clic!', msg: '¡Buen trabajo! Eres muy veloz.' },
+  { id: 6, type: 'whack_a_mole', title: 'Nivel 6', target: '🦡', bg: 'bg-forest', totalTasks: 10,
+    description: '¡Juego del Topo! Atrapa los topos antes de que se escondan.', msg: '¡Excelente reflejo!' },
 
   // DOBLE CLICK
   { id: 7, type: 'doubleclick', title: 'Nivel 7', targets: ['🔒', '🚪', '🧰'], bg: 'bg-classroom', totalTasks: 10,
@@ -121,10 +122,15 @@ function MouseGame({ difficulty = 1, onNavigate, onFinish }) {
       if (diff === 2) return 20;
       if (diff === 3) return 30;
     }
-    if (levelId === 3) { // Manzanas
+    if (levelId === 3 || levelId === 5) { // Manzanas y Globos
       if (diff === 1) return 20;
       if (diff === 2) return 40;
       if (diff === 3) return 60;
+    }
+    if (levelId === 4 || levelId === 6) { // Click objetos y Topo
+      if (diff === 1) return 10;
+      if (diff === 2) return 20;
+      if (diff === 3) return 30;
     }
     
     if (baseTasks === 1) return 1; // Scroll, checkbox and radio are single tasks
@@ -179,6 +185,10 @@ function MouseGame({ difficulty = 1, onNavigate, onFinish }) {
         return <FallingApplesLevel key={currentLevelIndex} target={level.target} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'click':
         return <ClickLevel key={tasksCompleted} target={currentTarget} moving={level.moving} onComplete={() => handleTaskComplete(1)} />;
+      case 'balloons':
+        return <BalloonPoppingLevel key={currentLevelIndex} target={level.target} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
+      case 'whack_a_mole':
+        return <WhackAMoleLevel key={currentLevelIndex} target={level.target} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'doubleclick':
         return <DoubleClickLevel key={tasksCompleted} target={currentTarget} onComplete={() => handleTaskComplete(1)} />;
       case 'drag':
