@@ -172,11 +172,11 @@ export function WateringLevel({ targets, totalTasks, onProgress }) {
   }, [hoveredId, onProgress]);
 
   return (
-    <div className="mechanic-container hover-bg" style={{ cursor: 'url("/watering-can.svg") 16 16, auto' }}>
+    <div className="mechanic-container hover-bg" style={{ cursor: 'url("/watering-can.svg") 24 24, auto' }}>
       <InlineTutorial type="hover" title="¡Riega las plantas!" subtitle="Mueve la jarra sobre cada planta por 2 segundos." />
       {plants.map(p => (
         <div key={p.id} 
-             style={{ position: 'absolute', left: `${p.x}%`, top: `${p.y}%`, transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+             style={{ position: 'absolute', cursor: 'inherit', left: `${p.x}%`, top: `${p.y}%`, transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
              onMouseEnter={() => setHoveredId(p.id)}
              onMouseLeave={() => setHoveredId(null)}>
            <div className={`target-emoji ${p.watered ? 'happy-pop' : 'idle-pulse'}`} style={{ filter: p.watered ? 'none' : 'grayscale(0.8) opacity(0.8)' }}>
