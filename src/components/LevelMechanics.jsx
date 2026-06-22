@@ -163,7 +163,7 @@ export function WateringLevel({ targets, totalTasks, onProgress }) {
   }, [hoveredId, onProgress]);
 
   return (
-    <div className="mechanic-container hover-bg" style={{ cursor: 'url("https://cdn-icons-png.flaticon.com/64/3039/3039401.png") 32 32, auto' }}>
+    <div className="mechanic-container hover-bg" style={{ cursor: 'url("https://cdn-icons-png.flaticon.com/64/3141/3141991.png") 16 16, auto' }}>
       <InlineTutorial type="hover" title="¡Riega las plantas!" subtitle="Mueve la jarra sobre cada planta por 2 segundos." />
       {plants.map(p => (
         <div key={p.id} 
@@ -229,7 +229,7 @@ export function FallingApplesLevel({ target, totalTasks, onProgress }) {
   const caughtCount = apples.filter(a => a.caught).length;
 
   return (
-    <div className="mechanic-container hover-bg" style={{ overflow: 'hidden' }}>
+    <div className="mechanic-container hover-bg" style={{ overflow: 'hidden', cursor: 'url("https://cdn-icons-png.flaticon.com/64/2913/2913520.png") 32 32, auto' }}>
       <InlineTutorial type="hover" title="¡Atrapa las manzanas!" subtitle="Pasa el mouse sobre ellas antes de que toquen el suelo." />
       
       <div style={{ position: 'absolute', top: '-25%', left: '50%', transform: 'translateX(-50%)', fontSize: '30rem', opacity: 0.15, pointerEvents: 'none', userSelect: 'none' }}>🌳</div>
@@ -241,7 +241,7 @@ export function FallingApplesLevel({ target, totalTasks, onProgress }) {
       {apples.map(a => !a.caught && !a.missed && (
         <div key={a.id}
              onMouseEnter={() => handleHover(a.id)}
-             style={{ position: 'absolute', left: `${a.x}%`, top: `${a.y}%`, fontSize: '4.5rem', cursor: 'crosshair', transition: 'top 0.05s linear', transform: 'translateX(-50%)' }}>
+             style={{ position: 'absolute', left: `${a.x}%`, top: `${a.y}%`, fontSize: '4.5rem', cursor: 'inherit', transition: 'top 0.05s linear', transform: 'translateX(-50%)' }}>
           {target}
         </div>
       ))}

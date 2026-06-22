@@ -115,13 +115,24 @@ function MouseGame({ difficulty = 1, onNavigate, onFinish }) {
 
   const level = levelData[currentLevelIndex];
   
-  const getTasksByDifficulty = (baseTasks, diff) => {
+  const getTasksByDifficulty = (levelId, baseTasks, diff) => {
+    if (levelId === 2) { // Plantas
+      if (diff === 1) return 10;
+      if (diff === 2) return 20;
+      if (diff === 3) return 30;
+    }
+    if (levelId === 3) { // Manzanas
+      if (diff === 1) return 20;
+      if (diff === 2) return 40;
+      if (diff === 3) return 60;
+    }
+    
     if (baseTasks === 1) return 1; // Scroll, checkbox and radio are single tasks
     if (diff === 1) return Math.max(1, Math.round(baseTasks * 0.5)); // 5 tasks
     if (diff === 2) return Math.max(1, Math.round(baseTasks * 0.8)); // 8 tasks
     return baseTasks; // 10 tasks
   };
-  const totalTasksPerLevel = getTasksByDifficulty(level.totalTasks || 1, difficulty);
+  const totalTasksPerLevel = getTasksByDifficulty(level.id, level.totalTasks || 1, difficulty);
 
   // Actualizar el objetivo aleatorio cuando cambia el nivel o se completa una tarea
   useEffect(() => {

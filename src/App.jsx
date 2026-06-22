@@ -34,8 +34,8 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Background Music - Happy Children Tune */}
-      <audio ref={audioRef} loop src="https://cdn.pixabay.com/download/audio/2022/10/18/audio_31c2730e64.mp3?filename=happy-kids-122557.mp3" />
+      {/* Background Music - 8-bit Arcade / Mario Style */}
+      <audio ref={audioRef} loop src="https://cdn.pixabay.com/download/audio/2022/01/21/audio_31743c58be.mp3?filename=arcade-music-loop-110041.mp3" />
       
       {currentView !== 'menu' && (
         <button 
