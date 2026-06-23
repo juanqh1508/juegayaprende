@@ -807,19 +807,24 @@ export function EggBreakLevel({ totalTasks, onProgress }) {
       {eggs.map(egg => (
         <div
           key={egg.id}
-          className={`target-emoji target-clickable-static ${egg.isBroken ? 'happy-pop' : ''}`}
           style={{ 
             position: 'absolute', 
             left: `${egg.x}%`, 
             top: `${egg.y}%`, 
-            transform: 'translate(-50%, -50%)',
-            fontSize: '7.5rem',
-            userSelect: 'none',
-            transition: 'transform 0.2s'
+            transform: 'translate(-50%, -50%)'
           }}
-          onDoubleClick={() => handleDoubleClick(egg.id)}
         >
-          {egg.isBroken ? '🐣' : '🥚'}
+          <div
+            className={`target-emoji target-clickable-static ${egg.isBroken ? 'happy-pop' : ''}`}
+            style={{ 
+              fontSize: '7.5rem',
+              userSelect: 'none',
+              cursor: 'pointer'
+            }}
+            onDoubleClick={() => handleDoubleClick(egg.id)}
+          >
+            {egg.isBroken ? '🐣' : '🥚'}
+          </div>
         </div>
       ))}
     </div>
