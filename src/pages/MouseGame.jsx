@@ -289,6 +289,19 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
                       <img src="/mole.png" alt="Topo" className="instruction-mole" />
                       <img src="/hammer.png" alt="Martillo" className="instruction-hammer" />
                     </div>
+                  ) : level.type === 'doubleclick' ? (
+                    <div className="instruction-doubleclick-container">
+                      <span className="instruction-lock"></span>
+                      <div className="instruction-mouse-cursor">
+                        <div className="mini-mouse-icon">
+                          <div className="mini-mouse-body">
+                            <div className="mini-btn left-btn active-double-click"></div>
+                            <div className="mini-btn right-btn"></div>
+                            <div className="mini-wheel"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     <div className={`tutorial-icon ${
                       ['hover'].includes(level.type) ? 'anim-hover' :
