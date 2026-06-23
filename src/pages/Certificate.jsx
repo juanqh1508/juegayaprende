@@ -94,23 +94,16 @@ function Certificate({ userName, difficulty = 1, onNavigate }) {
               </div>
 
               {/* Footer Section */}
-              <div className="cert-footer">
-                <div className="cert-footer-column">
-                  <div className="cert-sig-line"></div>
-                  <p className="cert-sig-title">Fecha de Emisión</p>
-                  <p className="cert-sig-value">{dateStr}</p>
-                </div>
-
+              <div className="cert-footer-simple">
                 <div className="cert-seal-area">
                   <div className="cert-seal">🏅</div>
-                  <div className="cert-seal-text">¡LOGRO DIGITAL!</div>
                 </div>
-
-                <div className="cert-footer-column">
-                  <div className="cert-sig-line"></div>
-                  <p className="cert-sig-title">Firma del Director</p>
-                  <p className="cert-sig-value">Juega y Aprende</p>
-                </div>
+                <p className="cert-date-simple">
+                  <strong>Culminado:</strong> {dateStr}
+                </p>
+                <p className="cert-signature-simple">
+                  Juega y Aprende
+                </p>
               </div>
             </div>
           </div>
