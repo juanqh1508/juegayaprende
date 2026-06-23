@@ -31,8 +31,8 @@ const levelData = [
     description: '¡Juego del Topo! Atrapa los topos antes de que se escondan.', msg: '¡Excelente reflejo!' },
 
   // DOBLE CLICK
-  { id: 7, type: 'doubleclick', title: 'Nivel 7', targets: ['🔒', '🚪', '🧰'], bg: 'bg-classroom', totalTasks: 10,
-    description: 'Abre los objetos haciendo doble clic.', msg: '¡Wow! Doble clic superado.' },
+  { id: 7, type: 'doubleclick', title: 'Nivel 7', targets: ['🔒', '🚪', '🧰'], bg: 'bg-classroom', totalTasks: 10, isStatic: true,
+    description: 'Dale Doble Click a los objetos con el botón izquierdo. Importante: Los click tienes que darlo rápido.', msg: '¡Wow! Doble clic superado.' },
   { id: 8, type: 'doubleclick', title: 'Nivel 8', targets: ['📁', '📂'], bg: 'bg-park', totalTasks: 10,
     description: 'Haz doble clic para abrir las carpetas.', msg: '¡Genial! Identificaste cómo abrir archivos.' },
   { id: 9, type: 'doubleclick', title: 'Nivel 9', targets: ['🥚'], bg: 'bg-forest', totalTasks: 10,
@@ -192,7 +192,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
       case 'whack_a_mole':
         return <WhackAMoleLevel key={currentLevelIndex} target={level.target} difficulty={difficulty} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'doubleclick':
-        return <DoubleClickLevel key={tasksCompleted} target={currentTarget} onComplete={() => handleTaskComplete(1)} />;
+        return <DoubleClickLevel key={tasksCompleted} target={currentTarget} isStatic={level.isStatic} onComplete={() => handleTaskComplete(1)} />;
       case 'drag':
         // Le pasamos todo el array de targets y la cantidad total de tareas. DragDropLevel maneja la colección.
         return <DragDropLevel key={currentLevelIndex} targets={level.targets} bin={level.bin} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} onComplete={() => {}} />;

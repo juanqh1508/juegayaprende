@@ -196,6 +196,14 @@
   transform: translate(-50%, -50%) scale(1.15) !important;
 }
 
+.target-clickable-static {
+  cursor: pointer;
+}
+
+.target-clickable-static:hover {
+  filter: drop-shadow(0 0 20px var(--mango-orange)) drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
 .target-double .double-hint {
   position: absolute;
   top: -18px;

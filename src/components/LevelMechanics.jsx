@@ -319,7 +319,7 @@ export function FallingApplesLevel({ target, totalTasks, onProgress }) {
 }
 
 // --- DOUBLE CLICK LEVEL ---
-export function DoubleClickLevel({ target, onComplete }) {
+export function DoubleClickLevel({ target, isStatic, onComplete }) {
   const [position, setPosition] = useState(getRandomPosition);
   const [flash, setFlash] = useState(false);
 
@@ -343,7 +343,7 @@ export function DoubleClickLevel({ target, onComplete }) {
       />
 
       <div
-        className={`target-emoji target-clickable target-double ${flash ? 'burst' : 'idle-bounce'}`}
+        className={`target-emoji target-double ${isStatic ? 'target-clickable-static' : 'target-clickable idle-bounce'} ${flash ? 'burst' : ''}`}
         style={{ position: 'absolute', top: position.top, left: position.left, transform: 'translate(-50%, -50%)' }}
         onDoubleClick={handleDoubleClick}
       >
