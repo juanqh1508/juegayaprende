@@ -91,13 +91,16 @@
   background: #ffffff;
   border-radius: 32px;
   padding: 16px;
-  width: 920px;
-  max-width: 96vw;
+  width: 900px;
+  max-width: 95vw;
+  aspect-ratio: 1.414 / 1; /* Standard A4 paper landscape ratio */
   box-shadow:
     0 30px 70px rgba(0,0,0,0.35),
     0 0 0 10px rgba(255,255,255,0.2);
   overflow: hidden;
   border: 10px solid #ffffff;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Wavy Colorful Border Bars */
@@ -147,13 +150,17 @@
 .cert-inner {
   border: 4px dashed #FFCA28; /* Golden dashed line */
   border-radius: 22px;
-  padding: 3rem 4rem;
+  padding: 2.2rem 3rem;
   text-align: center;
   position: relative;
   background:
     radial-gradient(circle at 10% 20%, rgba(124,77,255,0.05) 0%, transparent 35%),
     radial-gradient(circle at 90% 80%, rgba(0,188,212,0.05) 0%, transparent 35%),
     #ffffff;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* Logo / Header */
