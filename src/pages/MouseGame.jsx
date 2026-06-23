@@ -5,7 +5,8 @@ import {
   RadioLevel, SequenceClickLevel,
   WateringLevel, FallingApplesLevel,
   BalloonPoppingLevel, WhackAMoleLevel,
-  EggBreakLevel, FolderOpenLevel
+  EggBreakLevel, FolderOpenLevel,
+  CartoonMouseMascot
 } from '../components/LevelMechanics';
 import MouseInfographic from '../components/MouseInfographic';
 import { sounds } from '../utils/sounds';

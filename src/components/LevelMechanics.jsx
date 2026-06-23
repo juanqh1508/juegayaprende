@@ -9,6 +9,53 @@ function getRandomPosition() {
   };
 }
 
+// Cartoon Mouse Mascot Component (Cute vector mouse caricatured for kids)
+export function CartoonMouseMascot({ size = 80 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" className="cartoon-mouse-svg" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))' }}>
+      {/* Ears */}
+      <circle cx="25" cy="35" r="18" fill="#a0aab2" />
+      <circle cx="25" cy="35" r="11" fill="#ffa6c9" />
+      <circle cx="75" cy="35" r="18" fill="#a0aab2" />
+      <circle cx="75" cy="35" r="11" fill="#ffa6c9" />
+      
+      {/* Body / Hands pointing */}
+      <path d="M 30 80 Q 50 70 70 80 L 75 100 L 25 100 Z" fill="#8e99a2" />
+      <circle cx="28" cy="82" r="5" fill="#a0aab2" />
+      <circle cx="72" cy="82" r="5" fill="#a0aab2" />
+      
+      {/* Head */}
+      <circle cx="50" cy="58" r="26" fill="#b0bac2" />
+      
+      {/* Cheeks */}
+      <circle cx="35" cy="64" r="5" fill="#ffccd5" opacity="0.9" />
+      <circle cx="65" cy="64" r="5" fill="#ffccd5" opacity="0.9" />
+      
+      {/* Eyes */}
+      <circle cx="42" cy="50" r="4.5" fill="#2d3748" />
+      <circle cx="41" cy="48" r="1.5" fill="#ffffff" />
+      <circle cx="43" cy="51" r="0.8" fill="#ffffff" />
+      
+      <circle cx="58" cy="50" r="4.5" fill="#2d3748" />
+      <circle cx="57" cy="48" r="1.5" fill="#ffffff" />
+      <circle cx="59" cy="51" r="0.8" fill="#ffffff" />
+      
+      {/* Nose */}
+      <ellipse cx="50" cy="60" rx="4" ry="2.8" fill="#ff758f" />
+      
+      {/* Mouth */}
+      <path d="M 46 65 Q 50 69 54 65" fill="none" stroke="#2d3748" strokeWidth="2" strokeLinecap="round" />
+      
+      {/* Whiskers */}
+      <line x1="28" y1="60" x2="16" y2="58" stroke="#4a5568" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="27" y1="64" x2="14" y2="65" stroke="#4a5568" strokeWidth="1.2" strokeLinecap="round" />
+      
+      <line x1="72" y1="60" x2="84" y2="58" stroke="#4a5568" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="73" y1="64" x2="86" y2="65" stroke="#4a5568" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 // Inline Tutorial Component
 function InlineTutorial({ type, title, subtitle }) {
   const getAnimClass = () => {
@@ -23,20 +70,27 @@ function InlineTutorial({ type, title, subtitle }) {
   };
 
   return (
-    <div className="inline-tutorial">
-      <div className={`tutorial-icon ${getAnimClass()}`}>
-        <div className="mini-mouse-icon">
-          <div className="mini-mouse-body">
-            <div className={`mini-btn left-btn ${(type === 'click' || type === 'doubleclick' || type === 'drag') ? 'active-click' : ''}`}></div>
-            <div className="mini-btn right-btn"></div>
-            <div className={`mini-wheel ${type === 'scroll' ? 'active-wheel' : ''}`}></div>
+    <div className="inline-tutorial-container">
+      <div className="mascot-wrapper">
+        <CartoonMouseMascot size={75} />
+      </div>
+      <div className="speech-bubble">
+        <div className="tutorial-icon-container">
+          <div className={`tutorial-icon ${getAnimClass()}`}>
+            <div className="mini-mouse-icon">
+              <div className="mini-mouse-body">
+                <div className={`mini-btn left-btn ${(type === 'click' || type === 'doubleclick' || type === 'drag') ? 'active-click' : ''}`}></div>
+                <div className="mini-btn right-btn"></div>
+                <div className={`mini-wheel ${type === 'scroll' ? 'active-wheel' : ''}`}></div>
+              </div>
+            </div>
           </div>
         </div>
+        <p className="instruction">
+          <strong>{title}</strong><br/>
+          <span className="inst-sub">{subtitle}</span>
+        </p>
       </div>
-      <p className="instruction">
-        <strong>{title}</strong><br/>
-        <span className="inst-sub">{subtitle}</span>
-      </p>
     </div>
   );
 }
@@ -359,23 +413,40 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress, onComplete
   const [items, setItems] = useState([]);
   const [draggedId, setDraggedId] = useState(null);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
 
   useEffect(() => {
+    if (!containerRef.current) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const width = rect.width || window.innerWidth * 0.8;
+    const height = rect.height || window.innerHeight * 0.6;
+    
+    const cx = width / 2;
+    const cy = height / 2;
+    
     // Generate items scattered around the center (bin)
     const newItems = Array.from({ length: totalTasks }, (_, i) => {
-      // Angle from 0 to 2PI
-      const angle = Math.random() * Math.PI * 2;
-      // Distance from center (avoiding the exact center where the bin is)
-      const radius = 150 + Math.random() * 200; 
+      let x, y;
+      let attempts = 0;
       
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
+      // Try to find a random position that is inside bounds and not in the center bin
+      do {
+        // Leave padding on edges to avoid going out of container bounds
+        x = 60 + Math.random() * (width - 120);
+        y = 110 + Math.random() * (height - 200);
+        attempts++;
+      } while (
+        // Avoid the center bin area (radius of 130px)
+        Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2)) < 130 &&
+        attempts < 50
+      );
 
       return {
         id: i,
         emoji: targets[i % targets.length],
-        x: cx + Math.cos(angle) * radius,
-        y: cy + Math.sin(angle) * radius,
+        x,
+        y,
         dropped: false
       };
     });
@@ -390,22 +461,33 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress, onComplete
   };
 
   const handleMouseMove = (e) => {
-    if (draggedId !== null) {
+    if (draggedId !== null && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      let newX = e.clientX - startPos.x;
+      let newY = e.clientY - startPos.y;
+      
+      // Constrain inside container bounds
+      newX = Math.max(20, Math.min(newX, rect.width - 60));
+      newY = Math.max(100, Math.min(newY, rect.height - 60));
+
       setItems(prev => prev.map(item => 
-        item.id === draggedId ? { ...item, x: e.clientX - startPos.x, y: e.clientY - startPos.y } : item
+        item.id === draggedId ? { ...item, x: newX, y: newY } : item
       ));
     }
   };
 
   const handleMouseUp = () => {
-    if (draggedId !== null) {
+    if (draggedId !== null && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
       const item = items.find(i => i.id === draggedId);
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      // Check distance to center bin
+      
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      
+      // Check distance to center bin relative to container center
       const dist = Math.sqrt(Math.pow(item.x - cx, 2) + Math.pow(item.y - cy, 2));
       
-      if (dist < 100) { // Dropped close enough to the bin
+      if (dist < 110) { // Dropped close enough to the bin
         sounds.drop();
         setItems(prev => prev.map(i => i.id === draggedId ? { ...i, dropped: true } : i));
         onProgress();
@@ -417,7 +499,7 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress, onComplete
   };
 
   return (
-    <div className="mechanic-container drag-container drag-bg" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+    <div ref={containerRef} className="mechanic-container drag-container drag-bg" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       <InlineTutorial 
         type="drag" 
         title="¡Guarda los objetos en el centro!" 
@@ -436,7 +518,7 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress, onComplete
           </div>
         ))}
 
-        <div className="bin-emoji" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: '10rem', opacity: 0.8, zIndex: 1 }}>
+        <div className="bin-emoji" style={{ position: 'absolute', left: '50%', top: '55%', transform: 'translate(-50%, -50%)', fontSize: '10rem', opacity: 0.8, zIndex: 1 }}>
           {bin}
         </div>
       </div>
