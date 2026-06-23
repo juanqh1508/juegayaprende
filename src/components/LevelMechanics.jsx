@@ -426,35 +426,53 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress, onComplete
     const emojiSize = 110;
     
     // Generate items scattered around the edges (left and right sides)
-    const newItems = Array.from({ length: totalTasks }, (_, i) => {
+    const newItems = [];
+    
+    for (let i = 0; i < totalTasks; i++) {
       let x, y;
+      let attempts = 0;
+      let valid = false;
       
-      // Alternate items between left side and right side of the screen
-      if (i % 2 === 0) {
-        // Left column: from 120px (left safety) to 28% of container width (far from center)
-        const minLeft = 120;
-        const maxLeft = Math.max(minLeft + 10, width * 0.28 - emojiSize);
-        x = minLeft + Math.random() * (maxLeft - minLeft);
-      } else {
-        // Right column: from 72% of container width (far from center) to width - 200px (right safety)
-        const minRight = width * 0.72;
-        const maxRight = Math.max(minRight + 10, width - 200);
-        x = minRight + Math.random() * (maxRight - minRight);
+      while (!valid && attempts < 150) {
+        attempts++;
+        
+        // Alternate items between left side and right side of the screen
+        if (i % 2 === 0) {
+          // Left column: from 120px (left safety) to 28% of container width (far from center)
+          const minLeft = 120;
+          const maxLeft = Math.max(minLeft + 10, width * 0.28 - emojiSize);
+          x = minLeft + Math.random() * (maxLeft - minLeft);
+        } else {
+          // Right column: from 72% of container width (far from center) to width - 200px (right safety)
+          const minRight = width * 0.72;
+          const maxRight = Math.max(minRight + 10, width - 200);
+          x = minRight + Math.random() * (maxRight - minRight);
+        }
+        
+        // Height: avoid the top tutorial bubble (first 180px) and the bottom boundary (last 130px)
+        const minTop = 180;
+        const maxTop = Math.max(minTop + 10, height - 130 - emojiSize);
+        y = minTop + Math.random() * (maxTop - minTop);
+        
+        // Verify this position doesn't overlap any previously placed items (at least 95px distance)
+        valid = true;
+        for (const item of newItems) {
+          const dist = Math.sqrt(Math.pow(x - item.x, 2) + Math.pow(y - item.y, 2));
+          if (dist < 95) {
+            valid = false;
+            break;
+          }
+        }
       }
       
-      // Height: avoid the top tutorial bubble (first 180px) and the bottom boundary (last 130px)
-      const minTop = 180;
-      const maxTop = Math.max(minTop + 10, height - 130 - emojiSize);
-      y = minTop + Math.random() * (maxTop - minTop);
-
-      return {
+      newItems.push({
         id: i,
         emoji: targets[i % targets.length],
         x,
         y,
         dropped: false
-      };
-    });
+      });
+    }
     setItems(newItems);
   }, [targets, totalTasks]);
 
