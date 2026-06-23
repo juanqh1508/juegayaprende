@@ -267,13 +267,12 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
                 
                 <div style={{ display: 'flex', justifyContent: 'center', margin: '1.5rem 0 2rem 0' }}>
                   {level.type === 'watering' ? (
-                    <div style={{ position: 'relative', width: '80px', height: '80px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-                      <div style={{ fontSize: '4rem', lineHeight: 1 }}>🌱</div>
+                    <div className="instruction-watering-container">
+                      <div className="instruction-plant"></div>
                       <img 
                         src="/watering-can.svg" 
                         alt="Regadera" 
-                        className="anim-hover" 
-                        style={{ position: 'absolute', top: '-20px', right: '-20px', width: '60px', height: '60px', transformOrigin: 'bottom left' }} 
+                        className="instruction-jar" 
                       />
                     </div>
                   ) : level.type === 'falling_apples' ? (

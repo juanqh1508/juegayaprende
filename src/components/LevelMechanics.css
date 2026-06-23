@@ -1192,3 +1192,61 @@
   90%, 100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
 }
 
+/* Instruction screen Watering animation */
+.instruction-watering-container {
+  position: relative;
+  width: 200px;
+  height: 150px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0,0,0,0.03);
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.instruction-plant {
+  font-size: 4rem;
+  z-index: 1;
+  user-select: none;
+  display: inline-block;
+  animation: plant-grow-bounce 3s infinite ease-in-out;
+}
+
+.instruction-plant::after {
+  content: '🌱';
+  animation: plant-grow-change 3s infinite step-end;
+}
+
+.instruction-jar {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  z-index: 2;
+  transform-origin: bottom right;
+  animation: jar-water-loop 3s infinite ease-in-out;
+}
+
+@keyframes plant-grow-bounce {
+  0%, 48%, 100% { transform: scale(1); }
+  52% { transform: scale(1.3); }
+  56%, 90% { transform: scale(1.15); }
+}
+
+@keyframes plant-grow-change {
+  0%, 49% { content: '🌱'; }
+  50%, 90% { content: '🌻'; }
+  91%, 100% { content: '🌱'; }
+}
+
+@keyframes jar-water-loop {
+  0% { transform: translate(-80px, -30px) rotate(0deg); opacity: 0; }
+  10% { transform: translate(-80px, -30px) rotate(0deg); opacity: 1; }
+  /* moves over the plant from left and tilts to pour */
+  35%, 65% { transform: translate(-25px, -20px) rotate(30deg); opacity: 1; }
+  /* retreats */
+  85% { transform: translate(-80px, -30px) rotate(0deg); opacity: 1; }
+  90%, 100% { transform: translate(-80px, -30px) rotate(0deg); opacity: 0; }
+}
+
