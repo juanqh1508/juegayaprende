@@ -195,7 +195,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
       case 'doubleclick':
         return <DoubleClickLevel key={tasksCompleted} target={currentTarget} isStatic={level.isStatic} onComplete={() => handleTaskComplete(1)} />;
       case 'egg_break':
-        return <EggBreakLevel key={tasksCompleted} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
+        return <EggBreakLevel key={currentLevelIndex} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'drag':
         // Le pasamos todo el array de targets y la cantidad total de tareas. DragDropLevel maneja la colección.
         return <DragDropLevel key={currentLevelIndex} targets={level.targets} bin={level.bin} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} onComplete={() => {}} />;
