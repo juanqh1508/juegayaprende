@@ -422,23 +422,30 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress, onComplete
     const width = rect.width || window.innerWidth * 0.8;
     const height = rect.height || window.innerHeight * 0.6;
     
+    // Approximate size of the emoji element
+    const emojiSize = 110;
+    
     // Generate items scattered around the edges (left and right sides)
     const newItems = Array.from({ length: totalTasks }, (_, i) => {
       let x, y;
       
       // Alternate items between left side and right side of the screen
       if (i % 2 === 0) {
-        // Left side: from 60px to 35% of container width
-        x = 60 + Math.random() * (width * 0.35 - 60);
+        // Left column: from 120px (left safety) to 28% of container width (far from center)
+        const minLeft = 120;
+        const maxLeft = Math.max(minLeft + 10, width * 0.28 - emojiSize);
+        x = minLeft + Math.random() * (maxLeft - minLeft);
       } else {
-        // Right side: from 65% of container width to width - 100px
-        const minRight = width * 0.65;
-        const maxRight = width - 100;
+        // Right column: from 72% of container width (far from center) to width - 200px (right safety)
+        const minRight = width * 0.72;
+        const maxRight = Math.max(minRight + 10, width - 200);
         x = minRight + Math.random() * (maxRight - minRight);
       }
       
-      // Height: keep them vertically centered and away from top/bottom boundaries
-      y = 130 + Math.random() * (height - 230);
+      // Height: avoid the top tutorial bubble (first 180px) and the bottom boundary (last 130px)
+      const minTop = 180;
+      const maxTop = Math.max(minTop + 10, height - 130 - emojiSize);
+      y = minTop + Math.random() * (maxTop - minTop);
 
       return {
         id: i,
@@ -464,9 +471,9 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress, onComplete
       let newX = e.clientX - startPos.x;
       let newY = e.clientY - startPos.y;
       
-      // Constrain inside container bounds
-      newX = Math.max(20, Math.min(newX, rect.width - 60));
-      newY = Math.max(100, Math.min(newY, rect.height - 60));
+      // Constrain inside container bounds with safety margins
+      newX = Math.max(40, Math.min(newX, rect.width - 150));
+      newY = Math.max(160, Math.min(newY, rect.height - 140));
 
       setItems(prev => prev.map(item => 
         item.id === draggedId ? { ...item, x: newX, y: newY } : item
