@@ -291,7 +291,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
                     </div>
                   ) : level.type === 'doubleclick' ? (
                     <div className="instruction-doubleclick-container">
-                      <span className="instruction-lock"></span>
+                      <div className="instruction-object">🧰</div>
                       <div className="instruction-mouse-cursor">
                         <div className="mini-mouse-icon">
                           <div className="mini-mouse-body">

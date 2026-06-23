@@ -855,17 +855,12 @@
   overflow: hidden;
 }
 
-.instruction-lock {
+.instruction-object {
   font-size: 5rem;
   z-index: 1;
   user-select: none;
   display: inline-block;
-  animation: lock-popup-bounce 3s infinite ease-in-out;
-}
-
-.instruction-lock::after {
-  content: '🔒';
-  animation: lock-change 3s infinite step-end;
+  animation: object-disappear-loop 3s infinite ease-in-out;
 }
 
 .instruction-mouse-cursor {
@@ -879,16 +874,14 @@
   animation: mini-doubleclick-flash 3s infinite step-end;
 }
 
-@keyframes lock-popup-bounce {
-  0%, 42%, 100% { transform: scale(1); }
-  45% { transform: scale(1.25); }
-  48%, 90% { transform: scale(1); }
-}
-
-@keyframes lock-change {
-  0%, 44% { content: '🔒'; }
-  45%, 90% { content: '🔓'; }
-  91%, 100% { content: '🔒'; }
+@keyframes object-disappear-loop {
+  0%, 42% { transform: scale(1); opacity: 1; filter: none; }
+  /* double clicked at 45% */
+  45% { transform: scale(1.3) rotate(8deg); opacity: 0.8; filter: brightness(1.5); }
+  /* disappears */
+  50%, 85% { transform: scale(0); opacity: 0; }
+  /* returns */
+  90%, 100% { transform: scale(1); opacity: 1; filter: none; }
 }
 
 @keyframes mouse-doubleclick-move {
