@@ -37,7 +37,7 @@ const levelData = [
   { id: 8, type: 'egg_break', title: 'Nivel 8', target: '🥚', bg: 'bg-forest', totalTasks: 10,
     description: 'Haz doble clic rápido para romper el huevo y sacar al pollito.', msg: '🐥 ¡Pío Pío! Perfecto.' },
   { id: 9, type: 'folder_open', title: 'Nivel 9', targets: ['📁'], bg: 'bg-park', totalTasks: 10,
-    description: 'Haz doble clic rápido para abrir las carpetas y programas de la computadora.', msg: '¡Genial! Identificaste cómo abrir carpetas y programas en una computadora.' },
+    description: 'El doble clic sirve para abrir carpetas y programas en la computadora. Para lograrlo, debes presionar el botón izquierdo del mouse dos veces seguidas muy rápido.', msg: '¡Genial! Identificaste cómo abrir carpetas y programas en una computadora.' },
 
   // ARRASTRAR
   { id: 10, type: 'drag', title: 'Nivel 10', targets: ['🚗', '🧸', '🪁', '🧩', '🚂'], bin: '📦', bg: 'bg-classroom', totalTasks: 10,
