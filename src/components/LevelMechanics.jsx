@@ -284,7 +284,7 @@ export function FallingApplesLevel({ target, totalTasks, onProgress }) {
   return (
     <div className="mechanic-container hover-bg" style={{ overflow: 'hidden', cursor: 'none' }}>
       <CustomCursor image="/basket.svg" size={120} offsetX={60} offsetY={60} />
-      <InlineTutorial type="hover" title="¡Atrapa las manzanas!" subtitle="Pasa el mouse sobre ellas antes de que toquen el suelo." />
+      <InlineTutorial type="hover" title="¡Atrapa las manzanas!" subtitle="Atrapa las manzanas con la cesta antes que se caigan." />
       
       <div style={{ position: 'absolute', top: '-25%', left: '50%', transform: 'translateX(-50%)', fontSize: '30rem', opacity: 0.15, pointerEvents: 'none', userSelect: 'none' }}>🌳</div>
 

@@ -20,7 +20,7 @@ const levelData = [
   { id: 2, type: 'watering', title: 'Nivel 2', targets: ['🌻', '🌹', '🌷', '🌼', '🌺', '🌸', '🪴', '🌵', '🌾', '🌴'], bg: 'bg-park', totalTasks: 10,
     description: 'Riega las plantas posando la Jarra de agua encima de ellas por dos segundos.', msg: '¡Muy bien! Las plantas están felices.' },
   { id: 3, type: 'falling_apples', title: 'Nivel 3', target: '🍎', bg: 'bg-forest', totalTasks: 10,
-    description: 'Atrapa las manzanas pasando el mouse sobre ellas antes de que caigan.', msg: '¡Fantástico! Tienes unos reflejos geniales.' },
+    description: 'Atrapa las manzanas con la cesta antes que se caigan.', msg: '¡Fantástico! Tienes unos reflejos geniales.' },
 
   // CLICK
   { id: 4, type: 'click', title: 'Nivel 4', targets: ['🚗', '🎈', '⭐', '💎'], bg: 'bg-classroom', totalTasks: 10,
@@ -261,9 +261,19 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
                         style={{ position: 'absolute', top: '-20px', right: '-20px', width: '60px', height: '60px', transformOrigin: 'bottom left' }} 
                       />
                     </div>
+                  ) : level.type === 'falling_apples' ? (
+                    <div style={{ position: 'relative', width: '100px', height: '100px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                      <div className="idle-bounce" style={{ position: 'absolute', top: '10px', fontSize: '3.5rem', zIndex: 1 }}>🍎</div>
+                      <img 
+                        src="/basket.svg" 
+                        alt="Cesta" 
+                        className="anim-hover"
+                        style={{ position: 'absolute', bottom: '-10px', width: '70px', height: '70px', zIndex: 2 }} 
+                      />
+                    </div>
                   ) : (
                     <div className={`tutorial-icon ${
-                      ['hover', 'falling_apples'].includes(level.type) ? 'anim-hover' :
+                      ['hover'].includes(level.type) ? 'anim-hover' :
                       ['click', 'balloons', 'whack_a_mole', 'checkbox', 'radio', 'sequence'].includes(level.type) ? 'anim-click' :
                       level.type === 'doubleclick' ? 'anim-doubleclick' :
                       level.type === 'drag' ? 'anim-drag' :
