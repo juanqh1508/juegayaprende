@@ -711,11 +711,21 @@ export function WhackAMoleLevel({ target, difficulty, onProgress, totalTasks }) 
   const [activeMole, setActiveMole] = useState(null);
 
   useEffect(() => {
+    let speed = 1650; // Básico (más lento para niños)
+    if (difficulty === 2) speed = 1000; // Intermedio
+    if (difficulty === 3) speed = 650;  // Avanzado
+
     const moveInterval = setInterval(() => {
-      setActiveMole(Math.floor(Math.random() * 6));
-    }, 900);
+      setActiveMole(prev => {
+        let nextMole = Math.floor(Math.random() * 6);
+        while (nextMole === prev) {
+          nextMole = Math.floor(Math.random() * 6);
+        }
+        return nextMole;
+      });
+    }, speed);
     return () => clearInterval(moveInterval);
-  }, []);
+  }, [difficulty]);
 
   const handleWhack = (index) => {
     if (activeMole === index) {
