@@ -832,27 +832,30 @@ export function EggBreakLevel({ totalTasks, onProgress }) {
 }
 
 // --- FOLDER OPEN LEVEL (Level 9) ---
-// --- FOLDER OPEN LEVEL (Level 9) ---
 export function FolderOpenLevel({ totalTasks, onProgress }) {
   const [openedItem, setOpenedItem] = useState(null);
+  const [openedIds, setOpenedIds] = useState([]);
 
   const desktopItems = [
-    { id: 1, type: 'folder', name: 'Fotos 📷', icon: '📁', content: '🖼️ 🐱 🐶 🌳' },
-    { id: 2, type: 'program', name: 'Dibujo 🎨', icon: '🎨', content: '🖌️ Dibujando un sol... ☀️' },
-    { id: 3, type: 'folder', name: 'Dibujos 📄', icon: '📁', content: '📄 Tarea.txt 📄 Nota.txt' },
+    { id: 1, type: 'folder', name: 'Imágenes', icon: '📁', content: '🖼️ Paisaje.png 🐱 Gato.jpg 🌸 Flor.png' },
+    { id: 2, type: 'program', name: 'Paint 🎨', icon: '🎨', content: '🖌️ Dibujando un sol... ☀️' },
+    { id: 3, type: 'folder', name: 'Documentos', icon: '📁', content: '📄 Tarea.docx 📄 Cuento.pdf 📄 Notas.txt' },
     { id: 4, type: 'program', name: 'Juegos 🎮', icon: '🎮', content: '👾 ¡Cargando marcianitos! 🚀' },
     { id: 5, type: 'program', name: 'Internet 🌐', icon: '🌐', content: '🔍 Google - Buscar... 🖥️' },
-    { id: 6, type: 'folder', name: 'Música 🎵', icon: '📁', content: '🎵 Canción.mp3 🎵 Piano.wav' },
+    { id: 6, type: 'folder', name: 'Videos', icon: '📁', content: '🎥 DibujosAnimados.mp4 🎥 Cancion.mp4' },
     { id: 7, type: 'program', name: 'Calculadora 🧮', icon: '🧮', content: '1 + 1 = 2 🎯 5 + 5 = 10' },
-    { id: 8, type: 'folder', name: 'Papelera 🗑️', icon: '🗑️', content: '🗑️ Papelera vacía' },
+    { id: 8, type: 'folder', name: 'Papelera', icon: '🗑️', content: '🗑️ Papelera vacía' },
     { id: 9, type: 'program', name: 'Notas 📝', icon: '📝', content: '📝 Hola amigo! Bienvenido' },
-    { id: 10, type: 'program', name: 'Ajustes ⚙️', icon: '⚙️', content: '⚙️ Pantalla ⚙️ Sonido' }
+    { id: 10, type: 'folder', name: 'Música', icon: '📁', content: '🎵 Canción.mp3 🎵 Piano.wav 🎵 Melodía.mp3' }
   ];
 
   const handleDoubleClick = (item) => {
     if (openedItem) return;
     sounds.doubleClick();
     setOpenedItem(item);
+    if (!openedIds.includes(item.id)) {
+      setOpenedIds(prev => [...prev, item.id]);
+    }
 
     // Auto-close after exactly 2 seconds (2000ms)
     setTimeout(() => {
@@ -871,18 +874,22 @@ export function FolderOpenLevel({ totalTasks, onProgress }) {
       />
 
       <div className="desktop-grid">
-        {desktopItems.map(item => (
-          <div 
-            key={item.id} 
-            className="desktop-icon"
-            onDoubleClick={() => handleDoubleClick(item)}
-          >
-            <div className="desktop-icon-emoji">
-              {openedItem?.id === item.id && item.type === 'folder' ? '📂' : item.icon}
+        {desktopItems.map(item => {
+          const isOpened = openedIds.includes(item.id);
+          return (
+            <div 
+              key={item.id} 
+              className="desktop-icon"
+              style={{ opacity: isOpened ? 0.4 : 1, transition: 'opacity 0.3s' }}
+              onDoubleClick={() => handleDoubleClick(item)}
+            >
+              <div className="desktop-icon-emoji">
+                {openedItem?.id === item.id && item.type === 'folder' ? '📂' : item.icon}
+              </div>
+              <div className="desktop-icon-label">{item.name}</div>
             </div>
-            <div className="desktop-icon-label">{item.name}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {openedItem && (
