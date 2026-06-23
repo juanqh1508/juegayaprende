@@ -832,104 +832,77 @@ export function EggBreakLevel({ totalTasks, onProgress }) {
 }
 
 // --- FOLDER OPEN LEVEL (Level 9) ---
+// --- FOLDER OPEN LEVEL (Level 9) ---
 export function FolderOpenLevel({ totalTasks, onProgress }) {
-  const [openedFolder, setOpenedFolder] = useState(null);
-  const [exploredFolders, setExploredFolders] = useState([]);
+  const [openedItem, setOpenedItem] = useState(null);
 
-  const folders = [
-    { 
-      id: 'drawings', 
-      name: 'Dibujos 🎨', 
-      files: [
-        { icon: '🎨', name: 'Paisaje.png' },
-        { icon: '🎨', name: 'Girasol.png' },
-        { icon: '🎨', name: 'MiFamilia.png' }
-      ]
-    },
-    { 
-      id: 'photos', 
-      name: 'Fotos 📷', 
-      files: [
-        { icon: '🖼️', name: 'Perrito.jpg' },
-        { icon: '🖼️', name: 'Gatito.jpg' },
-        { icon: '🖼️', name: 'Vacaciones.jpg' }
-      ]
-    },
-    { 
-      id: 'games', 
-      name: 'Juegos 🎮', 
-      files: [
-        { icon: '👾', name: 'Pacman.exe' },
-        { icon: '🚀', name: 'Naves.exe' }
-      ]
-    }
+  const desktopItems = [
+    { id: 1, type: 'folder', name: 'Fotos 📷', icon: '📁', content: '🖼️ 🐱 🐶 🌳' },
+    { id: 2, type: 'program', name: 'Dibujo 🎨', icon: '🎨', content: '🖌️ Dibujando un sol... ☀️' },
+    { id: 3, type: 'folder', name: 'Dibujos 📄', icon: '📁', content: '📄 Tarea.txt 📄 Nota.txt' },
+    { id: 4, type: 'program', name: 'Juegos 🎮', icon: '🎮', content: '👾 ¡Cargando marcianitos! 🚀' },
+    { id: 5, type: 'program', name: 'Internet 🌐', icon: '🌐', content: '🔍 Google - Buscar... 🖥️' },
+    { id: 6, type: 'folder', name: 'Música 🎵', icon: '📁', content: '🎵 Canción.mp3 🎵 Piano.wav' },
+    { id: 7, type: 'program', name: 'Calculadora 🧮', icon: '🧮', content: '1 + 1 = 2 🎯 5 + 5 = 10' },
+    { id: 8, type: 'folder', name: 'Papelera 🗑️', icon: '🗑️', content: '🗑️ Papelera vacía' },
+    { id: 9, type: 'program', name: 'Notas 📝', icon: '📝', content: '📝 Hola amigo! Bienvenido' },
+    { id: 10, type: 'program', name: 'Ajustes ⚙️', icon: '⚙️', content: '⚙️ Pantalla ⚙️ Sonido' }
   ];
 
-  const handleFolderDoubleClick = (folder) => {
+  const handleDoubleClick = (item) => {
+    if (openedItem) return;
     sounds.doubleClick();
-    setOpenedFolder(folder);
-  };
+    setOpenedItem(item);
 
-  const handleCloseWindow = () => {
-    sounds.click();
-    if (openedFolder && !exploredFolders.includes(openedFolder.id)) {
-      const updatedExplored = [...exploredFolders, openedFolder.id];
-      setExploredFolders(updatedExplored);
+    // Auto-close after exactly 2 seconds (2000ms)
+    setTimeout(() => {
+      setOpenedItem(null);
       sounds.taskComplete();
       onProgress();
-    }
-    setOpenedFolder(null);
+    }, 2000);
   };
-
-  const visibleFolders = folders.slice(0, Math.min(totalTasks, folders.length));
 
   return (
     <div className="desktop-container">
       <InlineTutorial 
         type="doubleclick" 
-        title="¡Explorador de Archivos!" 
-        subtitle="Haz doble clic rápido en las carpetas para abrirlas y ver sus archivos." 
+        title="¡Explorador y Programas!" 
+        subtitle="Haz doble clic rápido en las carpetas y programas para abrirlos. ¡Se cerrarán en 2 segundos!" 
       />
 
       <div className="desktop-grid">
-        {visibleFolders.map(folder => {
-          const isExplored = exploredFolders.includes(folder.id);
-          return (
-            <div 
-              key={folder.id} 
-              className="desktop-icon"
-              onDoubleClick={() => handleFolderDoubleClick(folder)}
-            >
-              <div className="desktop-icon-emoji">
-                {openedFolder?.id === folder.id ? '📂' : (isExplored ? '📂' : '📁')}
-              </div>
-              <div className="desktop-icon-label">{folder.name}</div>
+        {desktopItems.map(item => (
+          <div 
+            key={item.id} 
+            className="desktop-icon"
+            onDoubleClick={() => handleDoubleClick(item)}
+          >
+            <div className="desktop-icon-emoji">
+              {openedItem?.id === item.id && item.type === 'folder' ? '📂' : item.icon}
             </div>
-          );
-        })}
+            <div className="desktop-icon-label">{item.name}</div>
+          </div>
+        ))}
       </div>
 
-      {openedFolder && (
+      {openedItem && (
         <div className="windows-window">
           <div className="windows-titlebar">
-            <span>📁</span>
-            <span className="windows-title">Carpeta: {openedFolder.name}</span>
+            <span>{openedItem.icon}</span>
+            <span className="windows-title">
+              {openedItem.type === 'folder' ? 'Carpeta' : 'Programa'}: {openedItem.name}
+            </span>
             <div className="windows-controls">
-              <button className="windows-btn" onClick={() => sounds.click()}>_</button>
-              <button className="windows-btn close-btn" onClick={handleCloseWindow}>✕</button>
+              <button className="windows-btn" disabled>_</button>
+              <button className="windows-btn close-btn" disabled>✕</button>
             </div>
           </div>
-          <div className="windows-body">
-            {openedFolder.files.map((file, idx) => (
-              <div 
-                key={idx} 
-                className="window-file"
-                onDoubleClick={() => { sounds.doubleClick(); sounds.taskComplete(); }}
-              >
-                <div className="window-file-icon">{file.icon}</div>
-                <div className="window-file-name">{file.name}</div>
-              </div>
-            ))}
+          <div className="windows-body" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold', color: '#0078D7', background: '#fff', textAlign: 'center', padding: '30px' }}>
+            <div style={{ fontSize: '4rem', marginBottom: '15px' }}>{openedItem.icon}</div>
+            <div>{openedItem.content}</div>
+            <div style={{ fontSize: '0.9rem', color: '#999', marginTop: '25px', fontWeight: 'normal' }}>
+              ⏱️ Cerrando automáticamente...
+            </div>
           </div>
         </div>
       )}
