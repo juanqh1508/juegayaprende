@@ -251,21 +251,33 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
                 <h2 style={{ fontSize: '2.5rem', marginBottom: '1rem', color: 'var(--panama-blue)' }}>{level.title}</h2>
                 
                 <div style={{ display: 'flex', justifyContent: 'center', margin: '1.5rem 0 2rem 0' }}>
-                  <div className={`tutorial-icon ${
-                    ['hover', 'watering', 'falling_apples'].includes(level.type) ? 'anim-hover' :
-                    ['click', 'balloons', 'whack_a_mole', 'checkbox', 'radio', 'sequence'].includes(level.type) ? 'anim-click' :
-                    level.type === 'doubleclick' ? 'anim-doubleclick' :
-                    level.type === 'drag' ? 'anim-drag' :
-                    level.type === 'scroll' ? 'anim-scroll' : ''
-                  }`} style={{ transform: 'scale(1.5)' }}>
-                    <div className="mini-mouse-icon">
-                      <div className="mini-mouse-body">
-                        <div className={`mini-btn left-btn ${['click', 'doubleclick', 'drag', 'checkbox', 'radio', 'sequence', 'balloons', 'whack_a_mole'].includes(level.type) ? 'active-click' : ''}`}></div>
-                        <div className="mini-btn right-btn"></div>
-                        <div className={`mini-wheel ${level.type === 'scroll' ? 'active-wheel' : ''}`}></div>
+                  {level.type === 'watering' ? (
+                    <div style={{ position: 'relative', width: '80px', height: '80px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                      <div style={{ fontSize: '4rem', lineHeight: 1 }}>🌱</div>
+                      <img 
+                        src="/watering-can.svg" 
+                        alt="Regadera" 
+                        className="anim-hover" 
+                        style={{ position: 'absolute', top: '-20px', right: '-20px', width: '60px', height: '60px', transformOrigin: 'bottom left' }} 
+                      />
+                    </div>
+                  ) : (
+                    <div className={`tutorial-icon ${
+                      ['hover', 'falling_apples'].includes(level.type) ? 'anim-hover' :
+                      ['click', 'balloons', 'whack_a_mole', 'checkbox', 'radio', 'sequence'].includes(level.type) ? 'anim-click' :
+                      level.type === 'doubleclick' ? 'anim-doubleclick' :
+                      level.type === 'drag' ? 'anim-drag' :
+                      level.type === 'scroll' ? 'anim-scroll' : ''
+                    }`} style={{ transform: 'scale(1.5)' }}>
+                      <div className="mini-mouse-icon">
+                        <div className="mini-mouse-body">
+                          <div className={`mini-btn left-btn ${['click', 'doubleclick', 'drag', 'checkbox', 'radio', 'sequence', 'balloons', 'whack_a_mole'].includes(level.type) ? 'active-click' : ''}`}></div>
+                          <div className="mini-btn right-btn"></div>
+                          <div className={`mini-wheel ${level.type === 'scroll' ? 'active-wheel' : ''}`}></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 <p style={{ fontSize: '1.3rem', marginBottom: '2rem', color: '#555' }}>{level.description}</p>
