@@ -725,7 +725,7 @@ export function WhackAMoleLevel({ target, difficulty, onProgress, totalTasks }) 
               className={`mole-character ${activeMole === index ? 'up' : 'down'}`}
               onMouseDown={() => handleWhack(index)}
             >
-              <img src="/mole.png" alt="Topo" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
+              <img src="/mole.png" alt="Topo" style={{ width: '200px', height: '200px', objectFit: 'contain' }} />
             </div>
             <div className="mole-dirt"></div>
           </div>
