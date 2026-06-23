@@ -422,25 +422,23 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress, onComplete
     const width = rect.width || window.innerWidth * 0.8;
     const height = rect.height || window.innerHeight * 0.6;
     
-    const cx = width / 2;
-    const cy = height / 2;
-    
-    // Generate items scattered around the center (bin)
+    // Generate items scattered around the edges (left and right sides)
     const newItems = Array.from({ length: totalTasks }, (_, i) => {
       let x, y;
-      let attempts = 0;
       
-      // Try to find a random position that is inside bounds and not in the center bin
-      do {
-        // Leave padding on edges to avoid going out of container bounds
-        x = 60 + Math.random() * (width - 120);
-        y = 110 + Math.random() * (height - 200);
-        attempts++;
-      } while (
-        // Avoid the center bin area (radius of 130px)
-        Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2)) < 130 &&
-        attempts < 50
-      );
+      // Alternate items between left side and right side of the screen
+      if (i % 2 === 0) {
+        // Left side: from 60px to 35% of container width
+        x = 60 + Math.random() * (width * 0.35 - 60);
+      } else {
+        // Right side: from 65% of container width to width - 100px
+        const minRight = width * 0.65;
+        const maxRight = width - 100;
+        x = minRight + Math.random() * (maxRight - minRight);
+      }
+      
+      // Height: keep them vertically centered and away from top/bottom boundaries
+      y = 130 + Math.random() * (height - 230);
 
       return {
         id: i,
