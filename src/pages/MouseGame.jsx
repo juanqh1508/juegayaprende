@@ -24,9 +24,9 @@ const levelData = [
 
   // CLICK
   { id: 4, type: 'click', title: 'Nivel 4', targets: ['🚗', '🎈', '⭐', '💎'], bg: 'bg-classroom', totalTasks: 10,
-    description: 'Haz clic rápido sobre los objetos que aparecen.', msg: '¡Correcto! Clic dominado.' },
+    description: 'Haz click sobre los objetos, presionando el botón izquierdo.', msg: '¡Correcto! Clic dominado.' },
   { id: 5, type: 'balloons', title: 'Nivel 5', target: '🎈', bg: 'bg-park', totalTasks: 10,
-    description: '¡Pincha los globos flotantes haciéndoles clic!', msg: '¡Buen trabajo! Eres muy veloz.' },
+    description: '¡Pincha los globos flotantes haciéndoles clic con el botón izquierdo!', msg: '¡Buen trabajo! Eres muy veloz.' },
   { id: 6, type: 'whack_a_mole', title: 'Nivel 6', target: '🦡', bg: 'bg-forest', totalTasks: 10,
     description: '¡Juego del Topo! Atrapa los topos antes de que se escondan.', msg: '¡Excelente reflejo!' },
 
@@ -271,10 +271,23 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
                         style={{ position: 'absolute', bottom: '-10px', width: '70px', height: '70px', zIndex: 2 }} 
                       />
                     </div>
+                  ) : level.type === 'balloons' ? (
+                    <div style={{ position: 'relative', width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div className="idle-float" style={{ position: 'absolute', top: '0px', fontSize: '4.5rem', zIndex: 1 }}>🎈</div>
+                      <div style={{ position: 'absolute', bottom: '-10px', right: '-10px', transform: 'scale(1.2)', zIndex: 2 }}>
+                        <div className="mini-mouse-icon anim-click">
+                          <div className="mini-mouse-body">
+                            <div className="mini-btn left-btn active-click"></div>
+                            <div className="mini-btn right-btn"></div>
+                            <div className="mini-wheel"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     <div className={`tutorial-icon ${
                       ['hover'].includes(level.type) ? 'anim-hover' :
-                      ['click', 'balloons', 'whack_a_mole', 'checkbox', 'radio', 'sequence'].includes(level.type) ? 'anim-click' :
+                      ['click', 'whack_a_mole', 'checkbox', 'radio', 'sequence'].includes(level.type) ? 'anim-click' :
                       level.type === 'doubleclick' ? 'anim-doubleclick' :
                       level.type === 'drag' ? 'anim-drag' :
                       level.type === 'scroll' ? 'anim-scroll' : ''
