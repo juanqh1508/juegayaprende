@@ -249,6 +249,25 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
             {!isLevelStarted ? (
               <div style={{ textAlign: 'center', background: 'rgba(255,255,255,0.95)', padding: '3rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)', maxWidth: '500px', animation: 'popIn 0.4s ease-out' }}>
                 <h2 style={{ fontSize: '2.5rem', marginBottom: '1rem', color: 'var(--panama-blue)' }}>{level.title}</h2>
+                
+                <div style={{ display: 'flex', justifyContent: 'center', margin: '1.5rem 0 2rem 0' }}>
+                  <div className={`tutorial-icon ${
+                    ['hover', 'watering', 'falling_apples'].includes(level.type) ? 'anim-hover' :
+                    ['click', 'balloons', 'whack_a_mole', 'checkbox', 'radio', 'sequence'].includes(level.type) ? 'anim-click' :
+                    level.type === 'doubleclick' ? 'anim-doubleclick' :
+                    level.type === 'drag' ? 'anim-drag' :
+                    level.type === 'scroll' ? 'anim-scroll' : ''
+                  }`} style={{ transform: 'scale(1.5)' }}>
+                    <div className="mini-mouse-icon">
+                      <div className="mini-mouse-body">
+                        <div className={`mini-btn left-btn ${['click', 'doubleclick', 'drag', 'checkbox', 'radio', 'sequence', 'balloons', 'whack_a_mole'].includes(level.type) ? 'active-click' : ''}`}></div>
+                        <div className="mini-btn right-btn"></div>
+                        <div className={`mini-wheel ${level.type === 'scroll' ? 'active-wheel' : ''}`}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <p style={{ fontSize: '1.3rem', marginBottom: '2rem', color: '#555' }}>{level.description}</p>
                 <button 
                   className="btn-primary" 
