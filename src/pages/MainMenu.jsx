@@ -4,10 +4,10 @@ import './MainMenu.css';
 function MainMenu({ onNavigate }) {
   return (
     <div className="main-menu">
-      <header className="menu-header">
-        <h1 className="title animate-bounce">Juega y Aprende</h1>
+      <header className="menu-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <img src="/logo.png" alt="Juega y Aprende" className="main-logo animate-bounce" style={{ maxWidth: '340px', width: '90%', height: 'auto', marginBottom: '1rem' }} />
         <p className="subtitle">¡Aprende a usar la computadora jugando!</p>
-        <h3 style={{ color: 'var(--panama-blue)', marginTop: '1rem', fontFamily: 'var(--font-heading)' }}>infoplazas AIP.</h3>
+        <h3 style={{ color: 'var(--panama-blue)', marginTop: '0.5rem', fontFamily: 'var(--font-heading)' }}>infoplazas AIP.</h3>
       </header>
 
       <div className="games-grid">

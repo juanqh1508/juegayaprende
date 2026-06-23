@@ -32,7 +32,7 @@ function Certificate({ userName, difficulty = 1, onNavigate }) {
     <div className="certificate-page">
       {!generated ? (
         <div className="name-form-card">
-          <div className="form-icon">🏆</div>
+          <img src="/logo.png" alt="Juega y Aprende" style={{ maxWidth: '240px', width: '80%', height: 'auto', marginBottom: '1.5rem' }} />
           <h2>¡Felicidades, las lecciones han terminado!</h2>
           <p>Has dominado el uso del mouse. Escribe tu nombre para generar tu diploma.</p>
           <form onSubmit={handleGenerate} className="name-form">
@@ -62,6 +62,8 @@ function Certificate({ userName, difficulty = 1, onNavigate }) {
               {dateStr}
             </div>
           </div>
+
+          <img src="/logo.png" alt="Juega y Aprende" className="certificate-screen-logo" style={{ height: '70px', width: 'auto', objectFit: 'contain', margin: '0.25rem 0' }} />
 
           <div className="action-buttons">
             <button className="btn-primary" onClick={() => { sounds.click(); window.print(); }}>

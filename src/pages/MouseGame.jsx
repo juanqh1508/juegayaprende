@@ -232,7 +232,10 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
   return (
     <div className={containerClass}>
       <header className="game-header">
-        <button onClick={() => { sounds.click(); onNavigate('menu'); }} className="btn-back">⬅ Menú</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <button onClick={() => { sounds.click(); onNavigate('menu'); }} className="btn-back">⬅ Menú</button>
+          <img src="/logo.png" alt="Juega y Aprende Logo" className="header-logo" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
+        </div>
 
         <div className="header-progress">
           <div className="progress-label">Nivel {currentLevelIndex + 1} / {levelData.length}</div>
