@@ -511,7 +511,7 @@ export function DragDropLevel({ targets, bin, totalTasks, onProgress, onComplete
           <div
             key={item.id}
             className={`target-emoji draggable idle-float ${draggedId === item.id ? 'grabbing' : ''}`}
-            style={{ position: 'absolute', left: 0, top: 0, transform: `translate(${item.x}px, ${item.y}px)`, zIndex: draggedId === item.id ? 100 : 10 }}
+            style={{ position: 'absolute', left: `${item.x}px`, top: `${item.y}px`, zIndex: draggedId === item.id ? 100 : 10 }}
             onMouseDown={(e) => handleMouseDown(e, item)}
           >
             {item.emoji}
