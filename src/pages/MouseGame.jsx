@@ -36,8 +36,8 @@ const levelData = [
     description: 'Dale Doble Click a los objetos con el botón izquierdo. Importante: Los click tienes que darlo rápido.', msg: '¡Wow! Doble clic superado.' },
   { id: 8, type: 'egg_break', title: 'Nivel 8', target: '🥚', bg: 'bg-forest', totalTasks: 10,
     description: 'Haz doble clic rápido para romper el huevo y sacar al pollito.', msg: '🐥 ¡Pío Pío! Perfecto.' },
-  { id: 9, type: 'folder_open', title: 'Nivel 9', targets: ['📁'], bg: 'bg-park', totalTasks: 3,
-    description: 'Haz doble clic rápido para abrir las carpetas de la computadora y explorar sus archivos.', msg: '¡Genial! Identificaste cómo abrir carpetas en una computadora.' },
+  { id: 9, type: 'folder_open', title: 'Nivel 9', targets: ['📁'], bg: 'bg-park', totalTasks: 10,
+    description: 'Haz doble clic rápido para abrir las carpetas y programas de la computadora.', msg: '¡Genial! Identificaste cómo abrir carpetas y programas en una computadora.' },
 
   // ARRASTRAR
   { id: 10, type: 'drag', title: 'Nivel 10', targets: ['🚗', '🧸', '🪁', '🧩', '🚂'], bin: '📦', bg: 'bg-classroom', totalTasks: 10,
@@ -140,9 +140,9 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
       if (diff === 3) return 30;
     }
     if (levelId === 9) { // Carpetas
-      if (diff === 1) return 1;
-      if (diff === 2) return 2;
-      if (diff === 3) return 3;
+      if (diff === 1) return 10;
+      if (diff === 2) return 15;
+      if (diff === 3) return 20;
     }
     
     if (baseTasks === 1) return 1; // Scroll, checkbox and radio are single tasks
