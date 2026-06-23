@@ -18,7 +18,7 @@ const levelData = [
   { id: 1, type: 'hover', title: 'Nivel 1', targets: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'], bg: 'bg-classroom', totalTasks: 10, isStatic: true,
     description: 'Posiciónate sobre los números para atraparlos.', msg: '¡Excelente! Atrapaste los números.' },
   { id: 2, type: 'watering', title: 'Nivel 2', targets: ['🌻', '🌹', '🌷', '🌼', '🌺', '🌸', '🪴', '🌵', '🌾', '🌴'], bg: 'bg-park', totalTasks: 10,
-    description: 'Riega las plantas pasando el mouse por encima de ellas por dos segundos.', msg: '¡Muy bien! Las plantas están felices.' },
+    description: 'Riega las plantas posando la Jarra de agua encima de ellas por dos segundos.', msg: '¡Muy bien! Las plantas están felices.' },
   { id: 3, type: 'falling_apples', title: 'Nivel 3', target: '🍎', bg: 'bg-forest', totalTasks: 10,
     description: 'Atrapa las manzanas pasando el mouse sobre ellas antes de que caigan.', msg: '¡Fantástico! Tienes unos reflejos geniales.' },
 

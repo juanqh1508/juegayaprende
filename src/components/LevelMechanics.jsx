@@ -213,7 +213,7 @@ export function WateringLevel({ targets, totalTasks, onProgress }) {
   return (
     <div className="mechanic-container hover-bg" style={{ cursor: 'none' }}>
       <CustomCursor image="/watering-can.svg" size={140} offsetX={70} offsetY={70} />
-      <InlineTutorial type="hover" title="¡Riega las plantas!" subtitle="Mueve la jarra sobre cada planta por 2 segundos." />
+      <InlineTutorial type="hover" title="¡Riega las plantas!" subtitle="Riega las plantas posando la Jarra de agua encima de ellas por dos segundos." />
       {plants.map(p => (
         <div key={p.id} 
              style={{ position: 'absolute', cursor: 'inherit', left: `${p.x}%`, top: `${p.y}%`, transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
