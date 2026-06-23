@@ -25,8 +25,13 @@ function InlineTutorial({ type, title, subtitle }) {
   return (
     <div className="inline-tutorial">
       <div className={`tutorial-icon ${getAnimClass()}`}>
-        🖱️
-        <div className="click-effect"></div>
+        <div className="mini-mouse-icon">
+          <div className="mini-mouse-body">
+            <div className={`mini-btn left-btn ${(type === 'click' || type === 'doubleclick' || type === 'drag') ? 'active-click' : ''}`}></div>
+            <div className="mini-btn right-btn"></div>
+            <div className={`mini-wheel ${type === 'scroll' ? 'active-wheel' : ''}`}></div>
+          </div>
+        </div>
       </div>
       <p className="instruction">
         <strong>{title}</strong><br/>
