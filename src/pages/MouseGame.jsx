@@ -134,6 +134,11 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
       if (diff === 2) return 20;
       if (diff === 3) return 30;
     }
+    if (levelId === 8) { // Huevos
+      if (diff === 1) return 15;
+      if (diff === 2) return 20;
+      if (diff === 3) return 30;
+    }
     
     if (baseTasks === 1) return 1; // Scroll, checkbox and radio are single tasks
     if (diff === 1) return Math.max(1, Math.round(baseTasks * 0.5)); // 5 tasks
