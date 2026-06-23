@@ -846,7 +846,19 @@ export function FolderOpenLevel({ totalTasks, onProgress }) {
     { id: 7, type: 'program', name: 'Calculadora 🧮', icon: '🧮', content: '1 + 1 = 2 🎯 5 + 5 = 10' },
     { id: 8, type: 'folder', name: 'Papelera', icon: '🗑️', content: '🗑️ Papelera vacía' },
     { id: 9, type: 'program', name: 'Notas 📝', icon: '📝', content: '📝 Hola amigo! Bienvenido' },
-    { id: 10, type: 'folder', name: 'Música', icon: '📁', content: '🎵 Canción.mp3 🎵 Piano.wav 🎵 Melodía.mp3' }
+    { id: 10, type: 'folder', name: 'Música', icon: '📁', content: '🎵 Canción.mp3 🎵 Piano.wav 🎵 Melodía.mp3' },
+    // Next 5 for medium difficulty (totalTasks = 15)
+    { id: 11, type: 'folder', name: 'Descargas', icon: '📁', content: '⬇️ Instalador.exe ⬇️ FotoDeFondo.png' },
+    { id: 12, type: 'program', name: 'Cámara 📷', icon: '📷', content: '📷 ¡Sonríe para la foto! 📸' },
+    { id: 13, type: 'program', name: 'Correo ✉️', icon: '✉️', content: '📧 Tienes 3 correos nuevos! 📬' },
+    { id: 14, type: 'folder', name: 'Tareas', icon: '📁', content: '📝 Matemáticas 📝 Ciencias 📝 Inglés' },
+    { id: 15, type: 'program', name: 'Calendario 📅', icon: '📅', content: '📅 Junio 2026 - ¡Día de juegos!' },
+    // Next 5 for advanced difficulty (totalTasks = 20)
+    { id: 16, type: 'program', name: 'Música 🎧', icon: '🎧', content: '🎧 Sonando: Música Tropical 🎶' },
+    { id: 17, type: 'folder', name: 'Dibujos', icon: '📁', content: '🎨 Carro.png 🎨 Casa.png 🎨 Castillo.png' },
+    { id: 18, type: 'program', name: 'Mapas 🧭', icon: '🧭', content: '🗺️ Mapa de la isla del tesoro 🏴‍☠️' },
+    { id: 19, type: 'folder', name: 'Libros', icon: '📁', content: '📖 El Principito 📖 Don Quijote' },
+    { id: 20, type: 'program', name: 'Reloj ⏰', icon: '⏰', content: '⏰ ¡Hora de jugar y aprender! ☀️' }
   ];
 
   const handleDoubleClick = (item) => {
@@ -865,16 +877,18 @@ export function FolderOpenLevel({ totalTasks, onProgress }) {
     }, 2000);
   };
 
+  const visibleItems = desktopItems.slice(0, Math.min(totalTasks, desktopItems.length));
+
   return (
     <div className="desktop-container">
       <InlineTutorial 
         type="doubleclick" 
         title="¡Explorador y Programas!" 
-        subtitle="Haz doble clic rápido en las carpetas y programas para abrirlos. ¡Se cerrarán en 2 segundos!" 
+        subtitle={`Haz doble clic rápido en las carpetas y programas para abrirlos. ¡Completa los ${totalTasks}!`} 
       />
 
       <div className="desktop-grid">
-        {desktopItems.map(item => {
+        {visibleItems.map(item => {
           const isOpened = openedIds.includes(item.id);
           return (
             <div 
