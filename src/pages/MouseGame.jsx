@@ -5,7 +5,7 @@ import {
   RadioLevel, SequenceClickLevel,
   WateringLevel, FallingApplesLevel,
   BalloonPoppingLevel, WhackAMoleLevel,
-  EggBreakLevel
+  EggBreakLevel, FolderOpenLevel
 } from '../components/LevelMechanics';
 import MouseInfographic from '../components/MouseInfographic';
 import { sounds } from '../utils/sounds';
@@ -36,8 +36,8 @@ const levelData = [
     description: 'Dale Doble Click a los objetos con el botón izquierdo. Importante: Los click tienes que darlo rápido.', msg: '¡Wow! Doble clic superado.' },
   { id: 8, type: 'egg_break', title: 'Nivel 8', target: '🥚', bg: 'bg-forest', totalTasks: 10,
     description: 'Haz doble clic rápido para romper el huevo y sacar al pollito.', msg: '🐥 ¡Pío Pío! Perfecto.' },
-  { id: 9, type: 'doubleclick', title: 'Nivel 9', targets: ['📁', '📂'], bg: 'bg-park', totalTasks: 10,
-    description: 'Haz doble clic para abrir las carpetas.', msg: '¡Genial! Identificaste cómo abrir archivos.' },
+  { id: 9, type: 'folder_open', title: 'Nivel 9', targets: ['📁'], bg: 'bg-park', totalTasks: 3,
+    description: 'Haz doble clic rápido para abrir las carpetas de la computadora y explorar sus archivos.', msg: '¡Genial! Identificaste cómo abrir carpetas en una computadora.' },
 
   // ARRASTRAR
   { id: 10, type: 'drag', title: 'Nivel 10', targets: ['🚗', '🧸', '🪁', '🧩', '🚂'], bin: '📦', bg: 'bg-classroom', totalTasks: 10,
@@ -139,6 +139,11 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
       if (diff === 2) return 20;
       if (diff === 3) return 30;
     }
+    if (levelId === 9) { // Carpetas
+      if (diff === 1) return 1;
+      if (diff === 2) return 2;
+      if (diff === 3) return 3;
+    }
     
     if (baseTasks === 1) return 1; // Scroll, checkbox and radio are single tasks
     if (diff === 1) return Math.max(1, Math.round(baseTasks * 0.5)); // 5 tasks
@@ -201,6 +206,8 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
         return <DoubleClickLevel key={tasksCompleted} target={currentTarget} isStatic={level.isStatic} onComplete={() => handleTaskComplete(1)} />;
       case 'egg_break':
         return <EggBreakLevel key={currentLevelIndex} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
+      case 'folder_open':
+        return <FolderOpenLevel key={currentLevelIndex} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'drag':
         // Le pasamos todo el array de targets y la cantidad total de tareas. DragDropLevel maneja la colección.
         return <DragDropLevel key={currentLevelIndex} targets={level.targets} bin={level.bin} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} onComplete={() => {}} />;
@@ -313,6 +320,23 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
                   ) : level.type === 'egg_break' ? (
                     <div className="instruction-egg-container">
                       <div className="instruction-egg"></div>
+                      <div className="instruction-mouse-cursor">
+                        <div className="mini-mouse-icon">
+                          <div className="mini-mouse-body">
+                            <div className="mini-btn left-btn active-double-click"></div>
+                            <div className="mini-btn right-btn"></div>
+                            <div className="mini-wheel"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : level.type === 'folder_open' ? (
+                    <div className="instruction-folder-container">
+                      <div className="instruction-folder"></div>
+                      <div className="instruction-window">
+                        <div className="instruction-window-title"></div>
+                        <div className="instruction-window-body">📄</div>
+                      </div>
                       <div className="instruction-mouse-cursor">
                         <div className="mini-mouse-icon">
                           <div className="mini-mouse-body">

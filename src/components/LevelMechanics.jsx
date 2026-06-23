@@ -831,3 +831,109 @@ export function EggBreakLevel({ totalTasks, onProgress }) {
   );
 }
 
+// --- FOLDER OPEN LEVEL (Level 9) ---
+export function FolderOpenLevel({ totalTasks, onProgress }) {
+  const [openedFolder, setOpenedFolder] = useState(null);
+  const [exploredFolders, setExploredFolders] = useState([]);
+
+  const folders = [
+    { 
+      id: 'drawings', 
+      name: 'Dibujos 🎨', 
+      files: [
+        { icon: '🎨', name: 'Paisaje.png' },
+        { icon: '🎨', name: 'Girasol.png' },
+        { icon: '🎨', name: 'MiFamilia.png' }
+      ]
+    },
+    { 
+      id: 'photos', 
+      name: 'Fotos 📷', 
+      files: [
+        { icon: '🖼️', name: 'Perrito.jpg' },
+        { icon: '🖼️', name: 'Gatito.jpg' },
+        { icon: '🖼️', name: 'Vacaciones.jpg' }
+      ]
+    },
+    { 
+      id: 'games', 
+      name: 'Juegos 🎮', 
+      files: [
+        { icon: '👾', name: 'Pacman.exe' },
+        { icon: '🚀', name: 'Naves.exe' }
+      ]
+    }
+  ];
+
+  const handleFolderDoubleClick = (folder) => {
+    sounds.doubleClick();
+    setOpenedFolder(folder);
+  };
+
+  const handleCloseWindow = () => {
+    sounds.click();
+    if (openedFolder && !exploredFolders.includes(openedFolder.id)) {
+      const updatedExplored = [...exploredFolders, openedFolder.id];
+      setExploredFolders(updatedExplored);
+      sounds.taskComplete();
+      onProgress();
+    }
+    setOpenedFolder(null);
+  };
+
+  const visibleFolders = folders.slice(0, Math.min(totalTasks, folders.length));
+
+  return (
+    <div className="desktop-container">
+      <InlineTutorial 
+        type="doubleclick" 
+        title="¡Explorador de Archivos!" 
+        subtitle="Haz doble clic rápido en las carpetas para abrirlas y ver sus archivos." 
+      />
+
+      <div className="desktop-grid">
+        {visibleFolders.map(folder => {
+          const isExplored = exploredFolders.includes(folder.id);
+          return (
+            <div 
+              key={folder.id} 
+              className="desktop-icon"
+              onDoubleClick={() => handleFolderDoubleClick(folder)}
+            >
+              <div className="desktop-icon-emoji">
+                {openedFolder?.id === folder.id ? '📂' : (isExplored ? '📂' : '📁')}
+              </div>
+              <div className="desktop-icon-label">{folder.name}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {openedFolder && (
+        <div className="windows-window">
+          <div className="windows-titlebar">
+            <span>📁</span>
+            <span className="windows-title">Carpeta: {openedFolder.name}</span>
+            <div className="windows-controls">
+              <button className="windows-btn" onClick={() => sounds.click()}>_</button>
+              <button className="windows-btn close-btn" onClick={handleCloseWindow}>✕</button>
+            </div>
+          </div>
+          <div className="windows-body">
+            {openedFolder.files.map((file, idx) => (
+              <div 
+                key={idx} 
+                className="window-file"
+                onDoubleClick={() => { sounds.doubleClick(); sounds.taskComplete(); }}
+              >
+                <div className="window-file-icon">{file.icon}</div>
+                <div className="window-file-name">{file.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
