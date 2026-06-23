@@ -712,7 +712,7 @@ export function WhackAMoleLevel({ target, difficulty, onProgress, totalTasks }) 
   };
 
   return (
-    <div className="mechanic-container mole-bg" style={{ cursor: 'url("https://cdn-icons-png.flaticon.com/64/8892/8892110.png") 16 16, auto' }}>
+    <div className="mechanic-container mole-bg" style={{ cursor: 'url("/hammer.png") 16 16, auto' }}>
       <InlineTutorial 
         type="click" 
         title="¡Juego del Topo!" 
@@ -725,7 +725,7 @@ export function WhackAMoleLevel({ target, difficulty, onProgress, totalTasks }) 
               className={`mole-character ${activeMole === index ? 'up' : 'down'}`}
               onMouseDown={() => handleWhack(index)}
             >
-              <img src="https://cdn-icons-png.flaticon.com/512/5165/5165842.png" alt="Topo" style={{ width: '80px', height: '80px' }} />
+              <img src="/mole.png" alt="Topo" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
             </div>
             <div className="mole-dirt"></div>
           </div>

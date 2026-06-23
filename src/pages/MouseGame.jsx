@@ -286,8 +286,8 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
                     </div>
                   ) : level.type === 'whack_a_mole' ? (
                     <div style={{ position: 'relative', width: '100px', height: '100px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-                      <img src="https://cdn-icons-png.flaticon.com/512/5165/5165842.png" alt="Topo" className="idle-float" style={{ position: 'absolute', bottom: '10px', width: '60px', height: '60px', zIndex: 1 }} />
-                      <img src="https://cdn-icons-png.flaticon.com/64/8892/8892110.png" alt="Martillo" className="anim-hover" style={{ position: 'absolute', top: '0px', right: '-10px', width: '50px', height: '50px', zIndex: 2, transform: 'rotate(-30deg)' }} />
+                      <img src="/mole.png" alt="Topo" className="idle-float" style={{ position: 'absolute', bottom: '10px', width: '60px', height: '60px', zIndex: 1 }} />
+                      <img src="/hammer.png" alt="Martillo" className="anim-hover" style={{ position: 'absolute', top: '0px', right: '-10px', width: '50px', height: '50px', zIndex: 2, transform: 'rotate(-30deg)' }} />
                     </div>
                   ) : (
                     <div className={`tutorial-icon ${
