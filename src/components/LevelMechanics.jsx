@@ -136,14 +136,27 @@ export function ClickLevel({ target, moving, onComplete }) {
   );
 }
 
-function CustomCursor({ image, size = 100, offsetX = 50, offsetY = 50 }) {
+function CustomCursor({ image, size = 100, offsetX = 50, offsetY = 50, rotateOnClick = false }) {
   const [pos, setPos] = useState({ x: -1000, y: -1000 });
+  const [isClicked, setIsClicked] = useState(false);
   
   useEffect(() => {
     const handleMouseMove = (e) => setPos({ x: e.clientX, y: e.clientY });
+    const handleMouseDown = () => setIsClicked(true);
+    const handleMouseUp = () => setIsClicked(false);
+    
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
   }, []);
+
+  const rotation = (rotateOnClick && isClicked) ? 'rotate(-35deg)' : 'rotate(0deg)';
 
   return (
     <div style={{
@@ -152,7 +165,9 @@ function CustomCursor({ image, size = 100, offsetX = 50, offsetY = 50 }) {
       top: pos.y,
       width: size,
       height: size,
-      transform: `translate(-${offsetX}px, -${offsetY}px)`,
+      transform: `translate(-${offsetX}px, -${offsetY}px) ${rotation}`,
+      transition: rotateOnClick ? 'transform 0.05s ease' : 'none',
+      transformOrigin: '70% 70%',
       pointerEvents: 'none',
       zIndex: 9999,
       backgroundImage: `url(${image})`,
@@ -712,7 +727,8 @@ export function WhackAMoleLevel({ target, difficulty, onProgress, totalTasks }) 
   };
 
   return (
-    <div className="mechanic-container mole-bg" style={{ cursor: 'url("/hammer.png") 16 16, auto' }}>
+    <div className="mechanic-container mole-bg" style={{ cursor: 'none' }}>
+      <CustomCursor image="/hammer.png" size={130} offsetX={65} offsetY={65} rotateOnClick={true} />
       <InlineTutorial 
         type="click" 
         title="¡Juego del Topo!" 
