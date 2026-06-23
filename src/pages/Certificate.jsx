@@ -43,7 +43,7 @@ function Certificate({ onNavigate }) {
       ) : (
         <div className="certificate-wrapper">
           <div className="cert-template-container" id="printable-certificate">
-            <img src="/certificate-template.png" alt="Certificado" className="cert-template-img" />
+            <img src="/certificate-template.jpg" alt="Certificado" className="cert-template-img" />
             
             <div className="cert-student-name">
               {name}
