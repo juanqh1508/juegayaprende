@@ -51,7 +51,7 @@ function App() {
 
       {currentView === 'menu' && <MainMenu onNavigate={navigateTo} />}
       {currentView === 'mouse-game' && <MouseGame difficulty={difficulty} startLevel={startLevel} onNavigate={navigateTo} onFinish={(name) => { setUserName(name); navigateTo('certificate'); }} />}
-      {currentView === 'certificate' && <Certificate userName={userName} onNavigate={navigateTo} />}
+      {currentView === 'certificate' && <Certificate userName={userName} difficulty={difficulty} onNavigate={navigateTo} />}
     </div>
   );
 }
