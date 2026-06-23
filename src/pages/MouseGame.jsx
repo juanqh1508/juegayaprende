@@ -4,7 +4,8 @@ import {
   DragDropLevel, ScrollLevel, CheckboxLevel, 
   RadioLevel, SequenceClickLevel,
   WateringLevel, FallingApplesLevel,
-  BalloonPoppingLevel, WhackAMoleLevel
+  BalloonPoppingLevel, WhackAMoleLevel,
+  EggBreakLevel
 } from '../components/LevelMechanics';
 import MouseInfographic from '../components/MouseInfographic';
 import { sounds } from '../utils/sounds';
@@ -33,10 +34,10 @@ const levelData = [
   // DOBLE CLICK
   { id: 7, type: 'doubleclick', title: 'Nivel 7', targets: ['🔒', '🚪', '🧰'], bg: 'bg-classroom', totalTasks: 10, isStatic: true,
     description: 'Dale Doble Click a los objetos con el botón izquierdo. Importante: Los click tienes que darlo rápido.', msg: '¡Wow! Doble clic superado.' },
-  { id: 8, type: 'doubleclick', title: 'Nivel 8', targets: ['📁', '📂'], bg: 'bg-park', totalTasks: 10,
-    description: 'Haz doble clic para abrir las carpetas.', msg: '¡Genial! Identificaste cómo abrir archivos.' },
-  { id: 9, type: 'doubleclick', title: 'Nivel 9', targets: ['🥚'], bg: 'bg-forest', totalTasks: 10,
+  { id: 8, type: 'egg_break', title: 'Nivel 8', target: '🥚', bg: 'bg-forest', totalTasks: 10,
     description: 'Haz doble clic rápido para romper el huevo y sacar al pollito.', msg: '🐥 ¡Pío Pío! Perfecto.' },
+  { id: 9, type: 'doubleclick', title: 'Nivel 9', targets: ['📁', '📂'], bg: 'bg-park', totalTasks: 10,
+    description: 'Haz doble clic para abrir las carpetas.', msg: '¡Genial! Identificaste cómo abrir archivos.' },
 
   // ARRASTRAR
   { id: 10, type: 'drag', title: 'Nivel 10', targets: ['🚗', '🧸', '🪁', '🧩', '🚂'], bin: '📦', bg: 'bg-classroom', totalTasks: 10,
@@ -193,6 +194,8 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
         return <WhackAMoleLevel key={currentLevelIndex} target={level.target} difficulty={difficulty} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'doubleclick':
         return <DoubleClickLevel key={tasksCompleted} target={currentTarget} isStatic={level.isStatic} onComplete={() => handleTaskComplete(1)} />;
+      case 'egg_break':
+        return <EggBreakLevel key={tasksCompleted} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'drag':
         // Le pasamos todo el array de targets y la cantidad total de tareas. DragDropLevel maneja la colección.
         return <DragDropLevel key={currentLevelIndex} targets={level.targets} bin={level.bin} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} onComplete={() => {}} />;
@@ -292,6 +295,19 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
                   ) : level.type === 'doubleclick' ? (
                     <div className="instruction-doubleclick-container">
                       <div className="instruction-object">🧰</div>
+                      <div className="instruction-mouse-cursor">
+                        <div className="mini-mouse-icon">
+                          <div className="mini-mouse-body">
+                            <div className="mini-btn left-btn active-double-click"></div>
+                            <div className="mini-btn right-btn"></div>
+                            <div className="mini-wheel"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : level.type === 'egg_break' ? (
+                    <div className="instruction-egg-container">
+                      <div className="instruction-egg"></div>
                       <div className="instruction-mouse-cursor">
                         <div className="mini-mouse-icon">
                           <div className="mini-mouse-body">

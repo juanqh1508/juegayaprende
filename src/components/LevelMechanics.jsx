@@ -761,3 +761,46 @@ export function WhackAMoleLevel({ target, difficulty, onProgress, totalTasks }) 
   );
 }
 
+// --- EGG BREAK LEVEL ---
+export function EggBreakLevel({ totalTasks, onProgress }) {
+  const [position, setPosition] = useState(getRandomPosition);
+  const [isBroken, setIsBroken] = useState(false);
+
+  const handleDoubleClick = () => {
+    if (isBroken) return;
+    sounds.doubleClick();
+    setIsBroken(true);
+    sounds.taskComplete();
+    setTimeout(() => {
+      setIsBroken(false);
+      setPosition(getRandomPosition());
+      onProgress();
+    }, 1100); // 1.1s so they see the chick clearly!
+  };
+
+  return (
+    <div className="mechanic-container double-bg">
+      <InlineTutorial 
+        type="doubleclick" 
+        title="¡Rompe el huevo!" 
+        subtitle="Haz doble clic rápido sobre el huevo para que nazca el pollito." 
+      />
+
+      <div
+        className={`target-emoji target-clickable ${isBroken ? 'egg-cracked happy-pop' : 'idle-bounce'}`}
+        style={{ 
+          position: 'absolute', 
+          top: position.top, 
+          left: position.left, 
+          transform: 'translate(-50%, -50%)',
+          fontSize: '8rem',
+          userSelect: 'none'
+        }}
+        onDoubleClick={handleDoubleClick}
+      >
+        {isBroken ? '🐥' : '🥚'}
+      </div>
+    </div>
+  );
+}
+
