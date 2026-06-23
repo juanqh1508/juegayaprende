@@ -3,8 +3,8 @@ import { sounds } from '../utils/sounds';
 import './Certificate.css';
 
 function Certificate({ userName, difficulty = 1, onNavigate }) {
-  const [name, setName] = useState(userName || '');
-  const [generated, setGenerated] = useState(!!userName);
+  const [name, setName] = useState('');
+  const [generated, setGenerated] = useState(false);
 
   const today = new Date();
   const dateStr = today.toLocaleDateString('es-PA', {
