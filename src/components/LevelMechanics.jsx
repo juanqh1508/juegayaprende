@@ -763,43 +763,65 @@ export function WhackAMoleLevel({ target, difficulty, onProgress, totalTasks }) 
 
 // --- EGG BREAK LEVEL ---
 export function EggBreakLevel({ totalTasks, onProgress }) {
-  const [position, setPosition] = useState(getRandomPosition);
-  const [isBroken, setIsBroken] = useState(false);
+  const [eggs, setEggs] = useState([]);
+  
+  useEffect(() => {
+    const cols = Math.ceil(Math.sqrt(totalTasks * 1.5));
+    const rows = Math.ceil(totalTasks / cols);
+    const cellWidth = 80 / cols;
+    const cellHeight = 60 / rows;
+    
+    const newEggs = Array.from({ length: totalTasks }, (_, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      return {
+        id: i,
+        isBroken: false,
+        x: 10 + col * cellWidth + Math.random() * (cellWidth * 0.4),
+        y: 20 + row * cellHeight + Math.random() * (cellHeight * 0.4)
+      };
+    });
+    setEggs(newEggs);
+  }, [totalTasks]);
 
-  const handleDoubleClick = () => {
-    if (isBroken) return;
-    sounds.doubleClick();
-    setIsBroken(true);
-    sounds.taskComplete();
-    setTimeout(() => {
-      setIsBroken(false);
-      setPosition(getRandomPosition());
-      onProgress();
-    }, 1100); // 1.1s so they see the chick clearly!
+  const handleDoubleClick = (id) => {
+    setEggs(prev => prev.map(egg => {
+      if (egg.id === id && !egg.isBroken) {
+        sounds.doubleClick();
+        sounds.taskComplete();
+        onProgress();
+        return { ...egg, isBroken: true };
+      }
+      return egg;
+    }));
   };
 
   return (
     <div className="mechanic-container double-bg">
       <InlineTutorial 
         type="doubleclick" 
-        title="¡Rompe el huevo!" 
-        subtitle="Haz doble clic rápido sobre el huevo para que nazca el pollito." 
+        title="¡Rompe los huevos!" 
+        subtitle="Haz doble clic rápido sobre cada huevo para que nazca el pollito en su cascarón." 
       />
 
-      <div
-        className={`target-emoji target-clickable ${isBroken ? 'egg-cracked happy-pop' : 'idle-bounce'}`}
-        style={{ 
-          position: 'absolute', 
-          top: position.top, 
-          left: position.left, 
-          transform: 'translate(-50%, -50%)',
-          fontSize: '8rem',
-          userSelect: 'none'
-        }}
-        onDoubleClick={handleDoubleClick}
-      >
-        {isBroken ? '🐥' : '🥚'}
-      </div>
+      {eggs.map(egg => (
+        <div
+          key={egg.id}
+          className={`target-emoji target-clickable-static ${egg.isBroken ? 'happy-pop' : ''}`}
+          style={{ 
+            position: 'absolute', 
+            left: `${egg.x}%`, 
+            top: `${egg.y}%`, 
+            transform: 'translate(-50%, -50%)',
+            fontSize: '7.5rem',
+            userSelect: 'none',
+            transition: 'transform 0.2s'
+          }}
+          onDoubleClick={() => handleDoubleClick(egg.id)}
+        >
+          {egg.isBroken ? '🐣' : '🥚'}
+        </div>
+      ))}
     </div>
   );
 }
