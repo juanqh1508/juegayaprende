@@ -72,7 +72,7 @@
 }
 
 /* =============================================
-   CERTIFICATE WRAPPER
+   CERTIFICATE WRAPPER & IMAGE CONTAINER
    ============================================= */
 .certificate-wrapper {
   display: flex;
@@ -83,254 +83,91 @@
   width: 100%;
 }
 
-/* =============================================
-   CERTIFICATE OUTER BOX (DIPLOMA)
-   ============================================= */
-.cert-outer {
+.cert-template-container {
   position: relative;
-  background: #ffffff;
-  border-radius: 32px;
-  padding: 16px;
-  width: 900px;
+  width: 880px;
   max-width: 95vw;
-  aspect-ratio: 1.414 / 1; /* Standard A4 paper landscape ratio */
-  box-shadow:
-    0 30px 70px rgba(0,0,0,0.35),
-    0 0 0 10px rgba(255,255,255,0.2);
+  aspect-ratio: 11 / 8.5; /* Letter format horizontal ratio */
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
   overflow: hidden;
-  border: 10px solid #ffffff;
-  display: flex;
-  flex-direction: column;
 }
 
-/* Wavy Colorful Border Bars */
-.cert-wave {
-  position: absolute;
-  left: 0;
+.cert-template-img {
   width: 100%;
-  height: 16px;
-  z-index: 1;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
-.cert-wave-top {
-  top: 0;
-  background: linear-gradient(90deg, #FF1744, #FF9100, #FFEA00, #00E676, #00B0FF, #D500F9);
-}
-
-.cert-wave-bottom {
-  bottom: 0;
-  background: linear-gradient(90deg, #D500F9, #00B0FF, #00E676, #FFEA00, #FF9100, #FF1744);
-}
-
-/* Cute Floating Emojis */
-.cert-deco {
+/* Dynamically overlays Name precisely on top of the "Se otorga a" line in Letter format */
+.cert-student-name {
   position: absolute;
-  font-size: 2.8rem;
-  z-index: 3;
-  opacity: 0.85;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
-  animation: float-deco 4s ease-in-out infinite;
-}
-
-@keyframes float-deco {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(8deg); }
-}
-
-.cert-deco-1 { top: 40px; left: 40px; animation-delay: 0s; }
-.cert-deco-2 { top: 45px; right: 120px; animation-delay: 0.8s; }
-.cert-deco-3 { top: 48%; left: 30px; animation-delay: 1.5s; font-size: 2.4rem; }
-.cert-deco-4 { top: 48%; right: 30px; animation-delay: 2.2s; font-size: 2.4rem; }
-.cert-deco-5 { bottom: 50px; left: 50px; animation-delay: 1.1s; }
-.cert-deco-6 { bottom: 45px; right: 50px; animation-delay: 2.8s; }
-
-/* =============================================
-   CERTIFICATE INNER CONTENT
-   ============================================= */
-.cert-inner {
-  border: 4px dashed #FFCA28; /* Golden dashed line */
-  border-radius: 22px;
-  padding: 2.2rem 3rem;
+  left: 48.5%;
+  top: 51.5%;
+  transform: translate(-50%, -50%);
+  width: 65%;
   text-align: center;
-  position: relative;
-  background:
-    radial-gradient(circle at 10% 20%, rgba(124,77,255,0.05) 0%, transparent 35%),
-    radial-gradient(circle at 90% 80%, rgba(0,188,212,0.05) 0%, transparent 35%),
-    #ffffff;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  font-family: 'Fredoka One', 'Outfit', 'Segoe UI', sans-serif;
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #2b3a8f; /* Dark matching blue */
+  text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Logo / Header */
-.cert-logo-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 0.75rem;
+/* Dynamically overlays Date precisely on top of the "Fecha" signature line in Letter format */
+.cert-completion-date {
+  position: absolute;
+  left: 32.5%;
+  top: 89.8%;
+  transform: translate(-50%, -50%);
+  font-family: 'Outfit', 'Segoe UI', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #3f51b5;
 }
 
-.logo-emoji {
-  font-size: 2.5rem;
-}
-
-.logo-title {
-  font-family: var(--font-heading);
-  font-weight: 900;
-  font-size: 1.6rem;
-  background: linear-gradient(135deg, #1565C0, #7C4DFF);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Certificate Titles */
-.cert-main-title {
-  font-family: var(--font-heading);
-  font-size: 3.8rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  margin: 0.5rem 0;
-  background: linear-gradient(135deg, #E53935, #FFB300, #2E7D32, #1565C0);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1.1;
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.05);
-}
-
-.cert-award-text {
-  font-family: var(--font-body);
-  font-size: 1.3rem;
-  color: #666;
-  font-style: italic;
-  margin: 1rem 0 0.5rem;
-}
-
-/* Student Name Overlay */
-.cert-name-box {
-  margin: 1.5rem 0;
-}
-
-.cert-participant-name {
-  font-family: var(--font-heading);
-  font-size: 3.5rem;
-  color: #7C4DFF; /* Royal purple */
-  margin: 0;
-  font-style: italic;
-  letter-spacing: 2px;
-  text-shadow: 2px 2px 0px rgba(0,0,0,0.05);
-}
-
-.cert-name-line {
-  width: 75%;
-  height: 4px;
-  background: linear-gradient(90deg, transparent, #FFCA28, transparent); /* Golden line */
-  margin: 0.5rem auto 0;
-}
-
-/* Body Content */
-.cert-body {
-  margin: 2rem 0;
-}
-
-.cert-body p {
-  font-size: 1.15rem;
-  color: #444;
-  margin: 4px 0;
-}
-
-.cert-course-title {
-  font-family: var(--font-heading);
-  font-size: 2.2rem;
-  color: #00E676; /* Green title */
-  background: linear-gradient(135deg, #00C853, #00B0FF);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0.5rem 0;
-  font-weight: 900;
-  letter-spacing: 1px;
-}
-
-.cert-difficulty-box {
-  display: inline-block;
-  background: linear-gradient(135deg, #FF9100, #FF3D00);
-  color: white;
-  padding: 8px 24px;
-  border-radius: 50px;
-  font-weight: 800;
-  font-family: var(--font-heading);
-  font-size: 1.15rem;
-  box-shadow: 0 4px 12px rgba(255,61,0,0.3);
-  margin: 0.5rem 0 1rem;
-}
-
-.cert-body-sub {
-  font-size: 1rem !important;
-  color: #666;
-  max-width: 620px;
-  margin: 0.5rem auto 0;
-  line-height: 1.6;
-}
-
-/* Footer Section */
-.cert-footer-simple {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1.5rem;
-  gap: 0.5rem;
-}
-
-.cert-date-simple {
-  font-size: 1.25rem;
-  color: #444;
-  margin: 0.5rem 0 0;
-}
-
-.cert-signature-simple {
-  font-family: var(--font-heading);
-  font-size: 1.6rem;
-  font-weight: 900;
-  color: #1565C0;
-  margin: 0;
-  letter-spacing: 1px;
-}
-
-/* Center Medal Seal */
-.cert-seal-area {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.cert-seal {
-  font-size: 5rem;
-  line-height: 1;
-  filter: drop-shadow(0 4px 8px rgba(255,214,0,0.4));
-  animation: pulse-seal 2s infinite;
-}
-
-@keyframes pulse-seal {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+/* Font size responsive scaling based on viewport width to prevent text overflow on mobile */
+@media (max-width: 900px) {
+  .cert-student-name {
+    font-size: 4.5vw;
+  }
+  .cert-completion-date {
+    font-size: 2vw;
+  }
 }
 
 /* =============================================
-   RESPONSIVENESS (Aspect ratio scale down)
+   ACTION BUTTONS
    ============================================= */
-@media (max-width: 900px) {
-  .cert-outer {
-    transform: scale(0.9);
-    margin: -50px 0;
-  }
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(8px);
+  color: var(--panama-blue);
+  border: 2px solid var(--panama-blue);
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,1);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
 /* =============================================
@@ -338,7 +175,7 @@
    ============================================= */
 @media print {
   @page {
-    size: landscape;
+    size: letter landscape;
     margin: 0;
   }
   
@@ -373,15 +210,10 @@
     top: 0;
     width: 100%;
     max-width: 100%;
+    height: auto;
+    aspect-ratio: 11 / 8.5;
     box-shadow: none;
     border-radius: 0;
-    border: none;
-    padding: 0;
-  }
-  
-  .cert-inner {
-    border-width: 3px;
-    padding: 2.5rem 3rem;
   }
 }
 
