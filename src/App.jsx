@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import MainMenu from './pages/MainMenu';
 import MouseGame from './pages/MouseGame';
 import Certificate from './pages/Certificate';
+import Intro from './pages/Intro';
 
 function App() {
-  const [currentView, setCurrentView] = useState('menu'); // 'menu', 'mouse-game', 'certificate'
+  const [currentView, setCurrentView] = useState('intro'); // 'intro', 'menu', 'mouse-game', 'certificate'
   const [userName, setUserName] = useState('');
   const [difficulty, setDifficulty] = useState(1); // 1: Fácil, 2: Medio, 3: Difícil
   const [startLevel, setStartLevel] = useState(0);
@@ -49,6 +50,7 @@ function App() {
         </button>
       )}
 
+      {currentView === 'intro' && <Intro onNavigate={navigateTo} />}
       {currentView === 'menu' && <MainMenu onNavigate={navigateTo} />}
       {currentView === 'mouse-game' && <MouseGame difficulty={difficulty} startLevel={startLevel} onNavigate={navigateTo} onFinish={(name) => { setUserName(name); navigateTo('certificate'); }} />}
       {currentView === 'certificate' && <Certificate userName={userName} difficulty={difficulty} onNavigate={navigateTo} />}
