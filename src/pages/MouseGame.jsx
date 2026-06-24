@@ -21,7 +21,7 @@ const sections = [
     title: "Mover el Mouse 🖱️",
     description: "Desliza el mouse suavemente sobre la mesa. Mueve el cursor en la pantalla para tocar y seguir los objetos sin presionar ningún botón.",
     voiceText: "¡Hola! En esta sección vamos a aprender a mover el mouse. Deslízalo suavemente sobre la mesa y posiciona el cursor sobre los objetos para interactuar con ellos. ¡Inténtalo!",
-    audioSrc: "/sounds/juega-y-aprende.mp3",
+    audioSrc: "/sounds/mover-el-mouse.mp3",
     icon: "🖱️"
   },
   {
