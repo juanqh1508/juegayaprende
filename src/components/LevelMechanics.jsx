@@ -58,41 +58,7 @@ export function CartoonMouseMascot({ size = 80 }) {
 
 // Inline Tutorial Component
 function InlineTutorial({ type, title, subtitle }) {
-  const getAnimClass = () => {
-    switch (type) {
-      case 'hover': return 'anim-hover';
-      case 'click': return 'anim-click';
-      case 'doubleclick': return 'anim-doubleclick';
-      case 'drag': return 'anim-drag';
-      case 'scroll': return 'anim-scroll';
-      default: return '';
-    }
-  };
-
-  return (
-    <div className="inline-tutorial-container">
-      <div className="mascot-wrapper">
-        <CartoonMouseMascot size={75} />
-      </div>
-      <div className="speech-bubble">
-        <div className="tutorial-icon-container">
-          <div className={`tutorial-icon ${getAnimClass()}`}>
-            <div className="mini-mouse-icon">
-              <div className="mini-mouse-body">
-                <div className={`mini-btn left-btn ${(type === 'click' || type === 'doubleclick' || type === 'drag') ? 'active-click' : ''}`}></div>
-                <div className="mini-btn right-btn"></div>
-                <div className={`mini-wheel ${type === 'scroll' ? 'active-wheel' : ''}`}></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <p className="instruction">
-          <strong>{title}</strong><br/>
-          <span className="inst-sub">{subtitle}</span>
-        </p>
-      </div>
-    </div>
-  );
+  return null;
 }
 
 

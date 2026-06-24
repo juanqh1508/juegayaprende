@@ -84,19 +84,24 @@ function Intro({ onNavigate }) {
       {!hasStarted ? (
         <div className="welcome-screen">
           <div className="welcome-card animated-card">
-            <h1 className="welcome-title">¡JUEGA Y APRENDE!</h1>
+            <img src="/logo.png" alt="Juega y Aprende" className="welcome-logo" style={{ maxWidth: '320px', width: '90%', height: 'auto', marginBottom: '1.5rem' }} />
             
-            {/* Simple static preview of the mouse */}
-            <div className="static-mouse-preview">
-              <div className="mouse-head-preview">
-                <div className="ear-preview left"></div>
-                <div className="ear-preview right"></div>
-                <div className="face-preview">
-                  <div className="eye-preview"></div>
-                  <div className="eye-preview"></div>
-                  <div className="nose-preview"></div>
-                </div>
-              </div>
+            {/* Detailed SVG Hardware Mouse */}
+            <div className="welcome-hardware-mouse">
+              <svg width="80" height="120" viewBox="0 0 100 150" className="hardware-mouse-svg">
+                <path d="M 50 0 L 50 15" stroke="#3f51b5" strokeWidth="3" fill="none" strokeDasharray="3,3" />
+                <rect x="15" y="15" width="70" height="120" rx="35" fill="url(#mouseGrad)" stroke="#3f51b5" strokeWidth="4" />
+                <line x1="50" y1="15" x2="50" y2="70" stroke="#3f51b5" strokeWidth="4" />
+                <path d="M 15 70 C 40 75, 60 75, 85 70" stroke="#3f51b5" strokeWidth="4" fill="none" />
+                <rect x="46" y="32" width="8" height="18" rx="4" fill="#ff4081" stroke="#3f51b5" strokeWidth="2" className="scroll-wheel-anim" />
+                <ellipse cx="50" cy="130" rx="20" ry="8" fill="rgba(255, 64, 129, 0.15)" />
+                <defs>
+                  <linearGradient id="mouseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="100%" stopColor="#cfd8dc" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
 
             <p className="welcome-subtitle">Haz clic abajo para escuchar a tu nuevo amigo:</p>
@@ -123,6 +128,9 @@ function Intro({ onNavigate }) {
           {/* Talking Mouse Character */}
           <div className="mouse-character-container">
             <div className={`mouse-body-full ${isPlaying ? 'talking-anim' : ''}`}>
+              {/* Tail */}
+              <div className="mouse-tail"></div>
+
               {/* Ears */}
               <div className="mouse-ear left-ear">
                 <div className="ear-inner"></div>
@@ -133,13 +141,21 @@ function Intro({ onNavigate }) {
 
               {/* Head */}
               <div className="mouse-head">
+                {/* Eyebrows */}
+                <div className="eyebrows">
+                  <div className="eyebrow left-eyebrow"></div>
+                  <div className="eyebrow right-eyebrow"></div>
+                </div>
+
                 {/* Eyes */}
                 <div className="mouse-eyes">
                   <div className="mouse-eye">
                     <div className="pupil"></div>
+                    <div className="pupil-shine"></div>
                   </div>
                   <div className="mouse-eye">
                     <div className="pupil"></div>
+                    <div className="pupil-shine"></div>
                   </div>
                 </div>
 
@@ -149,6 +165,9 @@ function Intro({ onNavigate }) {
                 {/* Blush Cheeks */}
                 <div className="blush-cheek left-cheek"></div>
                 <div className="blush-cheek right-cheek"></div>
+
+                {/* Snout Details */}
+                <div className="mouse-snout"></div>
 
                 {/* Whiskers */}
                 <div className="whiskers left-whiskers">

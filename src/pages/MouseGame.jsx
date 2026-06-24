@@ -182,6 +182,9 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
   const activeSection = sections.find(s => s.startLevelIndex === currentLevelIndex);
 
   useEffect(() => {
+    if (setIsMusicPlaying) {
+      setIsMusicPlaying(true);
+    }
     if (activeSection) {
       setShowSectionIntro(true);
       setIsLevelStarted(false);
@@ -344,16 +347,40 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
 
           <div className="section-mouse-mascot-container">
             <div className={`section-mouse-mascot ${isTalking ? 'talking-anim' : ''}`}>
+              {/* Tail */}
+              <div className="mouse-tail"></div>
+              
               <div className="mouse-ear left-ear"><div className="ear-inner"></div></div>
               <div className="mouse-ear right-ear"><div className="ear-inner"></div></div>
+              
               <div className="mouse-head">
-                <div className="mouse-eyes">
-                  <div className="mouse-eye"><div className="pupil"></div></div>
-                  <div className="mouse-eye"><div className="pupil"></div></div>
+                {/* Eyebrows */}
+                <div className="eyebrows">
+                  <div className="eyebrow left-eyebrow"></div>
+                  <div className="eyebrow right-eyebrow"></div>
                 </div>
+
+                {/* Eyes */}
+                <div className="mouse-eyes">
+                  <div className="mouse-eye">
+                    <div className="pupil"></div>
+                    <div className="pupil-shine"></div>
+                  </div>
+                  <div className="mouse-eye">
+                    <div className="pupil"></div>
+                    <div className="pupil-shine"></div>
+                  </div>
+                </div>
+                
                 <div className="mouse-nose"></div>
+                
+                {/* Blush Cheeks */}
                 <div className="blush-cheek left-cheek"></div>
                 <div className="blush-cheek right-cheek"></div>
+                
+                {/* Snout Details */}
+                <div className="mouse-snout"></div>
+
                 <div className="whiskers left-whiskers"><span></span><span></span></div>
                 <div className="whiskers right-whiskers"><span></span><span></span></div>
                 <div className={`mouse-mouth ${isTalking ? 'talking-mouth' : ''}`}></div>
@@ -465,6 +492,41 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
             <h2 className="level-title">
               {level.title}
             </h2>
+            {isLevelStarted && (
+              <div className="level-instruction-banner">
+                <div className="banner-mascot">
+                  <div className="avatar-ear left"></div>
+                  <div className="avatar-ear right"></div>
+                  <div className="avatar-head">
+                    <div className="avatar-eye left"></div>
+                    <div className="avatar-eye right"></div>
+                    <div className="avatar-nose"></div>
+                    <div className="avatar-blush left"></div>
+                    <div className="avatar-blush right"></div>
+                  </div>
+                </div>
+                <div className="banner-speech">
+                  <div className="banner-icon-container">
+                    <div className={`tutorial-icon ${
+                      ['hover'].includes(level.type) ? 'anim-hover' :
+                      ['click', 'checkbox', 'radio', 'sequence'].includes(level.type) ? 'anim-click' :
+                      level.type === 'doubleclick' ? 'anim-doubleclick' :
+                      level.type === 'drag' ? 'anim-drag' :
+                      level.type === 'scroll' ? 'anim-scroll' : ''
+                    }`}>
+                      <div className="mini-mouse-icon">
+                        <div className="mini-mouse-body">
+                          <div className={`mini-btn left-btn ${['click', 'doubleclick', 'drag', 'checkbox', 'radio', 'sequence', 'balloons', 'whack_a_mole'].includes(level.type) ? 'active-click' : ''}`}></div>
+                          <div className="mini-btn right-btn"></div>
+                          <div className={`mini-wheel ${level.type === 'scroll' ? 'active-wheel' : ''}`}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="banner-text"><strong>¡Instrucción!</strong> {level.description}</p>
+                </div>
+              </div>
+            )}
           </div>
           
           {totalTasksPerLevel > 1 && (

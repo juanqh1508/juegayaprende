@@ -580,3 +580,106 @@
     transform: translateY(0);
   }
 }
+
+/* =============================================
+   NEW HARDWARE MOUSE & MASCOT DETAIL STYLING
+   ============================================= */
+.welcome-hardware-mouse {
+  margin: 1.5rem auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hardware-mouse-svg {
+  filter: drop-shadow(0 8px 15px rgba(63, 81, 181, 0.15));
+}
+
+.scroll-wheel-anim {
+  animation: scrollWheel 1.5s infinite ease-in-out;
+  transform-origin: center;
+}
+
+@keyframes scrollWheel {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.3) translateY(2px); }
+}
+
+/* Redesigned Mascot Details */
+.mouse-snout {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 22px;
+  background: #ffffff;
+  border-radius: 22px 22px 18px 18px;
+  border: 3px solid #3f51b5;
+  z-index: 2;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+/* Adjust nose position to be on top of snout */
+.mouse-nose {
+  z-index: 3 !important;
+}
+
+/* Eyebrows */
+.eyebrows {
+  position: absolute;
+  top: 22px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 3;
+}
+
+.eyebrow {
+  width: 22px;
+  height: 4px;
+  background: #3f51b5;
+  border-radius: 2px;
+}
+
+.left-eyebrow {
+  transform: rotate(-10deg);
+}
+
+.right-eyebrow {
+  transform: rotate(10deg);
+}
+
+/* Pupil Shine Details */
+.pupil-shine {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #ffffff;
+  border-radius: 50%;
+  bottom: 6px;
+  left: 6px;
+}
+
+/* Cute Tail */
+.mouse-tail {
+  position: absolute;
+  bottom: 12px;
+  left: -20px;
+  width: 45px;
+  height: 45px;
+  border: 5px solid #ff8a80;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  transform: rotate(-45deg);
+  z-index: 0;
+  animation: tailWag 3s infinite ease-in-out;
+}
+
+@keyframes tailWag {
+  0%, 100% { transform: rotate(-45deg); }
+  50% { transform: rotate(-35deg) scaleX(1.05); }
+}
+
