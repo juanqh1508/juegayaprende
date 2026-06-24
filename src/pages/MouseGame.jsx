@@ -168,7 +168,7 @@ function Confetti() {
   );
 }
 
-function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
+function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlaying, onFinish }) {
   const [currentLevelIndex, setCurrentLevelIndex] = useState(startLevel);
   const [tasksCompleted, setTasksCompleted] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -305,6 +305,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
       if (newCount >= totalTasksPerLevel) {
         sounds.levelComplete();
         setShowSuccess(true);
+        if (setIsMusicPlaying) setIsMusicPlaying(false);
         return totalTasksPerLevel;
       }
       return newCount;
@@ -315,6 +316,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
     setShowSuccess(false);
     setTasksCompleted(0);
     setIsLevelStarted(false);
+    if (setIsMusicPlaying) setIsMusicPlaying(false);
     if (currentLevelIndex + 1 < levelData.length) {
       setCurrentLevelIndex(currentLevelIndex + 1);
     } else {
@@ -579,7 +581,11 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
                 <p style={{ fontSize: '1.3rem', marginBottom: '2rem', color: '#555' }}>{level.description}</p>
                 <button 
                   className="btn-primary" 
-                  onClick={() => { sounds.click(); setIsLevelStarted(true); }}
+                  onClick={() => { 
+                    sounds.click(); 
+                    setIsLevelStarted(true); 
+                    if (setIsMusicPlaying) setIsMusicPlaying(true);
+                  }}
                   style={{ fontSize: '1.5rem', padding: '15px 40px' }}
                 >
                   ¡Empezar Nivel!

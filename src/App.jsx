@@ -24,8 +24,8 @@ function App() {
     if (view === 'mouse-game') {
       setDifficulty(selectedDifficulty);
       setStartLevel(selectedLevel);
-      setIsMusicPlaying(true); // Auto-play music when game starts
-    } else if (view === 'menu' || view === 'certificate') {
+      setIsMusicPlaying(false); // Do NOT auto-play music when game starts
+    } else if (view === 'menu' || view === 'certificate' || view === 'intro') {
       setIsMusicPlaying(false);
     }
     setCurrentView(view);
@@ -52,7 +52,7 @@ function App() {
 
       {currentView === 'intro' && <Intro onNavigate={navigateTo} />}
       {currentView === 'menu' && <MainMenu onNavigate={navigateTo} />}
-      {currentView === 'mouse-game' && <MouseGame difficulty={difficulty} startLevel={startLevel} onNavigate={navigateTo} onFinish={(name) => { setUserName(name); navigateTo('certificate'); }} />}
+      {currentView === 'mouse-game' && <MouseGame difficulty={difficulty} startLevel={startLevel} onNavigate={navigateTo} setIsMusicPlaying={setIsMusicPlaying} onFinish={(name) => { setUserName(name); navigateTo('certificate'); }} />}
       {currentView === 'certificate' && <Certificate userName={userName} difficulty={difficulty} onNavigate={navigateTo} />}
     </div>
   );
