@@ -71,7 +71,7 @@ function Intro({ onNavigate }) {
       {/* Audio elements */}
       <audio 
         ref={voiceAudioRef} 
-        src="/sounds/juega-y-aprende.mp3" 
+        src="/sounds/bienvenida.mp3" 
         onTimeUpdate={handleTimeUpdate}
         onEnded={skipIntro}
       />
@@ -145,6 +145,10 @@ function Intro({ onNavigate }) {
 
                 {/* Nose */}
                 <div className="mouse-nose"></div>
+
+                {/* Blush Cheeks */}
+                <div className="blush-cheek left-cheek"></div>
+                <div className="blush-cheek right-cheek"></div>
 
                 {/* Whiskers */}
                 <div className="whiskers left-whiskers">

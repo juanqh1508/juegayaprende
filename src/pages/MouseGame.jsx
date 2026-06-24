@@ -21,6 +21,7 @@ const sections = [
     title: "Mover el Mouse 🖱️",
     description: "Desliza el mouse suavemente sobre la mesa. Mueve el cursor en la pantalla para tocar y seguir los objetos sin presionar ningún botón.",
     voiceText: "¡Hola! En esta sección vamos a aprender a mover el mouse. Deslízalo suavemente sobre la mesa y posiciona el cursor sobre los objetos para interactuar con ellos. ¡Inténtalo!",
+    audioSrc: "/sounds/juega-y-aprende.mp3",
     icon: "🖱️"
   },
   {
@@ -28,6 +29,7 @@ const sections = [
     title: "Hacer Clic 🎯",
     description: "Presiona el botón izquierdo del mouse una sola vez usando tu dedo índice. Úsalo para seleccionar cosas y atrapar los objetos.",
     voiceText: "¡Excelente! Ahora aprenderemos a hacer clic. Presiona una sola vez el botón izquierdo del mouse con tu dedo índice para presionar botones, reventar globos y atrapar al topo. ¡Tú puedes!",
+    audioSrc: "/sounds/click.mp3",
     icon: "🎯"
   },
   {
@@ -35,6 +37,7 @@ const sections = [
     title: "Doble Clic ⚡",
     description: "Presiona el botón izquierdo del mouse dos veces seguidas muy rápido. ¡Pompón! Sirve para abrir carpetas y abrir programas.",
     voiceText: "¡Genial! Ahora viene el doble clic. Presiona el botón izquierdo dos veces seguidas muy rápido. ¡Pompón! Úsalo para romper los huevos y abrir las carpetas en la pantalla.",
+    audioSrc: "/sounds/doble-click.mp3",
     icon: "⚡"
   },
   {
@@ -42,6 +45,7 @@ const sections = [
     title: "Arrastrar y Soltar 📦",
     description: "Mantén presionado el botón izquierdo sobre un objeto, muévelo a otro lugar, y luego suelta el botón para dejarlo caer.",
     voiceText: "¡Muy bien! Vamos a arrastrar y soltar. Haz clic en un juguete o ropa, mantén el botón presionado mientras lo mueves y suéltalo dentro de la caja o canasta.",
+    audioSrc: "/sounds/arrastrar-y-soltar.mp3",
     icon: "📦"
   },
   {
@@ -49,6 +53,7 @@ const sections = [
     title: "Desplazamiento (Scroll) 📜",
     description: "Usa la ruedita en el medio del mouse para deslizarte hacia arriba o hacia abajo en la pantalla.",
     voiceText: "¡Excelente! Ahora usaremos la ruedita del mouse, llamada scroll. Gírala hacia abajo con tu dedo medio para descubrir objetos que están ocultos abajo en la pantalla.",
+    audioSrc: "/sounds/scroll.mp3",
     icon: "📜"
   },
   {
@@ -56,6 +61,7 @@ const sections = [
     title: "Casillas de Selección 🗹",
     description: "Haz clic en los cuadros para seleccionar una o varias respuestas correctas.",
     voiceText: "¡Gran trabajo! Ahora aprenderemos a usar las casillas de selección. Haz clic en los cuadritos para marcar una o más respuestas correctas y completar la tarea.",
+    audioSrc: "/sounds/checkbox.mp3",
     icon: "🗹"
   },
   {
@@ -63,6 +69,7 @@ const sections = [
     title: "Botones de Opción 🔘",
     description: "Haz clic en los círculos para seleccionar una sola respuesta de las opciones disponibles.",
     voiceText: "¡Finalmente, aprenderemos los botones de opción! Haz clic en el círculo de la respuesta correcta. Recuerda que aquí solo puedes seleccionar una opción.",
+    audioSrc: "/sounds/boton-de-seleccion.mp3",
     icon: "🔘"
   }
 ];
@@ -170,6 +177,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
   const [currentTarget, setCurrentTarget] = useState(null);
   const [showSectionIntro, setShowSectionIntro] = useState(false);
   const [isTalking, setIsTalking] = useState(false);
+  const voiceAudioRef = useRef(null);
 
   const activeSection = sections.find(s => s.startLevelIndex === currentLevelIndex);
 
@@ -203,13 +211,42 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
     }
   };
 
+  const playSectionAudio = () => {
+    if (!activeSection) return;
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+
+    if (voiceAudioRef.current) {
+      voiceAudioRef.current.pause();
+    }
+
+    const audio = new Audio(activeSection.audioSrc);
+    voiceAudioRef.current = audio;
+
+    audio.onplay = () => setIsTalking(true);
+    audio.onended = () => setIsTalking(false);
+    audio.onerror = () => {
+      speakInstruction(activeSection.voiceText);
+    };
+
+    audio.play().catch(e => {
+      console.log("Audio play failed, falling back to TTS:", e);
+      speakInstruction(activeSection.voiceText);
+    });
+  };
+
   useEffect(() => {
     if (showSectionIntro && activeSection) {
       const timer = setTimeout(() => {
-        speakInstruction(activeSection.voiceText);
+        playSectionAudio();
       }, 600);
       return () => {
         clearTimeout(timer);
+        if (voiceAudioRef.current) {
+          voiceAudioRef.current.pause();
+        }
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
         }
@@ -313,6 +350,8 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
                   <div className="mouse-eye"><div className="pupil"></div></div>
                 </div>
                 <div className="mouse-nose"></div>
+                <div className="blush-cheek left-cheek"></div>
+                <div className="blush-cheek right-cheek"></div>
                 <div className="whiskers left-whiskers"><span></span><span></span></div>
                 <div className="whiskers right-whiskers"><span></span><span></span></div>
                 <div className={`mouse-mouth ${isTalking ? 'talking-mouth' : ''}`}></div>
@@ -330,7 +369,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
           <div className="section-intro-buttons" style={{ display: 'flex', gap: '20px', marginTop: '30px' }}>
             <button 
               className="btn-secondary" 
-              onClick={() => speakInstruction(activeSection.voiceText)}
+              onClick={playSectionAudio}
               style={{ fontSize: '1.2rem', padding: '12px 28px', borderRadius: '50px' }}
             >
               🔊 Escuchar
@@ -338,6 +377,9 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
             <button 
               className="btn-primary pulse-btn" 
               onClick={() => {
+                if (voiceAudioRef.current) {
+                  voiceAudioRef.current.pause();
+                }
                 if ('speechSynthesis' in window) {
                   window.speechSynthesis.cancel();
                 }
