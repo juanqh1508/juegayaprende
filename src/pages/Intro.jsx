@@ -77,7 +77,7 @@ function Intro({ onNavigate }) {
       />
       <audio 
         ref={bgMusicRef} 
-        src="https://cdn.pixabay.com/download/audio/2022/01/21/audio_31743c58be.mp3?filename=arcade-music-loop-110041.mp3" 
+        src="/sounds/fondo-juego.mp3" 
         loop 
       />
 

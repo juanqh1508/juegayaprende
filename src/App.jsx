@@ -38,7 +38,7 @@ function App() {
   return (
     <div className="app-container">
       {/* Background Music - 8-bit Arcade / Mario Style */}
-      <audio ref={audioRef} loop src="https://cdn.pixabay.com/download/audio/2022/01/21/audio_31743c58be.mp3?filename=arcade-music-loop-110041.mp3" />
+      <audio ref={audioRef} loop src="/sounds/fondo-juego.mp3" />
       
       {currentView !== 'menu' && (
         <button 
