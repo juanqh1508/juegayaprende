@@ -15,6 +15,58 @@ import './MouseGame.css';
 // Función para seleccionar aleatoriamente un elemento
 const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
+const sections = [
+  {
+    startLevelIndex: 0,
+    title: "Mover el Mouse 🖱️",
+    description: "Desliza el mouse suavemente sobre la mesa. Mueve el cursor en la pantalla para tocar y seguir los objetos sin presionar ningún botón.",
+    voiceText: "¡Hola! En esta sección vamos a aprender a mover el mouse. Deslízalo suavemente sobre la mesa y posiciona el cursor sobre los objetos para interactuar con ellos. ¡Inténtalo!",
+    icon: "🖱️"
+  },
+  {
+    startLevelIndex: 3,
+    title: "Hacer Clic 🎯",
+    description: "Presiona el botón izquierdo del mouse una sola vez usando tu dedo índice. Úsalo para seleccionar cosas y atrapar los objetos.",
+    voiceText: "¡Excelente! Ahora aprenderemos a hacer clic. Presiona una sola vez el botón izquierdo del mouse con tu dedo índice para presionar botones, reventar globos y atrapar al topo. ¡Tú puedes!",
+    icon: "🎯"
+  },
+  {
+    startLevelIndex: 6,
+    title: "Doble Clic ⚡",
+    description: "Presiona el botón izquierdo del mouse dos veces seguidas muy rápido. ¡Pompón! Sirve para abrir carpetas y abrir programas.",
+    voiceText: "¡Genial! Ahora viene el doble clic. Presiona el botón izquierdo dos veces seguidas muy rápido. ¡Pompón! Úsalo para romper los huevos y abrir las carpetas en la pantalla.",
+    icon: "⚡"
+  },
+  {
+    startLevelIndex: 9,
+    title: "Arrastrar y Soltar 📦",
+    description: "Mantén presionado el botón izquierdo sobre un objeto, muévelo a otro lugar, y luego suelta el botón para dejarlo caer.",
+    voiceText: "¡Muy bien! Vamos a arrastrar y soltar. Haz clic en un juguete o ropa, mantén el botón presionado mientras lo mueves y suéltalo dentro de la caja o canasta.",
+    icon: "📦"
+  },
+  {
+    startLevelIndex: 13,
+    title: "Desplazamiento (Scroll) 📜",
+    description: "Usa la ruedita en el medio del mouse para deslizarte hacia arriba o hacia abajo en la pantalla.",
+    voiceText: "¡Excelente! Ahora usaremos la ruedita del mouse, llamada scroll. Gírala hacia abajo con tu dedo medio para descubrir objetos que están ocultos abajo en la pantalla.",
+    icon: "📜"
+  },
+  {
+    startLevelIndex: 15,
+    title: "Casillas de Selección 🗹",
+    description: "Haz clic en los cuadros para seleccionar una o varias respuestas correctas.",
+    voiceText: "¡Gran trabajo! Ahora aprenderemos a usar las casillas de selección. Haz clic en los cuadritos para marcar una o más respuestas correctas y completar la tarea.",
+    icon: "🗹"
+  },
+  {
+    startLevelIndex: 17,
+    title: "Botones de Opción 🔘",
+    description: "Haz clic en los círculos para seleccionar una sola respuesta de las opciones disponibles.",
+    voiceText: "¡Finalmente, aprenderemos los botones de opción! Haz clic en el círculo de la respuesta correcta. Recuerda que aquí solo puedes seleccionar una opción.",
+    icon: "🔘"
+  }
+];
+
 const levelData = [
   // MOVER EL MOUSE
   { id: 1, type: 'hover', title: 'Nivel 1', targets: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'], bg: 'bg-classroom', totalTasks: 10, isStatic: true,
@@ -116,6 +168,54 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
   const [showInfographic, setShowInfographic] = useState(true);
   const [isLevelStarted, setIsLevelStarted] = useState(false);
   const [currentTarget, setCurrentTarget] = useState(null);
+  const [showSectionIntro, setShowSectionIntro] = useState(false);
+  const [isTalking, setIsTalking] = useState(false);
+
+  const activeSection = sections.find(s => s.startLevelIndex === currentLevelIndex);
+
+  useEffect(() => {
+    if (activeSection) {
+      setShowSectionIntro(true);
+      setIsLevelStarted(false);
+    }
+  }, [currentLevelIndex]);
+
+  const speakInstruction = (text) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'es-ES';
+      
+      const voices = window.speechSynthesis.getVoices();
+      const spanishVoice = voices.find(v => v.lang.startsWith('es'));
+      if (spanishVoice) {
+        utterance.voice = spanishVoice;
+      }
+      
+      utterance.pitch = 1.15;
+      utterance.rate = 0.95;
+      
+      utterance.onstart = () => setIsTalking(true);
+      utterance.onend = () => setIsTalking(false);
+      utterance.onerror = () => setIsTalking(false);
+      
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  useEffect(() => {
+    if (showSectionIntro && activeSection) {
+      const timer = setTimeout(() => {
+        speakInstruction(activeSection.voiceText);
+      }, 600);
+      return () => {
+        clearTimeout(timer);
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+      };
+    }
+  }, [showSectionIntro, activeSection]);
 
   const level = levelData[currentLevelIndex];
   
@@ -187,6 +287,71 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, onFinish }) {
 
   if (showInfographic) {
     return <MouseInfographic onComplete={() => setShowInfographic(false)} />;
+  }
+
+  if (showSectionIntro && activeSection) {
+    return (
+      <div className="section-intro-overlay">
+        <div className="section-intro-card anim-pop-in">
+          <span className="section-intro-icon-large">{activeSection.icon}</span>
+          <h2 className="section-intro-title">{activeSection.title}</h2>
+          
+          <div className="section-speech-bubble-container">
+            <div className="section-speech-bubble">
+              <p>{activeSection.description}</p>
+            </div>
+            <div className="section-speech-bubble-tip"></div>
+          </div>
+
+          <div className="section-mouse-mascot-container">
+            <div className={`section-mouse-mascot ${isTalking ? 'talking-anim' : ''}`}>
+              <div className="mouse-ear left-ear"><div className="ear-inner"></div></div>
+              <div className="mouse-ear right-ear"><div className="ear-inner"></div></div>
+              <div className="mouse-head">
+                <div className="mouse-eyes">
+                  <div className="mouse-eye"><div className="pupil"></div></div>
+                  <div className="mouse-eye"><div className="pupil"></div></div>
+                </div>
+                <div className="mouse-nose"></div>
+                <div className="whiskers left-whiskers"><span></span><span></span></div>
+                <div className="whiskers right-whiskers"><span></span><span></span></div>
+                <div className={`mouse-mouth ${isTalking ? 'talking-mouth' : ''}`}></div>
+              </div>
+              <div className="mouse-torso">
+                <div className="shirt-logo">🖱️</div>
+              </div>
+              <div className="mouse-hand left-hand"></div>
+              <div className="mouse-hand right-hand wave-hand"></div>
+              <div className="mouse-foot left-foot"></div>
+              <div className="mouse-foot right-foot"></div>
+            </div>
+          </div>
+
+          <div className="section-intro-buttons" style={{ display: 'flex', gap: '20px', marginTop: '30px' }}>
+            <button 
+              className="btn-secondary" 
+              onClick={() => speakInstruction(activeSection.voiceText)}
+              style={{ fontSize: '1.2rem', padding: '12px 28px', borderRadius: '50px' }}
+            >
+              🔊 Escuchar
+            </button>
+            <button 
+              className="btn-primary pulse-btn" 
+              onClick={() => {
+                if ('speechSynthesis' in window) {
+                  window.speechSynthesis.cancel();
+                }
+                setIsTalking(false);
+                setShowSectionIntro(false); 
+              }}
+              style={{ fontSize: '1.4rem', padding: '12px 36px', borderRadius: '50px' }}
+            >
+              ¡Entendido! 🎮
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const renderLevelComponent = () => {
