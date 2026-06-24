@@ -183,7 +183,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
 
   useEffect(() => {
     if (setIsMusicPlaying) {
-      setIsMusicPlaying(true);
+      setIsMusicPlaying(false);
     }
     if (activeSection) {
       setShowSectionIntro(true);
