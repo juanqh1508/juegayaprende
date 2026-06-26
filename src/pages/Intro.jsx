@@ -124,73 +124,89 @@ function Intro({ onNavigate }) {
               </defs>
 
               {/* Tail */}
-              <path d="M 120,230 Q 60,260 40,220" fill="none" stroke="#3f51b5" strokeWidth="5" strokeLinecap="round" />
+              <path d="M 120,200 Q 60,230 40,190" fill="none" stroke="#3f51b5" strokeWidth="5" strokeLinecap="round" />
+
+              {/* Legs (connected to torso) */}
+              {/* Left Leg */}
+              <line x1="100" y1="190" x2="100" y2="230" stroke="#3f51b5" strokeWidth="14" strokeLinecap="round" />
+              <line x1="100" y1="190" x2="100" y2="230" stroke="#a7b8ff" strokeWidth="6" strokeLinecap="round" />
+              
+              {/* Right Leg */}
+              <line x1="140" y1="190" x2="140" y2="230" stroke="#3f51b5" strokeWidth="14" strokeLinecap="round" />
+              <line x1="140" y1="190" x2="140" y2="230" stroke="#a7b8ff" strokeWidth="6" strokeLinecap="round" />
 
               {/* Feet */}
-              <ellipse cx="90" cy="245" rx="20" ry="12" fill="#B0BEC5" stroke="#3f51b5" strokeWidth="4" />
-              <ellipse cx="150" cy="245" rx="20" ry="12" fill="#B0BEC5" stroke="#3f51b5" strokeWidth="4" />
+              <path d="M 82,242 C 82,222 112,222 112,242 Z" fill="#B0BEC5" stroke="#3f51b5" strokeWidth="4" />
+              <path d="M 128,242 C 128,222 158,222 158,242 Z" fill="#B0BEC5" stroke="#3f51b5" strokeWidth="4" />
 
-              {/* Body (Shirt) */}
-              <path d="M 80,180 C 70,240 170,240 160,180 Z" fill="url(#shirtGrad)" stroke="#3f51b5" strokeWidth="4" />
+              {/* Torso / Shirt (centered and connected to legs) */}
+              <path d="M 95,140 C 75,210 165,210 145,140 Z" fill="url(#shirtGrad)" stroke="#3f51b5" strokeWidth="4" />
               {/* Controller Icon on Shirt */}
-              <text x="120" y="215" fontSize="22" textAnchor="middle" style={{ userSelect: 'none' }}>🎮</text>
+              <text x="120" y="180" fontSize="18" textAnchor="middle" style={{ userSelect: 'none' }}>🎮</text>
 
-              {/* Left Hand */}
-              <circle cx="65" cy="195" r="14" fill="#CFD8DC" stroke="#3f51b5" strokeWidth="4" />
-
-              {/* Right Hand (Waving) */}
-              <g className="wave-hand" style={{ transformOrigin: '175px 195px' }}>
-                <circle cx="175" cy="195" r="14" fill="#CFD8DC" stroke="#3f51b5" strokeWidth="4" />
+              {/* Arms (connected to body) */}
+              {/* Left Arm & Hand */}
+              <g>
+                <path d="M 95,150 Q 60,160 60,185" fill="none" stroke="#3f51b5" strokeWidth="14" strokeLinecap="round" />
+                <path d="M 95,150 Q 60,160 60,185" fill="none" stroke="#fff8e7" strokeWidth="6" strokeLinecap="round" />
+                <circle cx="60" cy="185" r="10" fill="#fff8e7" stroke="#3f51b5" strokeWidth="4" />
               </g>
 
-              {/* Ears */}
+              {/* Right Arm & Hand (Waving) */}
+              <g className="wave-hand" style={{ transformOrigin: '145px 150px' }}>
+                <path d="M 145,150 Q 180,140 180,115" fill="none" stroke="#3f51b5" strokeWidth="14" strokeLinecap="round" />
+                <path d="M 145,150 Q 180,140 180,115" fill="none" stroke="#fff8e7" strokeWidth="6" strokeLinecap="round" />
+                <circle cx="180" cy="115" r="10" fill="#fff8e7" stroke="#3f51b5" strokeWidth="4" />
+              </g>
+
+              {/* Ears (behind head) */}
               {/* Left Ear */}
               <g>
-                <circle cx="70" cy="100" r="42" fill="url(#earGrad)" stroke="#3f51b5" strokeWidth="5" />
-                <circle cx="70" cy="100" r="26" fill="#FF8A80" />
+                <circle cx="70" cy="65" r="38" fill="url(#earGrad)" stroke="#3f51b5" strokeWidth="5" />
+                <circle cx="70" cy="65" r="23" fill="#FF8A80" />
               </g>
               {/* Right Ear */}
               <g>
-                <circle cx="170" cy="100" r="42" fill="url(#earGrad)" stroke="#3f51b5" strokeWidth="5" />
-                <circle cx="170" cy="100" r="26" fill="#FF8A80" />
+                <circle cx="170" cy="65" r="38" fill="url(#earGrad)" stroke="#3f51b5" strokeWidth="5" />
+                <circle cx="170" cy="65" r="23" fill="#FF8A80" />
               </g>
 
-              {/* Head */}
-              <ellipse cx="120" cy="145" rx="66" ry="56" fill="url(#bodyGrad)" stroke="#3f51b5" strokeWidth="5" />
+              {/* Head (sits on top of the shirt/neck) */}
+              <ellipse cx="120" cy="105" rx="58" ry="50" fill="url(#bodyGrad)" stroke="#3f51b5" strokeWidth="5" />
 
               {/* Blush Cheeks */}
-              <ellipse cx="75" cy="160" rx="10" ry="6" fill="rgba(255, 64, 129, 0.45)" />
-              <ellipse cx="165" cy="160" rx="10" ry="6" fill="rgba(255, 64, 129, 0.45)" />
+              <ellipse cx="75" cy="120" rx="9" ry="5" fill="rgba(255, 64, 129, 0.45)" />
+              <ellipse cx="165" cy="120" rx="9" ry="5" fill="rgba(255, 64, 129, 0.45)" />
 
               {/* Whiskers */}
-              <line x1="65" y1="150" x2="40" y2="145" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
-              <line x1="65" y1="156" x2="42" y2="158" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
-              <line x1="175" y1="150" x2="200" y2="145" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
-              <line x1="175" y1="156" x2="198" y2="158" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
+              <line x1="65" y1="110" x2="40" y2="105" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
+              <line x1="65" y1="116" x2="42" y2="118" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
+              <line x1="175" y1="110" x2="200" y2="105" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
+              <line x1="175" y1="116" x2="198" y2="118" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
 
               {/* Eyes */}
               <g>
                 {/* Left Eye */}
-                <ellipse cx="96" cy="135" rx="11" ry="16" fill="#263238" style={{ animation: 'blinkEyes 4s infinite', transformOrigin: '96px 135px' }} />
-                <circle cx="100" cy="129" r="3" fill="#ffffff" />
+                <ellipse cx="96" cy="95" rx="10" ry="15" fill="#263238" style={{ animation: 'blinkEyes 4s infinite', transformOrigin: '96px 95px' }} />
+                <circle cx="100" cy="89" r="3" fill="#ffffff" />
                 
                 {/* Right Eye */}
-                <ellipse cx="144" cy="135" rx="11" ry="16" fill="#263238" style={{ animation: 'blinkEyes 4s infinite', transformOrigin: '144px 135px' }} />
-                <circle cx="148" cy="129" r="3" fill="#ffffff" />
+                <ellipse cx="144" cy="95" rx="10" ry="15" fill="#263238" style={{ animation: 'blinkEyes 4s infinite', transformOrigin: '144px 95px' }} />
+                <circle cx="148" cy="89" r="3" fill="#ffffff" />
               </g>
 
               {/* Nose */}
-              <ellipse cx="120" cy="150" rx="13" ry="9" fill="#FF8A80" stroke="#3f51b5" strokeWidth="3" />
+              <ellipse cx="120" cy="110" rx="12" ry="8" fill="#FF8A80" stroke="#3f51b5" strokeWidth="3" />
 
               {/* Mouth */}
               <ellipse 
                 cx="120" 
-                cy="172" 
-                rx="14" 
-                ry="6" 
+                cy="132" 
+                rx="12" 
+                ry="5" 
                 fill="#263238" 
                 className={isPlaying ? 'talking-mouth-svg' : ''} 
-                style={{ transformOrigin: '120px 172px', transition: 'all 0.1s ease' }} 
+                style={{ transformOrigin: '120px 132px', transition: 'all 0.1s ease' }} 
               />
             </svg>
           </div>
