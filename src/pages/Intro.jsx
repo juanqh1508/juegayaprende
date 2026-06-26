@@ -106,109 +106,77 @@ function Intro({ onNavigate }) {
             <div className="speech-bubble-tip"></div>
           </div>
 
+          {/* Talking Mouse Character */}
           <div className="mouse-character-container">
-            <svg width="240" height="280" viewBox="0 0 240 280" className={`mouse-svg ${isPlaying ? 'talking-anim' : ''}`} style={{ filter: 'drop-shadow(0 10px 20px rgba(92, 107, 192, 0.2))' }}>
-              <defs>
-                <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#fff8e7" />
-                  <stop offset="100%" stopColor="#f5e0bd" />
-                </linearGradient>
-                <linearGradient id="shirtGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#FFCA28" />
-                  <stop offset="100%" stopColor="#FF8F00" />
-                </linearGradient>
-                <linearGradient id="earGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#b9c6fe" />
-                  <stop offset="100%" stopColor="#8d9eff" />
-                </linearGradient>
-              </defs>
-
+            <div className={`mouse-body-full ${isPlaying ? 'talking-anim' : ''}`}>
               {/* Tail */}
-              <path d="M 120,200 Q 60,230 40,190" fill="none" stroke="#3f51b5" strokeWidth="5" strokeLinecap="round" />
+              <div className="mouse-tail"></div>
 
-              {/* Legs (connected to torso) */}
-              {/* Left Leg */}
-              <line x1="100" y1="190" x2="100" y2="230" stroke="#3f51b5" strokeWidth="14" strokeLinecap="round" />
-              <line x1="100" y1="190" x2="100" y2="230" stroke="#a7b8ff" strokeWidth="6" strokeLinecap="round" />
-              
-              {/* Right Leg */}
-              <line x1="140" y1="190" x2="140" y2="230" stroke="#3f51b5" strokeWidth="14" strokeLinecap="round" />
-              <line x1="140" y1="190" x2="140" y2="230" stroke="#a7b8ff" strokeWidth="6" strokeLinecap="round" />
+              {/* Ears */}
+              <div className="mouse-ear left-ear">
+                <div className="ear-inner"></div>
+              </div>
+              <div className="mouse-ear right-ear">
+                <div className="ear-inner"></div>
+              </div>
+
+              {/* Head */}
+              <div className="mouse-head">
+                {/* Eyebrows */}
+                <div className="eyebrows">
+                  <div className="eyebrow left-eyebrow"></div>
+                  <div className="eyebrow right-eyebrow"></div>
+                </div>
+
+                {/* Eyes */}
+                <div className="mouse-eyes">
+                  <div className="mouse-eye">
+                    <div className="pupil"></div>
+                    <div className="pupil-shine"></div>
+                  </div>
+                  <div className="mouse-eye">
+                    <div className="pupil"></div>
+                    <div className="pupil-shine"></div>
+                  </div>
+                </div>
+
+                {/* Nose */}
+                <div className="mouse-nose"></div>
+
+                {/* Blush Cheeks */}
+                <div className="blush-cheek left-cheek"></div>
+                <div className="blush-cheek right-cheek"></div>
+
+                {/* Snout Details */}
+                <div className="mouse-snout"></div>
+
+                {/* Whiskers */}
+                <div className="whiskers left-whiskers">
+                  <span></span>
+                  <span></span>
+                </div>
+                <div className="whiskers right-whiskers">
+                  <span></span>
+                  <span></span>
+                </div>
+
+                {/* Mouth */}
+                <div className={`mouse-mouth ${isPlaying ? 'talking-mouth' : ''}`}></div>
+              </div>
+
+              {/* Body / Shirt */}
+              <div className="mouse-torso">
+                <div className="shirt-logo">🎮</div>
+              </div>
+
+              {/* Hands */}
+              <div className="mouse-hand left-hand"></div>
+              <div className="mouse-hand right-hand wave-hand"></div>
 
               {/* Feet */}
-              <path d="M 82,242 C 82,222 112,222 112,242 Z" fill="#B0BEC5" stroke="#3f51b5" strokeWidth="4" />
-              <path d="M 128,242 C 128,222 158,222 158,242 Z" fill="#B0BEC5" stroke="#3f51b5" strokeWidth="4" />
-
-              {/* Torso / Shirt (centered and connected to legs) */}
-              <path d="M 95,140 C 75,210 165,210 145,140 Z" fill="url(#shirtGrad)" stroke="#3f51b5" strokeWidth="4" />
-              {/* Controller Icon on Shirt */}
-              <text x="120" y="180" fontSize="18" textAnchor="middle" style={{ userSelect: 'none' }}>🎮</text>
-
-              {/* Arms (connected to body) */}
-              {/* Left Arm & Hand */}
-              <g>
-                <path d="M 95,150 Q 60,160 60,185" fill="none" stroke="#3f51b5" strokeWidth="14" strokeLinecap="round" />
-                <path d="M 95,150 Q 60,160 60,185" fill="none" stroke="#fff8e7" strokeWidth="6" strokeLinecap="round" />
-                <circle cx="60" cy="185" r="10" fill="#fff8e7" stroke="#3f51b5" strokeWidth="4" />
-              </g>
-
-              {/* Right Arm & Hand (Waving) */}
-              <g className="wave-hand" style={{ transformOrigin: '145px 150px' }}>
-                <path d="M 145,150 Q 180,140 180,115" fill="none" stroke="#3f51b5" strokeWidth="14" strokeLinecap="round" />
-                <path d="M 145,150 Q 180,140 180,115" fill="none" stroke="#fff8e7" strokeWidth="6" strokeLinecap="round" />
-                <circle cx="180" cy="115" r="10" fill="#fff8e7" stroke="#3f51b5" strokeWidth="4" />
-              </g>
-
-              {/* Ears (behind head) */}
-              {/* Left Ear */}
-              <g>
-                <circle cx="70" cy="65" r="38" fill="url(#earGrad)" stroke="#3f51b5" strokeWidth="5" />
-                <circle cx="70" cy="65" r="23" fill="#FF8A80" />
-              </g>
-              {/* Right Ear */}
-              <g>
-                <circle cx="170" cy="65" r="38" fill="url(#earGrad)" stroke="#3f51b5" strokeWidth="5" />
-                <circle cx="170" cy="65" r="23" fill="#FF8A80" />
-              </g>
-
-              {/* Head (sits on top of the shirt/neck) */}
-              <ellipse cx="120" cy="105" rx="58" ry="50" fill="url(#bodyGrad)" stroke="#3f51b5" strokeWidth="5" />
-
-              {/* Blush Cheeks */}
-              <ellipse cx="75" cy="120" rx="9" ry="5" fill="rgba(255, 64, 129, 0.45)" />
-              <ellipse cx="165" cy="120" rx="9" ry="5" fill="rgba(255, 64, 129, 0.45)" />
-
-              {/* Whiskers */}
-              <line x1="65" y1="110" x2="40" y2="105" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
-              <line x1="65" y1="116" x2="42" y2="118" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
-              <line x1="175" y1="110" x2="200" y2="105" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
-              <line x1="175" y1="116" x2="198" y2="118" stroke="#263238" strokeWidth="3" strokeLinecap="round" />
-
-              {/* Eyes */}
-              <g>
-                {/* Left Eye */}
-                <ellipse cx="96" cy="95" rx="10" ry="15" fill="#263238" style={{ animation: 'blinkEyes 4s infinite', transformOrigin: '96px 95px' }} />
-                <circle cx="100" cy="89" r="3" fill="#ffffff" />
-                
-                {/* Right Eye */}
-                <ellipse cx="144" cy="95" rx="10" ry="15" fill="#263238" style={{ animation: 'blinkEyes 4s infinite', transformOrigin: '144px 95px' }} />
-                <circle cx="148" cy="89" r="3" fill="#ffffff" />
-              </g>
-
-              {/* Nose */}
-              <ellipse cx="120" cy="110" rx="12" ry="8" fill="#FF8A80" stroke="#3f51b5" strokeWidth="3" />
-
-              {/* Mouth */}
-              <ellipse 
-                cx="120" 
-                cy="132" 
-                rx="12" 
-                ry="5" 
-                fill="#263238" 
-                className={isPlaying ? 'talking-mouth-svg' : ''} 
-                style={{ transformOrigin: '120px 132px', transition: 'all 0.1s ease' }} 
-              />
-            </svg>
+              <div className="mouse-foot left-foot"></div>
+              <div className="mouse-foot right-foot"></div>
+            </div>
           </div>
 
           {/* Play/Pause controls for voice */}

@@ -683,19 +683,3 @@
   50% { transform: rotate(-35deg) scaleX(1.05); }
 }
 
-/* SVG Mouse Mouth animation */
-.talking-mouth-svg {
-  animation: talkMouthSvg 0.3s infinite alternate ease-in-out;
-}
-
-@keyframes talkMouthSvg {
-  0% {
-    transform: scale(1, 0.5);
-    fill: #263238;
-  }
-  100% {
-    transform: scale(1.1, 1.6);
-    fill: #ff4081;
-  }
-}
-
