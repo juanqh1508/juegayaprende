@@ -683,3 +683,128 @@
   50% { transform: rotate(-35deg) scaleX(1.05); }
 }
 
+/* Classroom Environment Background for Intro */
+.classroom-bg {
+  background-color: #f1ebd9; /* warm wall color */
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+  overflow: hidden;
+}
+
+.classroom-blackboard {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 48%;
+  background: #143d30; /* deep school board green */
+  border: 14px solid #8d6e63; /* wooden frame */
+  border-radius: 12px;
+  box-shadow: 
+    inset 0 0 30px rgba(0,0,0,0.8),
+    0 10px 25px rgba(0,0,0,0.15);
+  z-index: 1;
+}
+
+.chalk-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  font-family: 'Outfit', 'Inter', cursive, sans-serif;
+  color: rgba(255,255,255,0.65);
+  user-select: none;
+}
+
+.chalk-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  transform: rotate(-2deg);
+}
+
+.chalk-text.math {
+  align-self: flex-start;
+  color: #fff9db;
+}
+
+.chalk-text.abc {
+  align-self: flex-end;
+  color: #e8f4fd;
+  transform: rotate(1deg);
+}
+
+.chalk-title {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-1deg);
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255,255,255,0.4);
+  letter-spacing: 3px;
+  width: 100%;
+  text-align: center;
+}
+
+.classroom-desk {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 25%;
+  background: linear-gradient(180deg, #d7ccc8 0%, #8d6e63 100%);
+  border-top: 12px solid #5d4037;
+  z-index: 2;
+  box-shadow: 0 -8px 20px rgba(0,0,0,0.15);
+}
+
+.desk-accessories {
+  position: absolute;
+  top: -45px;
+  width: 100%;
+  padding: 0 10%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 2.2rem;
+  user-select: none;
+}
+
+.apple-on-desk {
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
+  animation: floatBubble 4s ease-in-out infinite;
+}
+
+.books-on-desk {
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
+  animation: floatBubble 5s ease-in-out infinite;
+}
+
+/* Ensure mouse container is correctly placed on top of desk */
+.mouse-character-container {
+  z-index: 3 !important;
+  position: relative;
+  margin-top: auto; /* Push down to sit on table */
+  margin-bottom: 25%; /* align with top of the table */
+}
+
+.speech-bubble-container {
+  z-index: 4 !important;
+  margin-top: 8%; /* Adjust spacing from top board */
+}
+
+.voice-controls {
+  z-index: 5 !important;
+  position: absolute;
+  bottom: 3%;
+}
+
+.skip-btn {
+  z-index: 6 !important;
+}
+
