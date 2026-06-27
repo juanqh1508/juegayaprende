@@ -6,7 +6,7 @@ import {
   WateringLevel, FallingApplesLevel,
   BalloonPoppingLevel, WhackAMoleLevel,
   EggBreakLevel, FolderOpenLevel,
-  CartoonMouseMascot
+  CartoonMouseMascot, MazeLevel
 } from '../components/LevelMechanics';
 import MouseInfographic from '../components/MouseInfographic';
 import { sounds } from '../utils/sounds';
@@ -104,8 +104,8 @@ const levelData = [
     description: 'Guarda los juguetes arrastrándolos a la caja.', msg: '¡Gran trabajo! Habitación ordenada.' },
   { id: 11, type: 'drag', title: 'Nivel 11', targets: ['👕', '🧦', '👖', '👗', '🧢'], bin: '🧺', bg: 'bg-park', totalTasks: 10,
     description: 'Arrastra toda la ropa a la canasta.', msg: '¡Héroe de la limpieza!' },
-  { id: 12, type: 'drag', title: 'Nivel 12', targets: ['A', 'E', 'I', 'O', 'U'], bin: '🔤', bg: 'bg-classroom', totalTasks: 10,
-    description: 'Separa las vocales arrastrándolas al contenedor.', msg: '¡Muy bien, conoces las vocales!' },
+  { id: 12, type: 'maze', title: 'Nivel 12', targets: ['🚗', '🚲', '🚀', '✈️', '⛵'], bg: 'bg-classroom', totalTasks: 5,
+    description: 'Cruza el laberinto arrastrando los objetos desde el Inicio hasta la Meta sin tocar las paredes.', msg: '¡Excelente! Cruzaste el laberinto sin tocar las paredes.' },
   { id: 13, type: 'drag', title: 'Nivel 13', targets: ['🍌', '🍂', '🍎'], bin: '♻️', bg: 'bg-forest', totalTasks: 10,
     description: 'Arrastra los desechos biodegradables al contenedor de reciclaje.', msg: '¡Excelente! Mantengamos limpio el planeta.' },
 
@@ -448,6 +448,8 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
       case 'drag':
         // Le pasamos todo el array de targets y la cantidad total de tareas. DragDropLevel maneja la colección.
         return <DragDropLevel key={currentLevelIndex} targets={level.targets} bin={level.bin} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} onComplete={() => {}} />;
+      case 'maze':
+        return <MazeLevel key={currentLevelIndex} targets={level.targets} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'scroll':
         return <ScrollLevel key={tasksCompleted} target={level.target} multiple={level.multiple} onComplete={() => handleTaskComplete(1)} />;
       case 'checkbox':

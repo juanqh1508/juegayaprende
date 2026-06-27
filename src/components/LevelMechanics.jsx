@@ -1002,3 +1002,215 @@ export function FolderOpenLevel({ totalTasks, onProgress }) {
   );
 }
 
+// --- MAZE LEVEL ---
+export function MazeLevel({ targets, totalTasks, onProgress, onComplete }) {
+  const [items, setItems] = useState([]);
+  const [draggedId, setDraggedId] = useState(null);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [collisionActive, setCollisionActive] = useState(false);
+  const containerRef = useRef(null);
+
+  // Maze board dimensions in virtual coordinates
+  const BOARD_WIDTH = 800;
+  const BOARD_HEIGHT = 500;
+
+  // Start & Finish Zones
+  const START_ZONE = { x: 20, y: 20, width: 140, height: 130 };
+  const FINISH_ZONE = { x: 640, y: 330, width: 140, height: 150 };
+
+  // Walls
+  const WALLS = [
+    // Outer boundaries
+    { x: 0, y: 0, width: BOARD_WIDTH, height: 20, id: 'boundary-top' },
+    { x: 0, y: BOARD_HEIGHT - 20, width: BOARD_WIDTH, height: 20, id: 'boundary-bottom' },
+    { x: 0, y: 0, width: 20, height: BOARD_HEIGHT, id: 'boundary-left' },
+    { x: BOARD_WIDTH - 20, y: 0, width: 20, height: BOARD_HEIGHT, id: 'boundary-right' },
+
+    // S-shape middle corridors
+    { x: 20, y: 150, width: 620, height: 25, id: 'wall-mid-1' }, // Leaves gap of 140px on the right (640-780)
+    { x: 160, y: 310, width: 620, height: 25, id: 'wall-mid-2' } // Leaves gap of 140px on the left (20-160)
+  ];
+
+  const itemSize = 45; // size of the emoji element in pixels
+
+  useEffect(() => {
+    // Generate initial items scattered in the START_ZONE
+    const newItems = targets.map((emoji, index) => {
+      const startX = START_ZONE.x + 15 + (index % 3) * 40;
+      const startY = START_ZONE.y + 20 + Math.floor(index / 3) * 45;
+      return {
+        id: index,
+        emoji,
+        startX,
+        startY,
+        x: startX,
+        y: startY,
+        dropped: false
+      };
+    });
+    setItems(newItems);
+  }, [targets]);
+
+  const handlePointerDown = (e, item) => {
+    if (item.dropped) return;
+    sounds.drag();
+    setDraggedId(item.id);
+    e.currentTarget.setPointerCapture(e.pointerId);
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    setStartPos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  const handlePointerMove = (e) => {
+    if (draggedId === null || !containerRef.current) return;
+
+    const containerRect = containerRef.current.querySelector('.maze-board').getBoundingClientRect();
+    
+    // Scale mapping between actual rendered size and virtual size (800x500)
+    const scaleX = containerRect.width / BOARD_WIDTH;
+    const scaleY = containerRect.height / BOARD_HEIGHT;
+
+    let newX = (e.clientX - containerRect.left) / scaleX - startPos.x;
+    let newY = (e.clientY - containerRect.top) / scaleY - startPos.y;
+
+    // Constrain inside container bounds with wall safety margins
+    newX = Math.max(20, Math.min(newX, BOARD_WIDTH - 20 - itemSize));
+    newY = Math.max(20, Math.min(newY, BOARD_HEIGHT - 20 - itemSize));
+
+    // Bounding box collision detection
+    const itemBox = { x: newX, y: newY, width: itemSize, height: itemSize };
+    let collided = false;
+
+    for (const wall of WALLS) {
+      if (
+        itemBox.x < wall.x + wall.width &&
+        itemBox.x + itemBox.width > wall.x &&
+        itemBox.y < wall.y + wall.height &&
+        itemBox.y + itemBox.height > wall.y
+      ) {
+        collided = true;
+        break;
+      }
+    }
+
+    if (collided) {
+      sounds.error();
+      setCollisionActive(true);
+      setTimeout(() => setCollisionActive(false), 400);
+
+      // Reset item to start position and end drag
+      setItems(prev => prev.map(item => 
+        item.id === draggedId ? { ...item, x: item.startX, y: item.startY } : item
+      ));
+      setDraggedId(null);
+      return;
+    }
+
+    // Check if center of the item reached the meta (Finish Zone)
+    const centerX = newX + itemSize / 2;
+    const centerY = newY + itemSize / 2;
+    const reachedFinish = 
+      centerX >= FINISH_ZONE.x &&
+      centerX <= FINISH_ZONE.x + FINISH_ZONE.width &&
+      centerY >= FINISH_ZONE.y &&
+      centerY <= FINISH_ZONE.y + FINISH_ZONE.height;
+
+    if (reachedFinish) {
+      sounds.drop();
+      setItems(prev => prev.map(item => 
+        item.id === draggedId ? { ...item, x: FINISH_ZONE.x + 45, y: FINISH_ZONE.y + 50, dropped: true } : item
+      ));
+      setDraggedId(null);
+      onProgress();
+      return;
+    }
+
+    // Move item if safe
+    setItems(prev => prev.map(item => 
+      item.id === draggedId ? { ...item, x: newX, y: newY } : item
+    ));
+  };
+
+  const handlePointerUp = (e) => {
+    if (draggedId !== null) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+      setDraggedId(null);
+    }
+  };
+
+  return (
+    <div 
+      ref={containerRef} 
+      className={`mechanic-container drag-bg ${collisionActive ? 'maze-screen-shake' : ''}`}
+    >
+      <div className="maze-board">
+        {/* Start Zone */}
+        <div className="maze-zone maze-start-zone" style={{
+          left: START_ZONE.x,
+          top: START_ZONE.y,
+          width: START_ZONE.width,
+          height: START_ZONE.height
+        }}>
+          <span className="maze-zone-label">INICIO 🏁</span>
+        </div>
+
+        {/* Finish Zone */}
+        <div className="maze-zone maze-finish-zone" style={{
+          left: FINISH_ZONE.x,
+          top: FINISH_ZONE.y,
+          width: FINISH_ZONE.width,
+          height: FINISH_ZONE.height
+        }}>
+          <span className="maze-zone-label">META 🏆</span>
+        </div>
+
+        {/* Walls */}
+        {WALLS.map(wall => (
+          <div 
+            key={wall.id} 
+            className={`maze-wall ${collisionActive ? 'maze-wall-flash' : ''}`} 
+            style={{
+              left: wall.x,
+              top: wall.y,
+              width: wall.width,
+              height: wall.height
+            }} 
+          />
+        ))}
+
+        {/* Maze Items */}
+        {items.map(item => (
+          <div
+            key={item.id}
+            className={`maze-item target-emoji ${item.dropped ? 'dropped success-bounce' : 'draggable'} ${draggedId === item.id ? 'grabbing' : ''}`}
+            style={{
+              left: item.x,
+              top: item.y,
+              width: itemSize,
+              height: itemSize,
+              fontSize: '2rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'absolute',
+              zIndex: draggedId === item.id ? 100 : 10,
+              cursor: item.dropped ? 'default' : 'grab',
+              userSelect: 'none',
+              touchAction: 'none'
+            }}
+            onPointerDown={(e) => handlePointerDown(e, item)}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+          >
+            {!item.dropped && item.emoji}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
