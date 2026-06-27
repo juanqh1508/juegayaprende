@@ -1004,6 +1004,7 @@ export function FolderOpenLevel({ totalTasks, onProgress }) {
 
 // --- MAZE LEVEL ---
 export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onComplete }) {
+  const [round, setRound] = useState(0);
   const [items, setItems] = useState([]);
   const [draggedId, setDraggedId] = useState(null);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
@@ -1018,8 +1019,10 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
   const START_ZONE = { x: 20, y: 20, width: 140, height: 120 };
   const FINISH_ZONE = { x: 640, y: 350, width: 140, height: 130 };
 
-  // Dynamic wall structures based on difficulty
-  const getWalls = () => {
+  const itemSize = 65; // Emojis size (65px)
+
+  // Dynamic wall structures based on difficulty and round
+  const getWallsForRound = (r) => {
     const boundaries = [
       { x: 0, y: 0, width: BOARD_WIDTH, height: 20, id: 'boundary-top' },
       { x: 0, y: BOARD_HEIGHT - 20, width: BOARD_WIDTH, height: 20, id: 'boundary-bottom' },
@@ -1027,40 +1030,80 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
       { x: BOARD_WIDTH - 20, y: 0, width: 20, height: BOARD_HEIGHT, id: 'boundary-right' },
     ];
 
+    let layoutType = 'A';
     if (difficulty === 1) {
-      // Easy: 1 horizontal wall in the middle (leaves gap on the right)
+      // Easy: Ring/obstacle -> 1 horizontal wall -> 2 horizontal walls
+      if (r === 0) layoutType = 'D';
+      else if (r === 1) layoutType = 'A';
+      else layoutType = 'B';
+    } else if (difficulty === 2) {
+      // Medium: 1 horizontal wall -> 2 horizontal walls -> 3 vertical walls
+      if (r === 0) layoutType = 'A';
+      else if (r === 1) layoutType = 'B';
+      else layoutType = 'C';
+    } else {
+      // Hard: 2 horizontal walls -> 3 vertical walls -> Hybrid complex grid
+      if (r === 0) layoutType = 'B';
+      else if (r === 1) layoutType = 'C';
+      else layoutType = 'E';
+    }
+
+    if (layoutType === 'A') {
+      // 1 horizontal wall
       return [
         ...boundaries,
         { x: 20, y: 240, width: 620, height: 25, id: 'wall-mid-1' }
       ];
-    } else if (difficulty === 3) {
-      // Hard: Vertical winding maze (comb layout with 3 vertical walls)
-      return [
-        ...boundaries,
-        { x: 180, y: 20, width: 25, height: 340, id: 'wall-hard-1' },  // gap at bottom (y: 360-480)
-        { x: 370, y: 140, width: 25, height: 340, id: 'wall-hard-2' }, // gap at top (y: 20-140)
-        { x: 550, y: 20, width: 25, height: 340, id: 'wall-hard-3' }   // gap at bottom (y: 360-480)
-      ];
-    } else {
-      // Medium (difficulty 2): 2 horizontal walls (leaves gap right, left)
+    } else if (layoutType === 'B') {
+      // 2 horizontal walls (S-shape)
       return [
         ...boundaries,
         { x: 20, y: 160, width: 620, height: 25, id: 'wall-mid-1' },
         { x: 160, y: 310, width: 620, height: 25, id: 'wall-mid-2' }
       ];
+    } else if (layoutType === 'C') {
+      // 3 vertical walls (Comb)
+      return [
+        ...boundaries,
+        { x: 180, y: 20, width: 25, height: 340, id: 'wall-hard-1' },
+        { x: 370, y: 140, width: 25, height: 340, id: 'wall-hard-2' },
+        { x: 550, y: 20, width: 25, height: 340, id: 'wall-hard-3' }
+      ];
+    } else if (layoutType === 'D') {
+      // Center box obstacle (Ring path)
+      return [
+        ...boundaries,
+        { x: 250, y: 150, width: 300, height: 200, id: 'wall-center-box' },
+        { x: 200, y: 20, width: 25, height: 130, id: 'wall-center-top' },
+        { x: 20, y: 320, width: 230, height: 25, id: 'wall-center-bottom' }
+      ];
+    } else {
+      // Hybrid complex grid maze
+      return [
+        ...boundaries,
+        { x: 300, y: 150, width: 200, height: 200, id: 'wall-hybrid-center' },
+        { x: 200, y: 20, width: 25, height: 130, id: 'wall-hybrid-top' },
+        { x: 575, y: 350, width: 25, height: 130, id: 'wall-hybrid-bottom' },
+        { x: 180, y: 320, width: 120, height: 25, id: 'wall-hybrid-mid-left' },
+        { x: 500, y: 150, width: 100, height: 25, id: 'wall-hybrid-mid-right' }
+      ];
     }
   };
 
-  const WALLS = getWalls();
-  const itemSize = 65; // Emojis are even larger now (65px)
+  const WALLS = getWallsForRound(round);
+
+  const getEmojisForRound = (r) => {
+    const startIdx = r * 2;
+    return targets.slice(startIdx, startIdx + 2);
+  };
 
   useEffect(() => {
-    // Generate initial items scattered in the START_ZONE
-    const activeTargets = targets.slice(0, totalTasks);
-    const newItems = activeTargets.map((emoji, index) => {
-      const cols = Math.min(activeTargets.length, 3);
-      const startX = START_ZONE.x + 10 + (index % cols) * 42;
-      const startY = START_ZONE.y + 10 + Math.floor(index / cols) * 45;
+    // Generate initial items scattered in the START_ZONE for the current round
+    const roundEmojis = getEmojisForRound(round);
+    const newItems = roundEmojis.map((emoji, index) => {
+      const cols = 2;
+      const startX = START_ZONE.x + 15 + (index % cols) * 55;
+      const startY = START_ZONE.y + 15 + Math.floor(index / cols) * 55;
       return {
         id: index,
         emoji,
@@ -1072,7 +1115,7 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
       };
     });
     setItems(newItems);
-  }, [targets, totalTasks]);
+  }, [round, targets]);
 
   const handlePointerDown = (e, item) => {
     if (item.dropped) return;
@@ -1146,11 +1189,22 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
       const dropX = FINISH_ZONE.x + 10 + (draggedId % 2) * 60;
       const dropY = FINISH_ZONE.y + 10 + Math.floor(draggedId / 2) * 55;
       
-      setItems(prev => prev.map(item => 
+      const updatedItems = items.map(item => 
         item.id === draggedId ? { ...item, x: dropX, y: dropY, dropped: true } : item
-      ));
+      );
+      setItems(updatedItems);
       setDraggedId(null);
-      onProgress();
+
+      // Check if all items in this round are dropped
+      const allDropped = updatedItems.every(item => item.dropped);
+      if (allDropped) {
+        onProgress();
+        if (round < 2) {
+          setTimeout(() => {
+            setRound(prev => prev + 1);
+          }, 800);
+        }
+      }
       return;
     }
 
@@ -1173,6 +1227,25 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
       className={`mechanic-container drag-bg ${collisionActive ? 'maze-screen-shake' : ''}`}
     >
       <div className={`maze-board ${collisionActive ? 'maze-board-collision' : ''}`}>
+        {/* Round Counter Overlay */}
+        <div style={{
+          position: 'absolute',
+          top: '25px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'rgba(255, 255, 255, 0.95)',
+          border: '2px solid #3182ce',
+          borderRadius: '24px',
+          padding: '6px 18px',
+          fontWeight: 'bold',
+          fontSize: '1.2rem',
+          color: '#2b6cb0',
+          boxShadow: '0 4px 10px rgba(49, 130, 206, 0.15)',
+          zIndex: 5
+        }}>
+          Laberinto {round + 1} de 3
+        </div>
+
         {/* Start Zone */}
         <div className="maze-zone maze-start-zone" style={{
           left: START_ZONE.x,
