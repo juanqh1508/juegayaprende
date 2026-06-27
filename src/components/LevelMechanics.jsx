@@ -1033,13 +1033,13 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
 
   const layoutType = getLayoutType(round);
 
-  // Start Zone is top-right for Layout C, top-left for others.
-  const START_ZONE = layoutType === 'C'
-    ? { x: 640, y: 20, width: 140, height: 120 }
-    : { x: 20, y: 20, width: 140, height: 120 };
+  // Start Zone is always at top-left
+  const START_ZONE = { x: 20, y: 20, width: 140, height: 120 };
 
-  // Finish Zone (Folder) is always bottom-left (where the red X is)
-  const FINISH_ZONE = { x: 20, y: 350, width: 140, height: 130 };
+  // Finish Zone (Folder) is bottom-left for Laberinto 2 (round 1), and bottom-right for Laberintos 1 & 3 (rounds 0 & 2)
+  const FINISH_ZONE = round === 1
+    ? { x: 20, y: 350, width: 140, height: 130 }
+    : { x: 640, y: 350, width: 140, height: 130 };
 
   const itemSize = 65; // Emojis size (65px)
 
@@ -1076,11 +1076,10 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
         { x: 550, y: 20, width: 25, height: 340, id: 'wall-hard-3' }
       ];
     } else if (currentLayout === 'D') {
-      // Center box obstacle (Ring path) - simplified for easy passage, with left vertical block
+      // Center box obstacle (Ring path) - simplified for easy passage
       return [
         ...boundaries,
-        { x: 260, y: 140, width: 280, height: 220, id: 'wall-center-box' },
-        { x: 180, y: 20, width: 25, height: 260, id: 'wall-center-left-block' } // forces going right from start
+        { x: 260, y: 140, width: 280, height: 220, id: 'wall-center-box' }
       ];
     } else {
       // 3 horizontal walls layout creating a 4-corridor S-shape path (gaps: right, left, right)
