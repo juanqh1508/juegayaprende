@@ -1308,23 +1308,27 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
       className={`mechanic-container drag-bg ${collisionActive ? 'maze-screen-shake' : ''}`}
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
     >
-      {/* Round Counter Overlay (Rendered outside/above the board) */}
-      <div style={{
-        marginBottom: '15px',
-        background: 'rgba(255, 255, 255, 0.95)',
-        border: '2px solid #3182ce',
-        borderRadius: '24px',
-        padding: '6px 18px',
-        fontWeight: 'bold',
-        fontSize: '1.2rem',
-        color: '#2b6cb0',
-        boxShadow: '0 4px 10px rgba(49, 130, 206, 0.15)',
-        zIndex: 5
-      }}>
-        Laberinto {round + 1} de 3
-      </div>
+      <div style={{ position: 'relative', marginTop: '35px' }}>
+        {/* Round Counter Overlay (pinned to the top outer edge) */}
+        <div style={{
+          position: 'absolute',
+          bottom: 'calc(100% - 12px)',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'rgba(255, 255, 255, 0.95)',
+          border: '2px solid #3182ce',
+          borderRadius: '24px',
+          padding: '5px 16px',
+          fontWeight: 'bold',
+          fontSize: '1.05rem',
+          color: '#2b6cb0',
+          boxShadow: '0 4px 10px rgba(49, 130, 206, 0.15)',
+          zIndex: 10
+        }}>
+          Laberinto {round + 1} de 3
+        </div>
 
-      <div className={`maze-board ${collisionActive ? 'maze-board-collision' : ''}`}>
+        <div className={`maze-board ${collisionActive ? 'maze-board-collision' : ''}`}>
         {/* Start Zone */}
         <div className="maze-zone maze-start-zone" style={{
           left: START_ZONE.x,
@@ -1394,7 +1398,8 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
         ))}
       </div>
     </div>
-  );
+  </div>
+);
 }
 
 
