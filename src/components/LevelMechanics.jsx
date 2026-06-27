@@ -1015,9 +1015,31 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 500;
 
-  // Start & Finish Zones (Start on the left, Finish/Folder on the right)
-  const START_ZONE = { x: 20, y: 20, width: 140, height: 120 };
-  const FINISH_ZONE = { x: 640, y: 350, width: 140, height: 130 };
+  const getLayoutType = (r) => {
+    if (difficulty === 1) {
+      if (r === 0) return 'D';
+      if (r === 1) return 'A';
+      return 'B';
+    } else if (difficulty === 2) {
+      if (r === 0) return 'A';
+      if (r === 1) return 'B';
+      return 'C';
+    } else {
+      if (r === 0) return 'B';
+      if (r === 1) return 'C';
+      return 'E';
+    }
+  };
+
+  const layoutType = getLayoutType(round);
+
+  // Start Zone is top-right for Layout C, top-left for others.
+  const START_ZONE = layoutType === 'C'
+    ? { x: 640, y: 20, width: 140, height: 120 }
+    : { x: 20, y: 20, width: 140, height: 120 };
+
+  // Finish Zone (Folder) is always bottom-left (where the red X is)
+  const FINISH_ZONE = { x: 20, y: 350, width: 140, height: 130 };
 
   const itemSize = 65; // Emojis size (65px)
 
@@ -1030,38 +1052,22 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
       { x: BOARD_WIDTH - 20, y: 0, width: 20, height: BOARD_HEIGHT, id: 'boundary-right' },
     ];
 
-    let layoutType = 'A';
-    if (difficulty === 1) {
-      // Easy: Ring/obstacle -> 1 horizontal wall -> 2 horizontal walls
-      if (r === 0) layoutType = 'D';
-      else if (r === 1) layoutType = 'A';
-      else layoutType = 'B';
-    } else if (difficulty === 2) {
-      // Medium: 1 horizontal wall -> 2 horizontal walls -> 3 vertical walls
-      if (r === 0) layoutType = 'A';
-      else if (r === 1) layoutType = 'B';
-      else layoutType = 'C';
-    } else {
-      // Hard: 2 horizontal walls -> 3 vertical walls -> Hybrid complex grid
-      if (r === 0) layoutType = 'B';
-      else if (r === 1) layoutType = 'C';
-      else layoutType = 'E';
-    }
+    const currentLayout = getLayoutType(r);
 
-    if (layoutType === 'A') {
+    if (currentLayout === 'A') {
       // 1 horizontal wall (leaves gap on the RIGHT)
       return [
         ...boundaries,
         { x: 20, y: 240, width: 620, height: 25, id: 'wall-mid-1' }
       ];
-    } else if (layoutType === 'B') {
+    } else if (currentLayout === 'B') {
       // 2 horizontal walls (S-shape, first gap on right, second gap on left)
       return [
         ...boundaries,
         { x: 20, y: 160, width: 620, height: 25, id: 'wall-mid-1' },  // gap on right
         { x: 160, y: 310, width: 620, height: 25, id: 'wall-mid-2' }  // gap on left
       ];
-    } else if (layoutType === 'C') {
+    } else if (currentLayout === 'C') {
       // 3 vertical walls (Comb)
       return [
         ...boundaries,
@@ -1069,11 +1075,12 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
         { x: 370, y: 140, width: 25, height: 340, id: 'wall-hard-2' },
         { x: 550, y: 20, width: 25, height: 340, id: 'wall-hard-3' }
       ];
-    } else if (layoutType === 'D') {
-      // Center box obstacle (Ring path) - simplified for easy passage
+    } else if (currentLayout === 'D') {
+      // Center box obstacle (Ring path) - simplified for easy passage, with left vertical block
       return [
         ...boundaries,
-        { x: 260, y: 140, width: 280, height: 220, id: 'wall-center-box' }
+        { x: 260, y: 140, width: 280, height: 220, id: 'wall-center-box' },
+        { x: 180, y: 20, width: 25, height: 260, id: 'wall-center-left-block' } // forces going right from start
       ];
     } else {
       // 3 horizontal walls layout creating a 4-corridor S-shape path (gaps: right, left, right)
