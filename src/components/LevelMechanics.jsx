@@ -1036,20 +1036,20 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
   // Start Zone is always at top-left
   const START_ZONE = { x: 20, y: 20, width: 140, height: 120 };
 
-  // Finish Zone (Folder) is bottom-left for Laberinto 2 (round 1), and bottom-right for Laberintos 1 & 3 (rounds 0 & 2)
-  // EXCEPT for Medium difficulty (difficulty === 2) where:
-  // - Laberinto 1 (round 0) has the Folder on the LEFT (bottom-left)
-  // - Laberinto 2 (round 1) has the Folder on the RIGHT (bottom-right)
-  // - Laberinto 3 (round 2) has the Folder on the RIGHT (bottom-right)
-  const getFinishZoneX = () => {
+  // Finish Zone (Folder) coordinates
+  const getFinishZoneCoords = () => {
     if (difficulty === 2) {
-      return round === 0 ? 20 : 640;
+      if (round === 0) return { x: 20, y: 350, width: 140, height: 130 }; // bottom-left
+      if (round === 1) return { x: 640, y: 350, width: 140, height: 130 }; // bottom-right
+      return { x: 640, y: 20, width: 140, height: 120 }; // top-right for Laberinto 3
     } else {
-      return round === 1 ? 20 : 640;
+      return round === 1
+        ? { x: 20, y: 350, width: 140, height: 130 }
+        : { x: 640, y: 350, width: 140, height: 130 };
     }
   };
 
-  const FINISH_ZONE = { x: getFinishZoneX(), y: 350, width: 140, height: 130 };
+  const FINISH_ZONE = getFinishZoneCoords();
 
   const itemSize = 65; // Emojis size (65px)
 
@@ -1105,9 +1105,11 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
       // Extra horizontal obstacles for Medium difficulty, exercise 3 (which uses Layout C)
       if (difficulty === 2 && r === 2) {
         walls.push(
-          { x: 20, y: 200, width: 90, height: 25, id: 'obstacle-c-left' },   // corridor 1 block
-          { x: 280, y: 280, width: 90, height: 25, id: 'obstacle-c-mid' },   // corridor 2 block
-          { x: 395, y: 200, width: 80, height: 25, id: 'obstacle-c-right' }  // corridor 3 block
+          { x: 20, y: 200, width: 90, height: 25, id: 'obstacle-c-left' },     // corridor 1 block
+          { x: 280, y: 280, width: 90, height: 25, id: 'obstacle-c-mid' },     // corridor 2 block
+          { x: 395, y: 200, width: 80, height: 25, id: 'obstacle-c-right' },   // corridor 3 block
+          { x: 700, y: 240, width: 80, height: 25, id: 'obstacle-c-end-1' },   // corridor 4 right barrier
+          { x: 575, y: 150, width: 80, height: 25, id: 'obstacle-c-end-2' }    // corridor 4 left barrier
         );
       }
       return walls;
