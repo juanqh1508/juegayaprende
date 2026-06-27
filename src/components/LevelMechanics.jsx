@@ -1041,19 +1041,19 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
   const getFinishZoneCoords = () => {
     if (difficulty === 2) {
       // Medium
-      if (round === 0) return { x: 20, y: 350, width: 140, height: 130 }; // bottom-left
-      if (round === 1) return { x: 640, y: 350, width: 140, height: 130 }; // bottom-right
-      return { x: 640, y: 20, width: 140, height: 120 }; // top-right for Laberinto 3
+      if (round === 0) return { x: 20, y: 410, width: 120, height: 70 }; // bottom-left
+      if (round === 1) return { x: 660, y: 410, width: 120, height: 70 }; // bottom-right
+      return { x: 660, y: 25, width: 120, height: 95 }; // top-right for Laberinto 3
     } else if (difficulty === 3) {
       // Hard
-      if (round === 0) return { x: 640, y: 20, width: 140, height: 120 }; // top-right (starts with Round 2 of Medium)
-      if (round === 1) return { x: 20, y: 350, width: 140, height: 130 }; // bottom-left
-      return { x: 640, y: 350, width: 140, height: 130 }; // bottom-right
+      if (round === 0) return { x: 660, y: 25, width: 120, height: 95 }; // top-right (starts with Round 2 of Medium)
+      if (round === 1) return { x: 20, y: 410, width: 120, height: 70 }; // bottom-left
+      return { x: 660, y: 410, width: 120, height: 70 }; // bottom-right
     } else {
       // Easy
       return round === 1
-        ? { x: 20, y: 350, width: 140, height: 130 }
-        : { x: 640, y: 350, width: 140, height: 130 };
+        ? { x: 20, y: 410, width: 120, height: 70 }
+        : { x: 660, y: 410, width: 120, height: 70 };
     }
   };
 
@@ -1150,7 +1150,7 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
         { x: 550, y: 20, width: 25, height: 350, id: 'wall-g-3' },  // gap at bottom
 
         // Horizontal obstacles inside vertical paths
-        { x: 20, y: 120, width: 85, height: 20, id: 'ob-g-1' },     // corridor 1 left block
+        { x: 20, y: 155, width: 85, height: 20, id: 'ob-g-1' },     // corridor 1 left block (shifted down to prevent overlapping start items)
         { x: 95, y: 260, width: 85, height: 20, id: 'ob-g-2' },     // corridor 1 right block
 
         { x: 285, y: 200, width: 85, height: 20, id: 'ob-g-3' },    // corridor 2 right block
