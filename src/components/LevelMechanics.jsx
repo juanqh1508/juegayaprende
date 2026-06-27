@@ -1184,8 +1184,15 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
     newX = Math.max(0, Math.min(newX, BOARD_WIDTH - itemSize));
     newY = Math.max(0, Math.min(newY, BOARD_HEIGHT - itemSize));
 
-    // Bounding box collision detection
-    const itemBox = { x: newX, y: newY, width: itemSize, height: itemSize };
+    // Bounding box collision detection (using a centered inset box of 40px for visual accuracy)
+    const collisionBoxSize = 40;
+    const insetOffset = (itemSize - collisionBoxSize) / 2; // (65 - 40) / 2 = 12.5px
+    const itemBox = { 
+      x: newX + insetOffset, 
+      y: newY + insetOffset, 
+      width: collisionBoxSize, 
+      height: collisionBoxSize 
+    };
     let collided = false;
 
     for (const wall of WALLS) {
