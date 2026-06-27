@@ -1003,7 +1003,7 @@ export function FolderOpenLevel({ totalTasks, onProgress }) {
 }
 
 // --- MAZE LEVEL ---
-export function MazeLevel({ targets, totalTasks, onProgress, onComplete }) {
+export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onComplete }) {
   const [items, setItems] = useState([]);
   const [draggedId, setDraggedId] = useState(null);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
@@ -1015,29 +1015,52 @@ export function MazeLevel({ targets, totalTasks, onProgress, onComplete }) {
   const BOARD_HEIGHT = 500;
 
   // Start & Finish Zones
-  const START_ZONE = { x: 20, y: 20, width: 140, height: 130 };
-  const FINISH_ZONE = { x: 640, y: 330, width: 140, height: 150 };
+  const START_ZONE = { x: 20, y: 20, width: 140, height: 120 };
+  const FINISH_ZONE = { x: 640, y: 350, width: 140, height: 130 };
 
-  // Walls
-  const WALLS = [
-    // Outer boundaries
-    { x: 0, y: 0, width: BOARD_WIDTH, height: 20, id: 'boundary-top' },
-    { x: 0, y: BOARD_HEIGHT - 20, width: BOARD_WIDTH, height: 20, id: 'boundary-bottom' },
-    { x: 0, y: 0, width: 20, height: BOARD_HEIGHT, id: 'boundary-left' },
-    { x: BOARD_WIDTH - 20, y: 0, width: 20, height: BOARD_HEIGHT, id: 'boundary-right' },
+  // Dynamic wall structures based on difficulty
+  const getWalls = () => {
+    const boundaries = [
+      { x: 0, y: 0, width: BOARD_WIDTH, height: 20, id: 'boundary-top' },
+      { x: 0, y: BOARD_HEIGHT - 20, width: BOARD_WIDTH, height: 20, id: 'boundary-bottom' },
+      { x: 0, y: 0, width: 20, height: BOARD_HEIGHT, id: 'boundary-left' },
+      { x: BOARD_WIDTH - 20, y: 0, width: 20, height: BOARD_HEIGHT, id: 'boundary-right' },
+    ];
 
-    // S-shape middle corridors
-    { x: 20, y: 150, width: 620, height: 25, id: 'wall-mid-1' }, // Leaves gap of 140px on the right (640-780)
-    { x: 160, y: 310, width: 620, height: 25, id: 'wall-mid-2' } // Leaves gap of 140px on the left (20-160)
-  ];
+    if (difficulty === 1) {
+      // Easy: 1 horizontal wall in the middle (leaves gap on the right)
+      return [
+        ...boundaries,
+        { x: 20, y: 240, width: 620, height: 25, id: 'wall-mid-1' }
+      ];
+    } else if (difficulty === 3) {
+      // Hard: 3 horizontal walls forming a triple corridor winding path
+      return [
+        ...boundaries,
+        { x: 20, y: 125, width: 620, height: 20, id: 'wall-mid-1' }, // gap on right
+        { x: 160, y: 235, width: 620, height: 20, id: 'wall-mid-2' }, // gap on left
+        { x: 20, y: 345, width: 620, height: 20, id: 'wall-mid-3' }  // gap on right
+      ];
+    } else {
+      // Medium (difficulty 2): 2 horizontal walls (leaves gap right, left)
+      return [
+        ...boundaries,
+        { x: 20, y: 160, width: 620, height: 25, id: 'wall-mid-1' },
+        { x: 160, y: 310, width: 620, height: 25, id: 'wall-mid-2' }
+      ];
+    }
+  };
 
-  const itemSize = 45; // size of the emoji element in pixels
+  const WALLS = getWalls();
+  const itemSize = 58; // Make emojis larger for better visibility (was 45)
 
   useEffect(() => {
     // Generate initial items scattered in the START_ZONE
-    const newItems = targets.map((emoji, index) => {
-      const startX = START_ZONE.x + 15 + (index % 3) * 40;
-      const startY = START_ZONE.y + 20 + Math.floor(index / 3) * 45;
+    const activeTargets = targets.slice(0, totalTasks);
+    const newItems = activeTargets.map((emoji, index) => {
+      const cols = Math.min(activeTargets.length, 3);
+      const startX = START_ZONE.x + 10 + (index % cols) * 42;
+      const startY = START_ZONE.y + 10 + Math.floor(index / cols) * 45;
       return {
         id: index,
         emoji,
@@ -1049,7 +1072,7 @@ export function MazeLevel({ targets, totalTasks, onProgress, onComplete }) {
       };
     });
     setItems(newItems);
-  }, [targets]);
+  }, [targets, totalTasks]);
 
   const handlePointerDown = (e, item) => {
     if (item.dropped) return;
@@ -1120,8 +1143,11 @@ export function MazeLevel({ targets, totalTasks, onProgress, onComplete }) {
 
     if (reachedFinish) {
       sounds.drop();
+      const dropX = FINISH_ZONE.x + 10 + (draggedId % 2) * 60;
+      const dropY = FINISH_ZONE.y + 10 + Math.floor(draggedId / 2) * 55;
+      
       setItems(prev => prev.map(item => 
-        item.id === draggedId ? { ...item, x: FINISH_ZONE.x + 45, y: FINISH_ZONE.y + 50, dropped: true } : item
+        item.id === draggedId ? { ...item, x: dropX, y: dropY, dropped: true } : item
       ));
       setDraggedId(null);
       onProgress();
@@ -1146,7 +1172,7 @@ export function MazeLevel({ targets, totalTasks, onProgress, onComplete }) {
       ref={containerRef} 
       className={`mechanic-container drag-bg ${collisionActive ? 'maze-screen-shake' : ''}`}
     >
-      <div className="maze-board">
+      <div className={`maze-board ${collisionActive ? 'maze-board-collision' : ''}`}>
         {/* Start Zone */}
         <div className="maze-zone maze-start-zone" style={{
           left: START_ZONE.x,
@@ -1191,7 +1217,7 @@ export function MazeLevel({ targets, totalTasks, onProgress, onComplete }) {
               top: item.y,
               width: itemSize,
               height: itemSize,
-              fontSize: '2rem',
+              fontSize: '2.5rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1212,5 +1238,6 @@ export function MazeLevel({ targets, totalTasks, onProgress, onComplete }) {
     </div>
   );
 }
+
 
 

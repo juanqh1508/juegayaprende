@@ -449,7 +449,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
         // Le pasamos todo el array de targets y la cantidad total de tareas. DragDropLevel maneja la colección.
         return <DragDropLevel key={currentLevelIndex} targets={level.targets} bin={level.bin} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} onComplete={() => {}} />;
       case 'maze':
-        return <MazeLevel key={currentLevelIndex} targets={level.targets} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
+        return <MazeLevel key={currentLevelIndex} targets={level.targets} totalTasks={totalTasksPerLevel} difficulty={difficulty} onProgress={() => handleTaskComplete(1)} />;
       case 'scroll':
         return <ScrollLevel key={tasksCompleted} target={level.target} multiple={level.multiple} onComplete={() => handleTaskComplete(1)} />;
       case 'checkbox':

@@ -1398,4 +1398,15 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
+.maze-board-collision {
+  border-color: #e53e3e !important;
+  box-shadow: 0 0 25px rgba(229, 62, 62, 0.6), inset 0 0 15px rgba(229, 62, 62, 0.2) !important;
+  animation: boardRedFlash 0.3s ease-in-out;
+}
+
+@keyframes boardRedFlash {
+  0%, 100% { border-color: #cbd5e0; }
+  50% { border-color: #e53e3e; }
+}
+
 
