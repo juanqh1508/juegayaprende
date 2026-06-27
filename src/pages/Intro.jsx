@@ -93,23 +93,6 @@ function Intro({ onNavigate }) {
         </div>
       ) : (
         <div className="animation-screen classroom-bg">
-          {/* Blackboard behind the speech bubble and mascot */}
-          <div className="classroom-blackboard">
-            <div className="chalk-content">
-              <span className="chalk-text math">1 + 1 = 2 🍎</span>
-              <span className="chalk-text abc">A B C ✏️</span>
-              <span className="chalk-title">¡Bienvenidos!</span>
-            </div>
-            <div className="chalk-dust"></div>
-          </div>
-          
-          {/* Wooden teacher's desk at the bottom */}
-          <div className="classroom-desk">
-            <div className="desk-accessories">
-              <span className="apple-on-desk" title="Manzana para el profesor">🍎</span>
-              <span className="books-on-desk" title="Libros de estudio">📚</span>
-            </div>
-          </div>
 
           {/* Top Skip Button */}
           <button className="skip-btn" onClick={skipIntro}>
