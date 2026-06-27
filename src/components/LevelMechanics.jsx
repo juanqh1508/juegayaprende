@@ -1095,8 +1095,8 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
   const WALLS = getWallsForRound(round);
 
   const getEmojisForRound = (r) => {
-    const startIdx = r * 2;
-    return targets.slice(startIdx, startIdx + 2);
+    const startIdx = r * 3;
+    return targets.slice(startIdx, startIdx + 3);
   };
 
   useEffect(() => {
@@ -1104,8 +1104,8 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
     const roundEmojis = getEmojisForRound(round);
     const newItems = roundEmojis.map((emoji, index) => {
       const cols = 2;
-      const startX = START_ZONE.x + 15 + (index % cols) * 55;
-      const startY = START_ZONE.y + 15 + Math.floor(index / cols) * 55;
+      const startX = START_ZONE.x + 12 + (index % cols) * 55;
+      const startY = START_ZONE.y + 12 + Math.floor(index / cols) * 45;
       return {
         id: index,
         emoji,
