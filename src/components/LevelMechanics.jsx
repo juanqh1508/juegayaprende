@@ -1025,9 +1025,10 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
       if (r === 1) return 'B';
       return 'C';
     } else {
-      if (r === 0) return 'B';
-      if (r === 1) return 'C';
-      return 'E';
+      // Hard: starts with C (R0) -> F (R1) -> G (R2)
+      if (r === 0) return 'C';
+      if (r === 1) return 'F';
+      return 'G';
     }
   };
 
@@ -1039,10 +1040,17 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
   // Finish Zone (Folder) coordinates
   const getFinishZoneCoords = () => {
     if (difficulty === 2) {
+      // Medium
       if (round === 0) return { x: 20, y: 350, width: 140, height: 130 }; // bottom-left
       if (round === 1) return { x: 640, y: 350, width: 140, height: 130 }; // bottom-right
       return { x: 640, y: 20, width: 140, height: 120 }; // top-right for Laberinto 3
+    } else if (difficulty === 3) {
+      // Hard
+      if (round === 0) return { x: 640, y: 20, width: 140, height: 120 }; // top-right (starts with Round 2 of Medium)
+      if (round === 1) return { x: 20, y: 350, width: 140, height: 130 }; // bottom-left
+      return { x: 640, y: 350, width: 140, height: 130 }; // bottom-right
     } else {
+      // Easy
       return round === 1
         ? { x: 20, y: 350, width: 140, height: 130 }
         : { x: 640, y: 350, width: 140, height: 130 };
@@ -1102,8 +1110,8 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
         { x: 370, y: 140, width: 25, height: 340, id: 'wall-hard-2' },
         { x: 550, y: 20, width: 25, height: 340, id: 'wall-hard-3' }
       ];
-      // Extra horizontal obstacles for Medium difficulty, exercise 3 (which uses Layout C)
-      if (difficulty === 2 && r === 2) {
+      // Extra horizontal obstacles for Medium difficulty round 2, and Hard difficulty round 0
+      if ((difficulty === 2 && r === 2) || (difficulty === 3 && r === 0)) {
         walls.push(
           { x: 20, y: 200, width: 90, height: 25, id: 'obstacle-c-left' },     // corridor 1 block
           { x: 280, y: 280, width: 90, height: 25, id: 'obstacle-c-mid' },     // corridor 2 block
@@ -1119,13 +1127,40 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
         ...boundaries,
         { x: 260, y: 140, width: 280, height: 220, id: 'wall-center-box' }
       ];
-    } else {
-      // 3 horizontal walls layout creating a 4-corridor S-shape path (gaps: right, left, right)
+    } else if (currentLayout === 'F') {
+      // Hard Round 1: Grid-winding maze with vertical obstacles
       return [
         ...boundaries,
-        { x: 20, y: 130, width: 620, height: 20, id: 'wall-hybrid-1' },  // gap on right
-        { x: 160, y: 250, width: 620, height: 20, id: 'wall-hybrid-2' }, // gap on left
-        { x: 20, y: 370, width: 620, height: 20, id: 'wall-hybrid-3' }   // gap on right
+        { x: 20, y: 140, width: 620, height: 20, id: 'wall-f-1' },  // gap on right
+        { x: 160, y: 260, width: 620, height: 20, id: 'wall-f-2' }, // gap on left
+        { x: 20, y: 380, width: 620, height: 20, id: 'wall-f-3' },  // gap on right
+
+        // Vertical obstacles
+        { x: 300, y: 20, width: 20, height: 40, id: 'ob-f-1' },     // hangs from top in corridor 1
+        { x: 480, y: 160, width: 20, height: 40, id: 'ob-f-2' },    // hangs from Wall 1 in corridor 2
+        { x: 320, y: 280, width: 20, height: 45, id: 'ob-f-3' },    // hangs from Wall 2 in corridor 3
+        { x: 500, y: 400, width: 20, height: 45, id: 'ob-f-4' }     // rises from bottom in corridor 4
+      ];
+    } else {
+      // Hard Round 2 (Layout G): Extreme vertical comb maze with horizontal corridor obstacles
+      return [
+        ...boundaries,
+        { x: 180, y: 20, width: 25, height: 350, id: 'wall-g-1' },  // gap at bottom
+        { x: 370, y: 130, width: 25, height: 350, id: 'wall-g-2' }, // gap at top
+        { x: 550, y: 20, width: 25, height: 350, id: 'wall-g-3' },  // gap at bottom
+
+        // Horizontal obstacles inside vertical paths
+        { x: 20, y: 120, width: 85, height: 20, id: 'ob-g-1' },     // corridor 1 left block
+        { x: 95, y: 260, width: 85, height: 20, id: 'ob-g-2' },     // corridor 1 right block
+
+        { x: 285, y: 200, width: 85, height: 20, id: 'ob-g-3' },    // corridor 2 right block
+        { x: 205, y: 340, width: 85, height: 20, id: 'ob-g-4' },    // corridor 2 left block
+
+        { x: 395, y: 150, width: 80, height: 20, id: 'ob-g-5' },    // corridor 3 left block
+        { x: 470, y: 280, width: 80, height: 20, id: 'ob-g-6' },    // corridor 3 right block
+
+        { x: 700, y: 240, width: 80, height: 25, id: 'ob-g-7' },    // corridor 4 right barrier
+        { x: 575, y: 140, width: 80, height: 25, id: 'ob-g-8' }     // corridor 4 left barrier
       ];
     }
   };
