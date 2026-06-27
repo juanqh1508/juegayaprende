@@ -1037,10 +1037,19 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
   const START_ZONE = { x: 20, y: 20, width: 140, height: 120 };
 
   // Finish Zone (Folder) is bottom-left for Laberinto 2 (round 1), and bottom-right for Laberintos 1 & 3 (rounds 0 & 2)
-  // EXCEPT for Medium difficulty (difficulty === 2) where Laberinto 1 (round 0) also has the Folder on the left.
-  const FINISH_ZONE = (round === 1 || (round === 0 && difficulty === 2))
-    ? { x: 20, y: 350, width: 140, height: 130 }
-    : { x: 640, y: 350, width: 140, height: 130 };
+  // EXCEPT for Medium difficulty (difficulty === 2) where:
+  // - Laberinto 1 (round 0) has the Folder on the LEFT (bottom-left)
+  // - Laberinto 2 (round 1) has the Folder on the RIGHT (bottom-right)
+  // - Laberinto 3 (round 2) has the Folder on the RIGHT (bottom-right)
+  const getFinishZoneX = () => {
+    if (difficulty === 2) {
+      return round === 0 ? 20 : 640;
+    } else {
+      return round === 1 ? 20 : 640;
+    }
+  };
+
+  const FINISH_ZONE = { x: getFinishZoneX(), y: 350, width: 140, height: 130 };
 
   const itemSize = 65; // Emojis size (65px)
 
@@ -1071,19 +1080,37 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
       return walls;
     } else if (currentLayout === 'B') {
       // 2 horizontal walls (S-shape, first gap on right, second gap on left)
-      return [
+      const walls = [
         ...boundaries,
         { x: 20, y: 160, width: 620, height: 25, id: 'wall-mid-1' },  // gap on right
         { x: 160, y: 310, width: 620, height: 25, id: 'wall-mid-2' }  // gap on left
       ];
+      // Extra obstacles for Medium difficulty, exercise 2 (which uses Layout B)
+      if (difficulty === 2 && r === 1) {
+        walls.push(
+          { x: 320, y: 20, width: 25, height: 60, id: 'obstacle-b-top' },     // top corridor block
+          { x: 480, y: 185, width: 25, height: 50, id: 'obstacle-b-mid' },    // middle corridor block
+          { x: 350, y: 410, width: 25, height: 70, id: 'obstacle-b-bottom' }  // bottom corridor block
+        );
+      }
+      return walls;
     } else if (currentLayout === 'C') {
       // 3 vertical walls (Comb)
-      return [
+      const walls = [
         ...boundaries,
         { x: 180, y: 20, width: 25, height: 340, id: 'wall-hard-1' },
         { x: 370, y: 140, width: 25, height: 340, id: 'wall-hard-2' },
         { x: 550, y: 20, width: 25, height: 340, id: 'wall-hard-3' }
       ];
+      // Extra horizontal obstacles for Medium difficulty, exercise 3 (which uses Layout C)
+      if (difficulty === 2 && r === 2) {
+        walls.push(
+          { x: 20, y: 200, width: 90, height: 25, id: 'obstacle-c-left' },   // corridor 1 block
+          { x: 280, y: 280, width: 90, height: 25, id: 'obstacle-c-mid' },   // corridor 2 block
+          { x: 395, y: 200, width: 80, height: 25, id: 'obstacle-c-right' }  // corridor 3 block
+        );
+      }
+      return walls;
     } else if (currentLayout === 'D') {
       // Center box obstacle (Ring path) - simplified for easy passage
       return [
