@@ -1070,22 +1070,18 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
         { x: 550, y: 20, width: 25, height: 340, id: 'wall-hard-3' }
       ];
     } else if (layoutType === 'D') {
-      // Center box obstacle (Ring path)
+      // Center box obstacle (Ring path) - simplified for easy passage
       return [
         ...boundaries,
-        { x: 250, y: 150, width: 300, height: 200, id: 'wall-center-box' },
-        { x: 200, y: 20, width: 25, height: 130, id: 'wall-center-top' },
-        { x: 20, y: 320, width: 230, height: 25, id: 'wall-center-bottom' }
+        { x: 260, y: 140, width: 280, height: 220, id: 'wall-center-box' }
       ];
     } else {
-      // Hybrid complex grid maze
+      // 3 horizontal walls layout creating a 4-corridor S-shape path
       return [
         ...boundaries,
-        { x: 300, y: 150, width: 200, height: 200, id: 'wall-hybrid-center' },
-        { x: 200, y: 20, width: 25, height: 130, id: 'wall-hybrid-top' },
-        { x: 575, y: 350, width: 25, height: 130, id: 'wall-hybrid-bottom' },
-        { x: 180, y: 320, width: 120, height: 25, id: 'wall-hybrid-mid-left' },
-        { x: 500, y: 150, width: 100, height: 25, id: 'wall-hybrid-mid-right' }
+        { x: 20, y: 130, width: 620, height: 20, id: 'wall-hybrid-1' },  // gap on right (640-780)
+        { x: 160, y: 250, width: 620, height: 20, id: 'wall-hybrid-2' }, // gap on left (20-160)
+        { x: 20, y: 370, width: 620, height: 20, id: 'wall-hybrid-3' }   // gap on right (640-780)
       ];
     }
   };
