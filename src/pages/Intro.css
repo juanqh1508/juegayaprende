@@ -240,7 +240,7 @@
    ============================================= */
 
 .mouse-character-container {
-  height: 320px;
+  height: 360px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -251,6 +251,8 @@
   position: relative;
   width: 180px;
   height: 260px;
+  transform: scale(1.25);
+  transform-origin: bottom center;
 }
 
 /* Ears */
@@ -688,10 +690,7 @@
 
 /* Classroom Environment Background for Intro */
 .classroom-bg {
-  background-image: url('/fondo.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: transparent;
   overflow: hidden;
 }
 
