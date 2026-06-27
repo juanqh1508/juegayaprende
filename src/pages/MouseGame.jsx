@@ -389,7 +389,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
                 <div className={`mouse-mouth ${isTalking ? 'talking-mouth' : ''}`}></div>
               </div>
               <div className="mouse-torso">
-                <div className="shirt-logo">🖱️</div>
+                <div className="shirt-logo">🎮</div>
               </div>
               <div className="mouse-hand left-hand"></div>
               <div className="mouse-hand right-hand wave-hand"></div>
