@@ -1048,7 +1048,7 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
       // Hard
       if (round === 0) return { x: 660, y: 25, width: 120, height: 95 }; // top-right (starts with Round 2 of Medium)
       if (round === 1) return { x: 20, y: 410, width: 120, height: 70 }; // bottom-left
-      return { x: 660, y: 410, width: 120, height: 70 }; // bottom-right
+      return { x: 660, y: 25, width: 120, height: 95 }; // top-right for Laberinto 3
     } else {
       // Easy
       return round === 1
