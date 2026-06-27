@@ -1015,9 +1015,9 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 500;
 
-  // Start & Finish Zones (Swapped: Start on the right, Finish on the left)
-  const START_ZONE = { x: 640, y: 20, width: 140, height: 120 };
-  const FINISH_ZONE = { x: 20, y: 350, width: 140, height: 130 };
+  // Start & Finish Zones (Start on the left, Finish/Folder on the right)
+  const START_ZONE = { x: 20, y: 20, width: 140, height: 120 };
+  const FINISH_ZONE = { x: 640, y: 350, width: 140, height: 130 };
 
   const itemSize = 65; // Emojis size (65px)
 
@@ -1049,17 +1049,17 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
     }
 
     if (layoutType === 'A') {
-      // 1 horizontal wall (leaves gap on the LEFT)
+      // 1 horizontal wall (leaves gap on the RIGHT)
       return [
         ...boundaries,
-        { x: 160, y: 240, width: 620, height: 25, id: 'wall-mid-1' }
+        { x: 20, y: 240, width: 620, height: 25, id: 'wall-mid-1' }
       ];
     } else if (layoutType === 'B') {
-      // 2 horizontal walls (S-shape, first gap on left, second gap on right)
+      // 2 horizontal walls (S-shape, first gap on right, second gap on left)
       return [
         ...boundaries,
-        { x: 160, y: 160, width: 620, height: 25, id: 'wall-mid-1' }, // gap on left
-        { x: 20, y: 310, width: 620, height: 25, id: 'wall-mid-2' }   // gap on right
+        { x: 20, y: 160, width: 620, height: 25, id: 'wall-mid-1' },  // gap on right
+        { x: 160, y: 310, width: 620, height: 25, id: 'wall-mid-2' }  // gap on left
       ];
     } else if (layoutType === 'C') {
       // 3 vertical walls (Comb)
@@ -1076,12 +1076,12 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
         { x: 260, y: 140, width: 280, height: 220, id: 'wall-center-box' }
       ];
     } else {
-      // 3 horizontal walls layout creating a 4-corridor S-shape path (gaps: left, right, left)
+      // 3 horizontal walls layout creating a 4-corridor S-shape path (gaps: right, left, right)
       return [
         ...boundaries,
-        { x: 160, y: 130, width: 620, height: 20, id: 'wall-hybrid-1' }, // gap on left
-        { x: 20, y: 250, width: 620, height: 20, id: 'wall-hybrid-2' },  // gap on right
-        { x: 160, y: 370, width: 620, height: 20, id: 'wall-hybrid-3' }  // gap on left
+        { x: 20, y: 130, width: 620, height: 20, id: 'wall-hybrid-1' },  // gap on right
+        { x: 160, y: 250, width: 620, height: 20, id: 'wall-hybrid-2' }, // gap on left
+        { x: 20, y: 370, width: 620, height: 20, id: 'wall-hybrid-3' }   // gap on right
       ];
     }
   };
@@ -1138,9 +1138,9 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
     let newX = (e.clientX - containerRect.left) / scaleX - startPos.x;
     let newY = (e.clientY - containerRect.top) / scaleY - startPos.y;
 
-    // Constrain inside container bounds with wall safety margins
-    newX = Math.max(20, Math.min(newX, BOARD_WIDTH - 20 - itemSize));
-    newY = Math.max(20, Math.min(newY, BOARD_HEIGHT - 20 - itemSize));
+    // Constrain inside container bounds allowing overlap with borders for collision detection
+    newX = Math.max(0, Math.min(newX, BOARD_WIDTH - itemSize));
+    newY = Math.max(0, Math.min(newY, BOARD_HEIGHT - itemSize));
 
     // Bounding box collision detection
     const itemBox = { x: newX, y: newY, width: itemSize, height: itemSize };
