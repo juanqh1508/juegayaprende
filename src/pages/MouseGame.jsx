@@ -104,8 +104,8 @@ const levelData = [
     description: 'Guarda los juguetes arrastrándolos a la caja.', msg: '¡Gran trabajo! Habitación ordenada.' },
   { id: 11, type: 'drag', title: 'Nivel 11', targets: ['👕', '🧦', '👖', '👗', '🧢'], bin: '🧺', bg: 'bg-park', totalTasks: 10,
     description: 'Arrastra toda la ropa a la canasta.', msg: '¡Héroe de la limpieza!' },
-  { id: 12, type: 'maze', title: 'Nivel 12', targets: ['🚗', '🚲', '🚀', '✈️', '⛵', '🛸'], bg: 'bg-classroom', totalTasks: 3,
-    description: 'Cruza los laberintos arrastrando los objetos desde el Inicio hasta la Meta sin tocar las paredes. ¡Supera las 3 rondas!', msg: '¡Excelente! Cruzaste todos los laberintos sin tocar las paredes.' },
+  { id: 12, type: 'maze', title: 'Nivel 12', targets: ['📄', '🖼️', '🎵', '🎥', '📊', '💾'], bg: 'bg-classroom', totalTasks: 3,
+    description: 'Guarda los archivos arrastrándolos a través del laberinto hasta la carpeta azul en el lado izquierdo sin tocar los bordes.', msg: '¡Estupendo! Guardaste todos los archivos en la carpeta.' },
   { id: 13, type: 'drag', title: 'Nivel 13', targets: ['🍌', '🍂', '🍎'], bin: '♻️', bg: 'bg-forest', totalTasks: 10,
     description: 'Arrastra los desechos biodegradables al contenedor de reciclaje.', msg: '¡Excelente! Mantengamos limpio el planeta.' },
 

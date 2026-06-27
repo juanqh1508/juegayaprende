@@ -1015,9 +1015,9 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 500;
 
-  // Start & Finish Zones
-  const START_ZONE = { x: 20, y: 20, width: 140, height: 120 };
-  const FINISH_ZONE = { x: 640, y: 350, width: 140, height: 130 };
+  // Start & Finish Zones (Swapped: Start on the right, Finish on the left)
+  const START_ZONE = { x: 640, y: 20, width: 140, height: 120 };
+  const FINISH_ZONE = { x: 20, y: 350, width: 140, height: 130 };
 
   const itemSize = 65; // Emojis size (65px)
 
@@ -1049,17 +1049,17 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
     }
 
     if (layoutType === 'A') {
-      // 1 horizontal wall
+      // 1 horizontal wall (leaves gap on the LEFT)
       return [
         ...boundaries,
-        { x: 20, y: 240, width: 620, height: 25, id: 'wall-mid-1' }
+        { x: 160, y: 240, width: 620, height: 25, id: 'wall-mid-1' }
       ];
     } else if (layoutType === 'B') {
-      // 2 horizontal walls (S-shape)
+      // 2 horizontal walls (S-shape, first gap on left, second gap on right)
       return [
         ...boundaries,
-        { x: 20, y: 160, width: 620, height: 25, id: 'wall-mid-1' },
-        { x: 160, y: 310, width: 620, height: 25, id: 'wall-mid-2' }
+        { x: 160, y: 160, width: 620, height: 25, id: 'wall-mid-1' }, // gap on left
+        { x: 20, y: 310, width: 620, height: 25, id: 'wall-mid-2' }   // gap on right
       ];
     } else if (layoutType === 'C') {
       // 3 vertical walls (Comb)
@@ -1076,12 +1076,12 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
         { x: 260, y: 140, width: 280, height: 220, id: 'wall-center-box' }
       ];
     } else {
-      // 3 horizontal walls layout creating a 4-corridor S-shape path
+      // 3 horizontal walls layout creating a 4-corridor S-shape path (gaps: left, right, left)
       return [
         ...boundaries,
-        { x: 20, y: 130, width: 620, height: 20, id: 'wall-hybrid-1' },  // gap on right (640-780)
-        { x: 160, y: 250, width: 620, height: 20, id: 'wall-hybrid-2' }, // gap on left (20-160)
-        { x: 20, y: 370, width: 620, height: 20, id: 'wall-hybrid-3' }   // gap on right (640-780)
+        { x: 160, y: 130, width: 620, height: 20, id: 'wall-hybrid-1' }, // gap on left
+        { x: 20, y: 250, width: 620, height: 20, id: 'wall-hybrid-2' },  // gap on right
+        { x: 160, y: 370, width: 620, height: 20, id: 'wall-hybrid-3' }  // gap on left
       ];
     }
   };
@@ -1249,7 +1249,10 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
           width: START_ZONE.width,
           height: START_ZONE.height
         }}>
-          <span className="maze-zone-label">INICIO 🏁</span>
+          <span className="maze-zone-label" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.85rem' }}>
+            <span>INICIO</span>
+            <span style={{ fontSize: '1.8rem', marginTop: '2px' }}>💻</span>
+          </span>
         </div>
 
         {/* Finish Zone */}
@@ -1259,7 +1262,10 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
           width: FINISH_ZONE.width,
           height: FINISH_ZONE.height
         }}>
-          <span className="maze-zone-label">META 🏆</span>
+          <span className="maze-zone-label" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.85rem' }}>
+            <span>CARPETA</span>
+            <span style={{ fontSize: '2.5rem', marginTop: '2px' }}>📁</span>
+          </span>
         </div>
 
         {/* Walls */}
