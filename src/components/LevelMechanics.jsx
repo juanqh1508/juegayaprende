@@ -1034,12 +1034,12 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
         { x: 20, y: 240, width: 620, height: 25, id: 'wall-mid-1' }
       ];
     } else if (difficulty === 3) {
-      // Hard: 3 horizontal walls forming a triple corridor winding path
+      // Hard: Vertical winding maze (comb layout with 3 vertical walls)
       return [
         ...boundaries,
-        { x: 20, y: 125, width: 620, height: 20, id: 'wall-mid-1' }, // gap on right
-        { x: 160, y: 235, width: 620, height: 20, id: 'wall-mid-2' }, // gap on left
-        { x: 20, y: 345, width: 620, height: 20, id: 'wall-mid-3' }  // gap on right
+        { x: 180, y: 20, width: 25, height: 340, id: 'wall-hard-1' },  // gap at bottom (y: 360-480)
+        { x: 370, y: 140, width: 25, height: 340, id: 'wall-hard-2' }, // gap at top (y: 20-140)
+        { x: 550, y: 20, width: 25, height: 340, id: 'wall-hard-3' }   // gap at bottom (y: 360-480)
       ];
     } else {
       // Medium (difficulty 2): 2 horizontal walls (leaves gap right, left)
@@ -1052,7 +1052,7 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
   };
 
   const WALLS = getWalls();
-  const itemSize = 58; // Make emojis larger for better visibility (was 45)
+  const itemSize = 65; // Emojis are even larger now (65px)
 
   useEffect(() => {
     // Generate initial items scattered in the START_ZONE
