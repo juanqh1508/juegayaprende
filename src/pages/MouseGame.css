@@ -650,7 +650,40 @@
 }
 
 .section-mouse-mascot .talking-mouth {
-  animation: talkMouth 0.3s infinite alternate;
+  animation: sectionTalkMouth 0.3s infinite alternate;
+}
+
+@keyframes sectionTalkMouth {
+  0% {
+    height: 5px;
+    width: 15px;
+    border-radius: 0 0 8px 8px;
+    transform: translateX(-50%) scaleY(0.6);
+  }
+  40% {
+    height: 18px;
+    width: 20px;
+    border-radius: 50% 50% 45% 45%;
+    transform: translateX(-50%) scaleY(1.3) scaleX(1.1);
+    background: #ff4081;
+    border: 2px solid #3f51b5;
+  }
+  80% {
+    height: 9px;
+    width: 18px;
+    border-radius: 40%;
+    transform: translateX(-50%) scaleY(0.7) scaleX(0.9);
+    background: #d84315;
+    border: 2px solid #3f51b5;
+  }
+  100% {
+    height: 17px;
+    width: 19px;
+    border-radius: 50%;
+    transform: translateX(-50%) scaleY(1.2) scaleX(1);
+    background: #ff4081;
+    border: 2px solid #3f51b5;
+  }
 }
 
 /* Body */
