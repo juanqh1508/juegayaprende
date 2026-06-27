@@ -1037,7 +1037,8 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
   const START_ZONE = { x: 20, y: 20, width: 140, height: 120 };
 
   // Finish Zone (Folder) is bottom-left for Laberinto 2 (round 1), and bottom-right for Laberintos 1 & 3 (rounds 0 & 2)
-  const FINISH_ZONE = round === 1
+  // EXCEPT for Medium difficulty (difficulty === 2) where Laberinto 1 (round 0) also has the Folder on the left.
+  const FINISH_ZONE = (round === 1 || (round === 0 && difficulty === 2))
     ? { x: 20, y: 350, width: 140, height: 130 }
     : { x: 640, y: 350, width: 140, height: 130 };
 
@@ -1056,10 +1057,18 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
 
     if (currentLayout === 'A') {
       // 1 horizontal wall (leaves gap on the RIGHT)
-      return [
+      const walls = [
         ...boundaries,
         { x: 20, y: 240, width: 620, height: 25, id: 'wall-mid-1' }
       ];
+      // Extra obstacles for Medium difficulty, exercise 1 (which uses Layout A)
+      if (difficulty === 2 && r === 0) {
+        walls.push(
+          { x: 380, y: 20, width: 25, height: 95, id: 'obstacle-top-1' },    // hangs from top
+          { x: 300, y: 385, width: 25, height: 95, id: 'obstacle-bottom-1' } // rises from bottom
+        );
+      }
+      return walls;
     } else if (currentLayout === 'B') {
       // 2 horizontal walls (S-shape, first gap on right, second gap on left)
       return [
