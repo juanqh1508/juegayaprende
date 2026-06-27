@@ -1138,8 +1138,7 @@ export function MazeLevel({ targets, totalTasks, difficulty = 1, onProgress, onC
         // Vertical obstacles
         { x: 300, y: 20, width: 20, height: 40, id: 'ob-f-1' },     // hangs from top in corridor 1
         { x: 480, y: 160, width: 20, height: 40, id: 'ob-f-2' },    // hangs from Wall 1 in corridor 2
-        { x: 320, y: 280, width: 20, height: 45, id: 'ob-f-3' },    // hangs from Wall 2 in corridor 3
-        { x: 500, y: 400, width: 20, height: 45, id: 'ob-f-4' }     // rises from bottom in corridor 4
+        { x: 320, y: 280, width: 20, height: 45, id: 'ob-f-3' }     // hangs from Wall 2 in corridor 3
       ];
     } else {
       // Hard Round 2 (Layout G): Extreme vertical comb maze with horizontal corridor obstacles
