@@ -9,6 +9,7 @@ import {
   CartoonMouseMascot, MazeLevel
 } from '../components/LevelMechanics';
 import MouseInfographic from '../components/MouseInfographic';
+import TutorialScreen from '../components/TutorialScreen';
 import { sounds } from '../utils/sounds';
 import './MouseGame.css';
 
@@ -335,96 +336,27 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
   }
 
   if (showSectionIntro && activeSection) {
+    let mechanicType = 'hover';
+    if (activeSection.title.includes('Mover')) mechanicType = 'hover';
+    else if (activeSection.title.includes('Clic 🎯')) mechanicType = 'click';
+    else if (activeSection.title.includes('Doble')) mechanicType = 'doubleclick';
+    else if (activeSection.title.includes('Arrastrar')) mechanicType = 'drag';
+    else if (activeSection.title.includes('Desplazamiento') || activeSection.title.includes('Scroll')) mechanicType = 'scroll';
+
     return (
-      <div className="section-intro-overlay">
-        <div className="section-intro-card anim-pop-in">
-          <span className="section-intro-icon-large">{activeSection.icon}</span>
-          <h2 className="section-intro-title">{activeSection.title}</h2>
-          
-          <div className="section-speech-bubble-container">
-            <div className="section-speech-bubble">
-              <p>{activeSection.description}</p>
-            </div>
-            <div className="section-speech-bubble-tip"></div>
-          </div>
-
-          <div className="section-mouse-mascot-container">
-            <div className={`section-mouse-mascot ${isTalking ? 'talking-anim' : ''}`}>
-              {/* Tail */}
-              <div className="mouse-tail"></div>
-              
-              <div className="mouse-ear left-ear"><div className="ear-inner"></div></div>
-              <div className="mouse-ear right-ear"><div className="ear-inner"></div></div>
-              
-              <div className="mouse-head">
-                {/* Eyebrows */}
-                <div className="eyebrows">
-                  <div className="eyebrow left-eyebrow"></div>
-                  <div className="eyebrow right-eyebrow"></div>
-                </div>
-
-                {/* Eyes */}
-                <div className="mouse-eyes">
-                  <div className="mouse-eye">
-                    <div className="pupil"></div>
-                    <div className="pupil-shine"></div>
-                  </div>
-                  <div className="mouse-eye">
-                    <div className="pupil"></div>
-                    <div className="pupil-shine"></div>
-                  </div>
-                </div>
-                
-                <div className="mouse-nose"></div>
-                
-                {/* Blush Cheeks */}
-                <div className="blush-cheek left-cheek"></div>
-                <div className="blush-cheek right-cheek"></div>
-                
-                {/* Snout Details */}
-                <div className="mouse-snout"></div>
-
-                <div className="whiskers left-whiskers"><span></span><span></span></div>
-                <div className="whiskers right-whiskers"><span></span><span></span></div>
-                <div className={`mouse-mouth ${isTalking ? 'talking-mouth' : ''}`}></div>
-              </div>
-              <div className="mouse-torso">
-                <div className="shirt-logo">🎮</div>
-              </div>
-              <div className="mouse-hand left-hand"></div>
-              <div className="mouse-hand right-hand wave-hand"></div>
-              <div className="mouse-foot left-foot"></div>
-              <div className="mouse-foot right-foot"></div>
-            </div>
-          </div>
-
-          <div className="section-intro-buttons" style={{ display: 'flex', gap: '20px', marginTop: '30px' }}>
-            <button 
-              className="btn-secondary" 
-              onClick={playSectionAudio}
-              style={{ fontSize: '1.2rem', padding: '12px 28px', borderRadius: '50px' }}
-            >
-              🔊 Escuchar
-            </button>
-            <button 
-              className="btn-primary pulse-btn" 
-              onClick={() => {
-                if (voiceAudioRef.current) {
-                  voiceAudioRef.current.pause();
-                }
-                if ('speechSynthesis' in window) {
-                  window.speechSynthesis.cancel();
-                }
-                setIsTalking(false);
-                setShowSectionIntro(false); 
-              }}
-              style={{ fontSize: '1.4rem', padding: '12px 36px', borderRadius: '50px' }}
-            >
-              ¡Entendido! 🎮
-            </button>
-          </div>
-        </div>
-      </div>
+      <TutorialScreen 
+        mechanicType={mechanicType} 
+        onStart={() => {
+          if (voiceAudioRef.current) {
+            voiceAudioRef.current.pause();
+          }
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+          }
+          setIsTalking(false);
+          setShowSectionIntro(false); 
+        }} 
+      />
     );
   }
 

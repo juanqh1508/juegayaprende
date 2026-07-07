@@ -48,8 +48,6 @@ function TutorialScreen({ mechanicType, onStart }) {
           </div>
           {mechanicType === 'drag' && <div className="drop-zone-icon">📥</div>}
         </div>
-
-        <p className="tutorial-text">{description}</p>
         
         <button className="btn-primary" onClick={onStart}>¡Entendido, a jugar!</button>
       </div>

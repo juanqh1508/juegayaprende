@@ -240,7 +240,7 @@
    ============================================= */
 
 .mouse-character-container {
-  height: 360px;
+  height: 580px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -251,7 +251,7 @@
   position: relative;
   width: 180px;
   height: 260px;
-  transform: scale(1.25);
+  transform: scale(2.2);
   transform-origin: bottom center;
 }
 

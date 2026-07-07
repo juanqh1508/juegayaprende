@@ -99,13 +99,6 @@ function Intro({ onNavigate }) {
             Saltar Intro ➔
           </button>
 
-          {/* Speech Bubble */}
-          <div className="speech-bubble-container">
-            <div className="speech-bubble">
-              <p>{subtitle}</p>
-            </div>
-            <div className="speech-bubble-tip"></div>
-          </div>
 
           {/* Talking Mouse Character */}
           <div className="mouse-character-container">
