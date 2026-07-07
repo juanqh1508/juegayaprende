@@ -1,4 +1,5 @@
 import React from 'react';
+import { CartoonMouseMascot } from './LevelMechanics';
 import './TutorialScreen.css';
 
 function TutorialScreen({ mechanicType, onStart }) {
@@ -41,12 +42,18 @@ function TutorialScreen({ mechanicType, onStart }) {
       <div className="tutorial-card">
         <h2>{title}</h2>
         
-        <div className="animation-box">
-          <div className={`mouse-icon ${animationClass}`}>
-            🖱️
-            <div className="click-effect"></div>
+        <div className="tutorial-content-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '30px', marginBottom: '2rem', flexWrap: 'wrap' }}>
+          <div className="tutorial-mascot-container">
+            <CartoonMouseMascot size={120} />
           </div>
-          {mechanicType === 'drag' && <div className="drop-zone-icon">📥</div>}
+          
+          <div className="animation-box" style={{ flex: 1, minWidth: '250px', marginBottom: 0 }}>
+            <div className={`mouse-icon ${animationClass}`}>
+              🖱️
+              <div className="click-effect"></div>
+            </div>
+            {mechanicType === 'drag' && <div className="drop-zone-icon">📥</div>}
+          </div>
         </div>
         
         <button className="btn-primary" onClick={onStart}>¡Entendido, a jugar!</button>
