@@ -1,198 +1,226 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { 
+  auth, 
+  db, 
+  googleProvider, 
+  microsoftProvider, 
+  signInWithPopup, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  updateProfile, 
+  signOut, 
+  onAuthStateChanged,
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs
+} from '../firebase';
 
 const AuthContext = createContext(null);
 
-// Función auxiliar para parsear respuestas JSON sin caer en errores como "Unexpected token"
-async function parseJsonResponse(response) {
-  const text = await response.text();
-  try {
-    return JSON.parse(text);
-  } catch {
-    if (!response.ok) {
-      throw new Error(`Error ${response.status}: No se pudo comunicar con el servidor backend (puerto 5005). Verifica que esté encendido.`);
-    }
-    throw new Error('La respuesta del servidor no tiene un formato válido.');
-  }
-}
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem('game_auth_token') || null);
   const [loading, setLoading] = useState(true);
 
-  // Verificar token guardado al cargar la aplicación
+  // Escuchar el estado de autenticación en tiempo real con Firebase
   useEffect(() => {
-    async function verifyUser() {
-      const storedToken = localStorage.getItem('game_auth_token');
-      if (!storedToken) {
-        setLoading(false);
-        return;
-      }
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          // Intentar obtener datos extra guardados en Firestore (como el nombre personalizado)
+          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+          const userData = userDoc.exists() ? userDoc.data() : {};
 
-      try {
-        const response = await fetch('/api/auth/me', {
-          headers: {
-            'Authorization': `Bearer ${storedToken}`
-          }
-        });
-
-        if (response.ok) {
-          const data = await parseJsonResponse(response);
-          setUser(data.user);
-          setToken(storedToken);
-        } else {
-          localStorage.removeItem('game_auth_token');
-          setUser(null);
-          setToken(null);
+          setUser({
+            id: firebaseUser.uid,
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            username: userData.username || firebaseUser.email?.split('@')[0] || 'usuario',
+            fullName: userData.fullName || firebaseUser.displayName || firebaseUser.email?.split('@')[0],
+            avatarUrl: firebaseUser.photoURL
+          });
+        } catch (err) {
+          // Si Firestore aún no tiene reglas o hay error de red, usamos los datos directos de Auth
+          setUser({
+            id: firebaseUser.uid,
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            username: firebaseUser.email?.split('@')[0] || 'usuario',
+            fullName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Estudiante',
+            avatarUrl: firebaseUser.photoURL
+          });
         }
-      } catch (err) {
-        console.warn('No se pudo contactar al servidor de autenticación:', err);
-      } finally {
-        setLoading(false);
+      } else {
+        setUser(null);
       }
-    }
+      setLoading(false);
+    });
 
-    verifyUser();
+    return () => unsubscribe();
   }, []);
 
-  // Iniciar sesión con Correo o Usuario + Contraseña
-  const login = async (identifier, password) => {
+  // 1. Iniciar sesión con Correo y Contraseña
+  const login = async (email, password) => {
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier, password })
-      });
+      const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
+      return { success: true, user: cred.user };
+    } catch (err) {
+      let msg = 'Error al iniciar sesión.';
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        msg = 'Correo o contraseña incorrectos.';
+      } else if (err.code === 'auth/invalid-email') {
+        msg = 'El formato del correo electrónico no es válido.';
+      } else if (err.code === 'auth/too-many-requests') {
+        msg = 'Demasiados intentos fallidos. Intenta más tarde.';
+      }
+      return { success: false, error: msg };
+    }
+  };
 
-      const data = await parseJsonResponse(response);
+  // 2. Registrarse con Correo y Contraseña
+  const register = async ({ email, password, fullName, username }) => {
+    try {
+      const cleanEmail = email.trim();
+      const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
+      const displayName = fullName || username || cleanEmail.split('@')[0];
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al iniciar sesión');
+      // Actualizar el nombre en Firebase Auth
+      await updateProfile(cred.user, { displayName });
+
+      // Guardar información extendida en Cloud Firestore
+      try {
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          uid: cred.user.uid,
+          email: cleanEmail,
+          fullName: displayName,
+          username: username || cleanEmail.split('@')[0],
+          authProvider: 'password',
+          createdAt: new Date().toISOString()
+        }, { merge: true });
+      } catch (e) {
+        console.warn('Nota: Perfil guardado en Auth (Firestore pendiente de reglas):', e);
       }
 
-      localStorage.setItem('game_auth_token', data.token);
-      setToken(data.token);
-      setUser(data.user);
-      return { success: true, user: data.user };
+      return { success: true, user: cred.user };
     } catch (err) {
+      let msg = 'Error al crear la cuenta.';
+      if (err.code === 'auth/email-already-in-use') {
+        msg = 'Este correo electrónico ya está registrado. Inicia sesión.';
+      } else if (err.code === 'auth/weak-password') {
+        msg = 'La contraseña debe tener al menos 6 caracteres.';
+      } else if (err.code === 'auth/invalid-email') {
+        msg = 'El correo electrónico no es válido.';
+      }
+      return { success: false, error: msg };
+    }
+  };
+
+  // 3. Iniciar sesión con Google (Ventana emergente oficial)
+  const loginWithGoogle = async () => {
+    try {
+      const cred = await signInWithPopup(auth, googleProvider);
+      
+      // Guardar/Actualizar en Cloud Firestore
+      try {
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          uid: cred.user.uid,
+          email: cred.user.email,
+          fullName: cred.user.displayName,
+          avatarUrl: cred.user.photoURL,
+          authProvider: 'google',
+          lastLogin: new Date().toISOString()
+        }, { merge: true });
+      } catch (e) {
+        console.warn('Nota: Sesión iniciada con Google:', e);
+      }
+
+      return { success: true, user: cred.user };
+    } catch (err) {
+      if (err.code === 'auth/popup-closed-by-user') {
+        return { success: false, error: 'Inicio de sesión con Google cancelado.' };
+      }
       return { success: false, error: err.message };
     }
   };
 
-  // Registrar nueva cuenta con correo
-  const register = async ({ email, username, password, fullName }) => {
+  // 4. Iniciar sesión con Microsoft (Hotmail / Outlook)
+  const loginWithMicrosoft = async () => {
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, username, password, fullName })
-      });
+      const cred = await signInWithPopup(auth, microsoftProvider);
 
-      const data = await parseJsonResponse(response);
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al registrar usuario');
+      try {
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          uid: cred.user.uid,
+          email: cred.user.email,
+          fullName: cred.user.displayName,
+          authProvider: 'microsoft',
+          lastLogin: new Date().toISOString()
+        }, { merge: true });
+      } catch (e) {
+        console.warn('Nota: Sesión iniciada con Microsoft:', e);
       }
 
-      localStorage.setItem('game_auth_token', data.token);
-      setToken(data.token);
-      setUser(data.user);
-      return { success: true, user: data.user };
+      return { success: true, user: cred.user };
     } catch (err) {
+      if (err.code === 'auth/popup-closed-by-user') {
+        return { success: false, error: 'Inicio de sesión con Microsoft cancelado.' };
+      }
       return { success: false, error: err.message };
     }
   };
 
-  // Iniciar sesión con Google (recibe el token/credential de Google)
-  const loginWithGoogle = async (credential) => {
+  // 5. Cerrar sesión
+  const logout = async () => {
     try {
-      const response = await fetch('/api/auth/google', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential })
-      });
-
-      const data = await parseJsonResponse(response);
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al autenticar con Google');
-      }
-
-      localStorage.setItem('game_auth_token', data.token);
-      setToken(data.token);
-      setUser(data.user);
-      return { success: true, user: data.user };
+      await signOut(auth);
+      setUser(null);
     } catch (err) {
-      return { success: false, error: err.message };
+      console.error('Error al cerrar sesión:', err);
     }
   };
 
-  // Iniciar sesión con Microsoft / Hotmail / Outlook
-  const loginWithMicrosoft = async (accessToken) => {
-    try {
-      const response = await fetch('/api/auth/microsoft', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accessToken })
-      });
-
-      const data = await parseJsonResponse(response);
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al autenticar con Microsoft');
-      }
-
-      localStorage.setItem('game_auth_token', data.token);
-      setToken(data.token);
-      setUser(data.user);
-      return { success: true, user: data.user };
-    } catch (err) {
-      return { success: false, error: err.message };
-    }
-  };
-
-  // Cerrar sesión
-  const logout = () => {
-    localStorage.removeItem('game_auth_token');
-    setToken(null);
-    setUser(null);
-  };
-
-  // Guardar progreso del juego en PostgreSQL o SQLite
+  // 6. Guardar progreso de lecciones en Cloud Firestore
   const saveProgress = async (progressData) => {
-    if (!token) return null;
+    if (!auth.currentUser) return null;
+    const uid = auth.currentUser.uid;
+    const docId = `${uid}_${progressData.gameKey}_${progressData.difficulty}`;
+
     try {
-      const response = await fetch('/api/auth/progress', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(progressData)
-      });
-      return await parseJsonResponse(response);
+      const docRef = doc(db, 'progress', docId);
+      const existingSnap = await getDoc(docRef);
+      const prevLevel = existingSnap.exists() ? (existingSnap.data().highest_level || 0) : 0;
+      const prevCompleted = existingSnap.exists() ? existingSnap.data().completed : false;
+
+      const dataToSave = {
+        user_id: uid,
+        game_key: progressData.gameKey,
+        difficulty: progressData.difficulty,
+        highest_level: Math.max(prevLevel, progressData.level || 0),
+        completed: prevCompleted || !!progressData.completed,
+        certificate_name: progressData.certificateName || existingSnap.data()?.certificate_name || null,
+        updated_at: new Date().toISOString()
+      };
+
+      await setDoc(docRef, dataToSave, { merge: true });
+      return dataToSave;
     } catch (err) {
-      console.error('Error al sincronizar progreso:', err);
+      console.warn('Aviso: No se pudo sincronizar progreso en Firestore:', err);
       return null;
     }
   };
 
-  // Obtener historial de progreso del usuario desde PostgreSQL o SQLite
+  // 7. Obtener historial de lecciones desde Cloud Firestore
   const getProgress = async () => {
-    if (!token) return [];
+    if (!auth.currentUser) return [];
     try {
-      const response = await fetch('/api/auth/progress', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        const data = await parseJsonResponse(response);
-        return data.progress || [];
-      }
-      return [];
+      const q = query(collection(db, 'progress'), where('user_id', '==', auth.currentUser.uid));
+      const snap = await getDocs(q);
+      return snap.docs.map(d => d.data());
     } catch (err) {
-      console.error('Error al consultar historial:', err);
+      console.warn('Aviso: No se pudo obtener historial de Firestore:', err);
       return [];
     }
   };
@@ -200,7 +228,6 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={{
       user,
-      token,
       loading,
       login,
       register,

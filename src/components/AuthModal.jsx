@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './AuthModal.css';
 
@@ -14,109 +14,49 @@ function AuthModal({ isOpen, onClose }) {
 
   const { login, register, loginWithGoogle, loginWithMicrosoft } = useAuth();
 
-  // Inicializar Google Identity Services si el script está listo
-  useEffect(() => {
-    if (isOpen && window.google && window.google.accounts) {
-      try {
-        const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
-        if (googleClientId) {
-          window.google.accounts.id.initialize({
-            client_id: googleClientId,
-            callback: handleGoogleCredentialResponse,
-          });
-        }
-      } catch (err) {
-        console.warn('Google Identity no se pudo inicializar:', err);
-      }
-    }
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
-  // Manejar respuesta de Google
-  const handleGoogleCredentialResponse = async (response) => {
-    if (!response.credential) return;
-    setLoading(true);
+  // Click en el botón de Google (Firebase Popup)
+  const handleGoogleClick = async () => {
     setErrorMsg('');
+    setSuccessMsg('');
+    setLoading(true);
     try {
-      const res = await loginWithGoogle(response.credential);
+      const res = await loginWithGoogle();
       if (res.success) {
-        setSuccessMsg(`¡Bienvenido, ${res.user.fullName || res.user.username}! 🎉`);
+        setSuccessMsg('¡Bienvenido con Google! 🎉');
         setTimeout(() => onClose(), 800);
       } else {
         setErrorMsg(res.error || 'No se pudo iniciar sesión con Google.');
       }
     } catch (err) {
-      setErrorMsg('Error al conectar con el servidor.');
+      setErrorMsg('Error al abrir la ventana de Google.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Click en el botón de Google
-  const handleGoogleClick = () => {
-    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    if (!googleClientId) {
-      setErrorMsg('Aún no has configurado VITE_GOOGLE_CLIENT_ID. Mientras tanto, puedes registrarte o entrar escribiendo tu correo de Google abajo.');
-      return;
-    }
-
-    if (window.google && window.google.accounts) {
-      window.google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          setErrorMsg('Selecciona tu cuenta de Google en la ventana emergente o escribe tu correo abajo.');
-        }
-      });
+  // Click en el botón de Microsoft / Hotmail (Firebase Popup)
+  const handleMicrosoftClick = async () => {
+    setErrorMsg('');
+    setSuccessMsg('');
+    setLoading(true);
+    try {
+      const res = await loginWithMicrosoft();
+      if (res.success) {
+        setSuccessMsg('¡Bienvenido con Microsoft! 🎮');
+        setTimeout(() => onClose(), 800);
+      } else {
+        setErrorMsg(res.error || 'No se pudo iniciar sesión con Microsoft.');
+      }
+    } catch (err) {
+      setErrorMsg('Error al abrir la ventana de Microsoft.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Click en el botón de Microsoft (Hotmail / Outlook)
-  const handleMicrosoftClick = () => {
-    const msClientId = import.meta.env.VITE_MICROSOFT_CLIENT_ID;
-    if (!msClientId) {
-      setErrorMsg('Aún no has configurado VITE_MICROSOFT_CLIENT_ID. Mientras tanto, puedes registrarte o entrar con tu correo de Hotmail/Outlook abajo.');
-      return;
-    }
-
-    // Flujo OAuth Popup con Microsoft Identity
-    const redirectUri = window.location.origin;
-    const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${msClientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=openid%20profile%20email%20User.Read`;
-    
-    const popup = window.open(authUrl, 'Microsoft Login', 'width=500,height=600');
-    
-    const checkPopup = setInterval(() => {
-      if (!popup || popup.closed) {
-        clearInterval(checkPopup);
-        return;
-      }
-      try {
-        if (popup.location.href.includes(redirectUri)) {
-          const hash = popup.location.hash;
-          const params = new URLSearchParams(hash.substring(1));
-          const accessToken = params.get('access_token');
-          popup.close();
-          clearInterval(checkPopup);
-
-          if (accessToken) {
-            setLoading(true);
-            loginWithMicrosoft(accessToken).then((res) => {
-              setLoading(false);
-              if (res.success) {
-                setSuccessMsg(`¡Bienvenido, ${res.user.fullName || res.user.username}! 🎮`);
-                setTimeout(() => onClose(), 800);
-              } else {
-                setErrorMsg(res.error || 'No se pudo iniciar sesión con Microsoft.');
-              }
-            });
-          }
-        }
-      } catch (e) {
-        // Ignora errores de Cross-Origin hasta que regrese al mismo dominio
-      }
-    }, 500);
-  };
-
-  // Envío del formulario tradicional con cualquier correo
+  // Envío del formulario de correo y contraseña
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -126,10 +66,10 @@ function AuthModal({ isOpen, onClose }) {
     try {
       if (isRegister) {
         const res = await register({
-          email: emailOrUser.includes('@') ? emailOrUser.trim() : null,
-          username: username.trim() || (emailOrUser.includes('@') ? '' : emailOrUser.trim()),
+          email: emailOrUser.trim(),
           password,
-          fullName: fullName.trim()
+          fullName: fullName.trim(),
+          username: username.trim()
         });
 
         if (res.success) {
@@ -139,7 +79,7 @@ function AuthModal({ isOpen, onClose }) {
           setErrorMsg(res.error || 'No se pudo crear la cuenta.');
         }
       } else {
-        const res = await login(emailOrUser, password);
+        const res = await login(emailOrUser.trim(), password);
 
         if (res.success) {
           setSuccessMsg('¡Bienvenido de nuevo! 🎮');
@@ -149,7 +89,7 @@ function AuthModal({ isOpen, onClose }) {
         }
       }
     } catch (err) {
-      setErrorMsg('Error de conexión con el servidor backend.');
+      setErrorMsg('Error al conectar con Firebase.');
     } finally {
       setLoading(false);
     }
@@ -207,7 +147,7 @@ function AuthModal({ isOpen, onClose }) {
 
         {/* Separador */}
         <div className="auth-divider">
-          <span>o con cualquier correo</span>
+          <span>o con tu correo electrónico</span>
         </div>
 
         {/* Pestañas para cambiar entre Login y Registro con correo */}
@@ -242,10 +182,10 @@ function AuthModal({ isOpen, onClose }) {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label>📧 {isRegister ? 'Correo Electrónico (Hotmail, Gmail, etc.)' : 'Correo Electrónico o Usuario'}</label>
+            <label>📧 {isRegister ? 'Correo Electrónico (Hotmail, Gmail, etc.)' : 'Correo Electrónico'}</label>
             <input 
-              type={isRegister ? 'email' : 'text'}
-              placeholder={isRegister ? 'ejemplo@hotmail.com o @gmail.com' : 'tu-correo@correo.com o tu usuario'} 
+              type="email"
+              placeholder={isRegister ? 'ejemplo@hotmail.com o @gmail.com' : 'tu-correo@correo.com'} 
               value={emailOrUser}
               onChange={(e) => setEmailOrUser(e.target.value)}
               required 
@@ -281,7 +221,7 @@ function AuthModal({ isOpen, onClose }) {
             <label>🔑 Contraseña</label>
             <input 
               type="password" 
-              placeholder="••••••••" 
+              placeholder="Mínimo 6 caracteres" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required 
@@ -293,7 +233,7 @@ function AuthModal({ isOpen, onClose }) {
             className="auth-submit-btn" 
             disabled={loading}
           >
-            {loading ? 'Conectando con PostgreSQL...' : (isRegister ? 'Crear Cuenta 🚀' : 'Entrar a Jugar 🎮')}
+            {loading ? 'Conectando con Firebase...' : (isRegister ? 'Crear Cuenta 🚀' : 'Entrar a Jugar 🎮')}
           </button>
 
           <button 
