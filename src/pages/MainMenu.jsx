@@ -1,9 +1,111 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import AuthModal from '../components/AuthModal';
+import HistoryModal from '../components/HistoryModal';
 import './MainMenu.css';
 
 function MainMenu({ onNavigate }) {
+  const { user, logout } = useAuth();
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
   return (
     <div className="main-menu">
+      {/* Barra superior de usuario / autenticación */}
+      <div style={{
+        width: '100%',
+        maxWidth: '900px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '0.5rem 1rem',
+        marginBottom: '0.5rem',
+        flexWrap: 'wrap',
+        gap: '10px'
+      }}>
+        {/* Botón de Historial (disponible para todos) */}
+        <button
+          onClick={() => setIsHistoryOpen(true)}
+          style={{
+            background: 'white',
+            color: 'var(--tropical-green)',
+            border: '2px solid var(--tropical-green)',
+            padding: '8px 16px',
+            borderRadius: '50px',
+            fontFamily: 'var(--font-heading)',
+            fontSize: '1rem',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+        >
+          📊 Mi Historial y Retos
+        </button>
+
+        {user ? (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            background: 'white',
+            padding: '6px 14px',
+            borderRadius: '50px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            border: '2px solid var(--sun-yellow)'
+          }}>
+            <span style={{ fontWeight: 'bold', color: 'var(--panama-blue)', fontSize: '0.95rem' }}>
+              🐭 ¡Hola, {user.fullName || user.username}!
+            </span>
+            <button
+              onClick={logout}
+              style={{
+                background: '#fee2e2',
+                color: '#b91c1c',
+                border: 'none',
+                padding: '4px 10px',
+                borderRadius: '20px',
+                fontSize: '0.82rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'background 0.2s'
+              }}
+              title="Cerrar sesión"
+            >
+              Salir 🚪
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: 'bold', background: '#f1f5f9', padding: '6px 12px', borderRadius: '20px' }}>
+              🎮 Modo Libre
+            </span>
+            <button
+              onClick={() => setIsAuthOpen(true)}
+              style={{
+                background: 'white',
+                color: 'var(--panama-blue)',
+                border: '2px solid var(--panama-blue)',
+                padding: '8px 16px',
+                borderRadius: '50px',
+                fontFamily: 'var(--font-heading)',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              🔐 Iniciar Sesión / Registro
+            </button>
+          </div>
+        )}
+      </div>
+
       <header className="menu-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <img src="/logo.png" alt="Juega y Aprende" className="main-logo animate-bounce" style={{ maxWidth: '340px', width: '90%', height: 'auto', marginBottom: '1rem' }} />
         <p className="subtitle">¡Aprende a usar la computadora jugando!</p>
@@ -40,6 +142,17 @@ function MainMenu({ onNavigate }) {
           <button className="btn-locked" disabled>Bloqueado</button>
         </div>
       </div>
+
+      {/* Modal de autenticación */}
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+
+      {/* Modal de historial de actividades */}
+      <HistoryModal 
+        isOpen={isHistoryOpen} 
+        onClose={() => setIsHistoryOpen(false)} 
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onContinueLevel={(diff, level) => onNavigate('mouse-game', diff, level)}
+      />
     </div>
   );
 }

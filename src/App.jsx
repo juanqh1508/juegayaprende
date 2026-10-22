@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AuthProvider } from './context/AuthContext';
 import MainMenu from './pages/MainMenu';
 import MouseGame from './pages/MouseGame';
 import Certificate from './pages/Certificate';
@@ -36,25 +37,27 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      {/* Background Music - 8-bit Arcade / Mario Style */}
-      <audio ref={audioRef} loop src="/sounds/fondo-juego.mp3" />
-      
-      {currentView !== 'menu' && (
-        <button 
-          onClick={toggleMusic} 
-          style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000, background: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.2rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}
-          title={isMusicPlaying ? "Pausar música" : "Reproducir música"}
-        >
-          {isMusicPlaying ? '🔊' : '🔇'}
-        </button>
-      )}
+    <AuthProvider>
+      <div className="app-container">
+        {/* Background Music - 8-bit Arcade / Mario Style */}
+        <audio ref={audioRef} loop src="/sounds/fondo-juego.mp3" />
+        
+        {currentView !== 'menu' && (
+          <button 
+            onClick={toggleMusic} 
+            style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000, background: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.2rem', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}
+            title={isMusicPlaying ? "Pausar música" : "Reproducir música"}
+          >
+            {isMusicPlaying ? '🔊' : '🔇'}
+          </button>
+        )}
 
-      {currentView === 'intro' && <Intro onNavigate={navigateTo} />}
-      {currentView === 'menu' && <MainMenu onNavigate={navigateTo} />}
-      {currentView === 'mouse-game' && <MouseGame difficulty={difficulty} startLevel={startLevel} onNavigate={navigateTo} setIsMusicPlaying={setIsMusicPlaying} onFinish={(name) => { setUserName(name); navigateTo('certificate'); }} />}
-      {currentView === 'certificate' && <Certificate userName={userName} difficulty={difficulty} onNavigate={navigateTo} />}
-    </div>
+        {currentView === 'intro' && <Intro onNavigate={navigateTo} />}
+        {currentView === 'menu' && <MainMenu onNavigate={navigateTo} />}
+        {currentView === 'mouse-game' && <MouseGame difficulty={difficulty} startLevel={startLevel} onNavigate={navigateTo} setIsMusicPlaying={setIsMusicPlaying} onFinish={(name) => { setUserName(name); navigateTo('certificate'); }} />}
+        {currentView === 'certificate' && <Certificate userName={userName} difficulty={difficulty} onNavigate={navigateTo} />}
+      </div>
+    </AuthProvider>
   );
 }
 

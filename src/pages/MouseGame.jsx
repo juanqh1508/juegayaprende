@@ -11,6 +11,7 @@ import {
 import MouseInfographic from '../components/MouseInfographic';
 import TutorialScreen from '../components/TutorialScreen';
 import { sounds } from '../utils/sounds';
+import { useAuth } from '../context/AuthContext';
 import './MouseGame.css';
 
 // Función para seleccionar aleatoriamente un elemento
@@ -170,6 +171,7 @@ function Confetti() {
 }
 
 function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlaying, onFinish }) {
+  const { user, saveProgress } = useAuth();
   const [currentLevelIndex, setCurrentLevelIndex] = useState(startLevel);
   const [tasksCompleted, setTasksCompleted] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -313,6 +315,17 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
         sounds.levelComplete();
         setShowSuccess(true);
         if (setIsMusicPlaying) setIsMusicPlaying(false);
+
+        // Si el usuario tiene sesión activa, registrar automáticamente el nivel superado en PostgreSQL
+        if (user && saveProgress) {
+          saveProgress({
+            gameKey: 'mouse-game',
+            difficulty,
+            level: currentLevelIndex + 1,
+            completed: currentLevelIndex + 1 >= levelData.length
+          });
+        }
+
         return totalTasksPerLevel;
       }
       return newCount;

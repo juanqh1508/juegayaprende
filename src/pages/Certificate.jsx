@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { sounds } from '../utils/sounds';
+import { useAuth } from '../context/AuthContext';
 import './Certificate.css';
 
 function Certificate({ userName, difficulty = 1, onNavigate }) {
-  const [name, setName] = useState('');
+  const { user, saveProgress } = useAuth();
+  const [name, setName] = useState(userName || user?.fullName || user?.username || '');
   const [generated, setGenerated] = useState(false);
 
   const today = new Date();
@@ -25,6 +27,17 @@ function Certificate({ userName, difficulty = 1, onNavigate }) {
     if (name.trim() !== '') {
       sounds.levelComplete();
       setGenerated(true);
+
+      // Guardar diploma y progreso en PostgreSQL si el usuario está autenticado
+      if (user) {
+        saveProgress({
+          gameKey: 'mouse-game',
+          difficulty,
+          level: 19,
+          completed: true,
+          certificateName: name.trim()
+        });
+      }
     }
   };
 
