@@ -7,7 +7,7 @@ import { initDb } from './db.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5005;
 
 // Configuración de CORS
 app.use(cors({

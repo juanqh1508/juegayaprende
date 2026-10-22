@@ -2,6 +2,19 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
+// Función auxiliar para parsear respuestas JSON sin caer en errores como "Unexpected token"
+async function parseJsonResponse(response) {
+  const text = await response.text();
+  try {
+    return JSON.parse(text);
+  } catch {
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: No se pudo comunicar con el servidor backend (puerto 5005). Verifica que esté encendido.`);
+    }
+    throw new Error('La respuesta del servidor no tiene un formato válido.');
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('game_auth_token') || null);
@@ -24,7 +37,7 @@ export function AuthProvider({ children }) {
         });
 
         if (response.ok) {
-          const data = await response.json();
+          const data = await parseJsonResponse(response);
           setUser(data.user);
           setToken(storedToken);
         } else {
@@ -51,7 +64,7 @@ export function AuthProvider({ children }) {
         body: JSON.stringify({ identifier, password })
       });
 
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || 'Error al iniciar sesión');
@@ -75,7 +88,7 @@ export function AuthProvider({ children }) {
         body: JSON.stringify({ email, username, password, fullName })
       });
 
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || 'Error al registrar usuario');
@@ -99,7 +112,7 @@ export function AuthProvider({ children }) {
         body: JSON.stringify({ credential })
       });
 
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || 'Error al autenticar con Google');
@@ -123,7 +136,7 @@ export function AuthProvider({ children }) {
         body: JSON.stringify({ accessToken })
       });
 
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || 'Error al autenticar con Microsoft');
@@ -145,7 +158,7 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  // Guardar progreso del juego en PostgreSQL
+  // Guardar progreso del juego en PostgreSQL o SQLite
   const saveProgress = async (progressData) => {
     if (!token) return null;
     try {
@@ -157,14 +170,14 @@ export function AuthProvider({ children }) {
         },
         body: JSON.stringify(progressData)
       });
-      return await response.json();
+      return await parseJsonResponse(response);
     } catch (err) {
-      console.error('Error al sincronizar progreso con PostgreSQL:', err);
+      console.error('Error al sincronizar progreso:', err);
       return null;
     }
   };
 
-  // Obtener historial de progreso del usuario desde PostgreSQL
+  // Obtener historial de progreso del usuario desde PostgreSQL o SQLite
   const getProgress = async () => {
     if (!token) return [];
     try {
@@ -174,12 +187,12 @@ export function AuthProvider({ children }) {
         }
       });
       if (response.ok) {
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         return data.progress || [];
       }
       return [];
     } catch (err) {
-      console.error('Error al consultar historial en PostgreSQL:', err);
+      console.error('Error al consultar historial:', err);
       return [];
     }
   };

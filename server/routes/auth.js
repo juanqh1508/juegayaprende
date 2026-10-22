@@ -2,7 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
-import { pool } from '../db.js';
+import { dbQuery } from '../db.js';
 import { authenticateToken } from '../authMiddleware.js';
 
 const router = express.Router();
@@ -46,7 +46,7 @@ router.post('/register', async (req, res) => {
     }
 
     // Verificar si ya existe en PostgreSQL
-    const existing = await pool.query(
+    const existing = await dbQuery(
       'SELECT id FROM users WHERE username = $1 OR (email IS NOT NULL AND email = $2)',
       [usernameToUse, emailToUse]
     );
@@ -59,7 +59,7 @@ router.post('/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const result = await pool.query(
+    const result = await dbQuery(
       `INSERT INTO users (username, email, password_hash, full_name, auth_provider)
        VALUES ($1, $2, $3, $4, 'local')
        RETURNING id, username, email, full_name, role, created_at`,
@@ -97,7 +97,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Buscar usuario por correo o nombre de usuario
-    const result = await pool.query(
+    const result = await dbQuery(
       'SELECT id, username, email, full_name, role, password_hash, auth_provider FROM users WHERE email = $1 OR username = $1',
       [loginIdentifier]
     );
@@ -176,7 +176,7 @@ router.post('/google', async (req, res) => {
     const cleanEmail = email.toLowerCase().trim();
 
     // Buscar si ya existe el usuario
-    let userQuery = await pool.query(
+    let userQuery = await dbQuery(
       'SELECT id, username, email, full_name, role, avatar_url FROM users WHERE email = $1 OR (auth_provider = $2 AND provider_id = $3)',
       [cleanEmail, 'google', googleId]
     );
@@ -184,7 +184,7 @@ router.post('/google', async (req, res) => {
     let user;
     if (userQuery.rows.length > 0) {
       user = userQuery.rows[0];
-      await pool.query(
+      await dbQuery(
         'UPDATE users SET auth_provider = $1, provider_id = $2, avatar_url = COALESCE($3, avatar_url), full_name = COALESCE(full_name, $4), updated_at = CURRENT_TIMESTAMP WHERE id = $5',
         ['google', googleId, picture, name, user.id]
       );
@@ -192,12 +192,12 @@ router.post('/google', async (req, res) => {
       let baseUsername = cleanEmail.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '');
       if (baseUsername.length < 3) baseUsername = 'user_' + Math.floor(1000 + Math.random() * 9000);
 
-      const checkUsername = await pool.query('SELECT id FROM users WHERE username = $1', [baseUsername]);
+      const checkUsername = await dbQuery('SELECT id FROM users WHERE username = $1', [baseUsername]);
       if (checkUsername.rows.length > 0) {
         baseUsername = `${baseUsername}_${Math.floor(100 + Math.random() * 900)}`;
       }
 
-      const insertRes = await pool.query(
+      const insertRes = await dbQuery(
         `INSERT INTO users (username, email, full_name, auth_provider, provider_id, avatar_url)
          VALUES ($1, $2, $3, 'google', $4, $5)
          RETURNING id, username, email, full_name, role, avatar_url`,
@@ -253,7 +253,7 @@ router.post('/microsoft', async (req, res) => {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    let userQuery = await pool.query(
+    let userQuery = await dbQuery(
       'SELECT id, username, email, full_name, role FROM users WHERE email = $1 OR (auth_provider = $2 AND provider_id = $3)',
       [cleanEmail, 'microsoft', microsoftId]
     );
@@ -261,7 +261,7 @@ router.post('/microsoft', async (req, res) => {
     let user;
     if (userQuery.rows.length > 0) {
       user = userQuery.rows[0];
-      await pool.query(
+      await dbQuery(
         'UPDATE users SET auth_provider = $1, provider_id = $2, full_name = COALESCE(full_name, $3), updated_at = CURRENT_TIMESTAMP WHERE id = $4',
         ['microsoft', microsoftId, name, user.id]
       );
@@ -269,12 +269,12 @@ router.post('/microsoft', async (req, res) => {
       let baseUsername = cleanEmail.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '');
       if (baseUsername.length < 3) baseUsername = 'user_' + Math.floor(1000 + Math.random() * 9000);
 
-      const checkUsername = await pool.query('SELECT id FROM users WHERE username = $1', [baseUsername]);
+      const checkUsername = await dbQuery('SELECT id FROM users WHERE username = $1', [baseUsername]);
       if (checkUsername.rows.length > 0) {
         baseUsername = `${baseUsername}_${Math.floor(100 + Math.random() * 900)}`;
       }
 
-      const insertRes = await pool.query(
+      const insertRes = await dbQuery(
         `INSERT INTO users (username, email, full_name, auth_provider, provider_id)
          VALUES ($1, $2, $3, 'microsoft', $4)
          RETURNING id, username, email, full_name, role`,
@@ -304,7 +304,7 @@ router.post('/microsoft', async (req, res) => {
 // 5. OBTENER PERFIL DEL USUARIO AUTENTICADO
 router.get('/me', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query(
+    const result = await dbQuery(
       'SELECT id, username, email, full_name, role, auth_provider, avatar_url, created_at FROM users WHERE id = $1',
       [req.user.id]
     );
@@ -354,7 +354,7 @@ router.post('/progress', authenticateToken, async (req, res) => {
       RETURNING *;
     `;
 
-    const result = await pool.query(query, [
+    const result = await dbQuery(query, [
       userId,
       gameKey,
       difficulty || 1,
@@ -374,7 +374,7 @@ router.post('/progress', authenticateToken, async (req, res) => {
 router.get('/progress', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
-    const result = await pool.query(
+    const result = await dbQuery(
       'SELECT game_key, difficulty, highest_level, completed, certificate_name, updated_at FROM game_progress WHERE user_id = $1',
       [userId]
     );
