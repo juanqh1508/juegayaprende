@@ -783,6 +783,7 @@
    BALLOON POPPING LEVEL
    ============================================= */
 .balloon {
+  cursor: pointer;
   position: absolute;
   bottom: -200px;
   font-size: 13.5rem;

@@ -384,7 +384,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
       case 'click':
         return <ClickLevel key={tasksCompleted} target={currentTarget} moving={level.moving} onComplete={() => handleTaskComplete(1)} />;
       case 'balloons':
-        return <BalloonPoppingLevel key={currentLevelIndex} target={level.target} difficulty={difficulty} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
+        return <BalloonPoppingLevel key={currentLevelIndex} target={level.target} difficulty={difficulty} totalTasks={totalTasksPerLevel} tasksCompleted={tasksCompleted} onProgress={() => handleTaskComplete(1)} />;
       case 'whack_a_mole':
         return <WhackAMoleLevel key={currentLevelIndex} target={level.target} difficulty={difficulty} totalTasks={totalTasksPerLevel} onProgress={() => handleTaskComplete(1)} />;
       case 'doubleclick':

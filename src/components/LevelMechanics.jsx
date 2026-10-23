@@ -732,29 +732,73 @@ export function SequenceClickLevel({ sequenceLength = 3, onComplete }) {
 }
 
 // --- BALLOON POPPING LEVEL ---
-export function BalloonPoppingLevel({ target, difficulty, onProgress, totalTasks }) {
+export function BalloonPoppingLevel({ target, difficulty, onProgress, totalTasks, tasksCompleted = 0 }) {
   const [balloons, setBalloons] = useState([]);
-  
+  const tasksCompletedRef = useRef(tasksCompleted);
+  tasksCompletedRef.current = tasksCompleted;
+  const totalTasksRef = useRef(totalTasks);
+  totalTasksRef.current = totalTasks;
+
+  let animDurationSeconds = 6;
+  if (difficulty === 2) animDurationSeconds = 4;
+  if (difficulty === 3) animDurationSeconds = 2.5;
+  const animDuration = `${animDurationSeconds}s`;
+  const animDurationMs = animDurationSeconds * 1000;
+
+  let spawnSpeed = 800;
+  if (difficulty === 2) spawnSpeed = 650;
+  if (difficulty === 3) spawnSpeed = 500;
+
   useEffect(() => {
+    // Spawn an initial balloon so screen isn't empty on start
+    const now = Date.now();
+    setBalloons([
+      { id: now, left: 15 + Math.random() * 65, createdAt: now }
+    ]);
+
     const spawnInterval = setInterval(() => {
+      // If the required quantity is already completed, stop spawning new balloons
+      if (tasksCompletedRef.current >= totalTasksRef.current) {
+        return;
+      }
+
       setBalloons(prev => {
-        if (prev.length > 6) return prev;
-        return [...prev, { id: Date.now() + Math.random(), left: 10 + Math.random() * 80 }];
+        const currentTime = Date.now();
+        // Keep only balloons that haven't exceeded their float duration + safe margin
+        const activeBalloons = prev.filter(b => currentTime - b.createdAt < animDurationMs + 400);
+
+        // Keep up to 6 balloons on screen simultaneously
+        if (activeBalloons.length >= 6) {
+          return activeBalloons;
+        }
+
+        const newBalloon = {
+          id: currentTime + Math.random(),
+          left: 8 + Math.random() * 76,
+          createdAt: currentTime
+        };
+
+        return [...activeBalloons, newBalloon];
       });
-    }, 800);
+    }, spawnSpeed);
+
     return () => clearInterval(spawnInterval);
-  }, []);
+  }, [difficulty, animDurationMs, spawnSpeed]);
 
   const handlePop = (id) => {
-    sounds.click();
-    sounds.taskComplete();
-    setBalloons(prev => prev.filter(b => b.id !== id));
-    onProgress();
+    setBalloons(prev => {
+      const exists = prev.some(b => b.id === id);
+      if (!exists) return prev;
+      sounds.click();
+      sounds.taskComplete();
+      onProgress();
+      return prev.filter(b => b.id !== id);
+    });
   };
 
-  let animDuration = '6s';
-  if (difficulty === 2) animDuration = '4s';
-  if (difficulty === 3) animDuration = '2.5s';
+  const handleEscape = (id) => {
+    setBalloons(prev => prev.filter(b => b.id !== id));
+  };
 
   return (
     <div className="mechanic-container balloons-bg" style={{ position: 'relative', overflow: 'hidden', cursor: 'crosshair' }}>
@@ -763,12 +807,19 @@ export function BalloonPoppingLevel({ target, difficulty, onProgress, totalTasks
         title="¡Pincha los globos!" 
         subtitle="Haz clic sobre los globos antes de que se escapen." 
       />
+
+      <div style={{ position: 'absolute', bottom: '20px', left: '30px', fontSize: '4rem', display: 'flex', alignItems: 'center', gap: '15px', zIndex: 10, pointerEvents: 'none', userSelect: 'none' }}>
+        🎈 <span style={{ fontSize: '2rem', fontWeight: 'bold', background: 'rgba(255,255,255,0.85)', padding: '5px 18px', borderRadius: '20px', color: '#333', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>{tasksCompleted} / {totalTasks}</span>
+      </div>
+
       {balloons.map(b => (
         <div
           key={b.id}
           className="balloon"
           style={{ left: `${b.left}%`, animationDuration: animDuration }}
           onMouseDown={() => handlePop(b.id)}
+          onTouchStart={(e) => { e.preventDefault(); handlePop(b.id); }}
+          onAnimationEnd={() => handleEscape(b.id)}
         >
           {target}
         </div>
