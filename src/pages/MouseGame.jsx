@@ -316,8 +316,8 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
         setShowSuccess(true);
         if (setIsMusicPlaying) setIsMusicPlaying(false);
 
-        // Si el usuario tiene sesión activa, registrar automáticamente el nivel superado en PostgreSQL
-        if (user && saveProgress) {
+        // Registrar automáticamente el nivel superado
+        if (saveProgress) {
           saveProgress({
             gameKey: 'mouse-game',
             difficulty,

@@ -21,6 +21,55 @@ import {
 
 const AuthContext = createContext(null);
 
+
+const LOCAL_STORAGE_KEY = 'plataforma_juegos_progress';
+
+function getLocalProgressList() {
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    console.warn('Error al leer progreso de localStorage:', e);
+    return [];
+  }
+}
+
+function saveLocalProgressItem(item) {
+  try {
+    const list = getLocalProgressList();
+    const existingIndex = list.findIndex(
+      p => p.game_key === item.game_key && Number(p.difficulty) === Number(item.difficulty)
+    );
+
+    if (existingIndex >= 0) {
+      const existing = list[existingIndex];
+      list[existingIndex] = {
+        ...existing,
+        ...item,
+        highest_level: Math.max(Number(existing.highest_level) || 0, Number(item.highest_level) || 0),
+        completed: existing.completed || item.completed,
+        certificate_name: item.certificate_name || existing.certificate_name || null,
+        updated_at: new Date().toISOString()
+      };
+    } else {
+      list.push({
+        ...item,
+        highest_level: Number(item.highest_level) || 0,
+        completed: !!item.completed,
+        updated_at: new Date().toISOString()
+      });
+    }
+
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(list));
+    return list;
+  } catch (e) {
+    console.warn('Error al guardar progreso en localStorage:', e);
+    return [];
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);

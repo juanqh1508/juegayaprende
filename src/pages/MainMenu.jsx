@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from '../components/AuthModal';
 import HistoryModal from '../components/HistoryModal';
 import './MainMenu.css';
 
 function MainMenu({ onNavigate }) {
-  const { user, logout } = useAuth();
+  const { user, logout, getProgress } = useAuth();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [startLevel, setStartLevel] = useState(0);
+
+  useEffect(() => {
+    if (getProgress) {
+      getProgress().then(list => {
+        if (list && list.length > 0) {
+          const maxLevel = Math.max(...list.map(p => Number(p.highest_level) || 0));
+          if (maxLevel > 0) {
+            setStartLevel(Math.min(maxLevel, 18));
+          }
+        }
+      }).catch(() => {});
+    }
+  }, [isHistoryOpen, user]);
 
   return (
     <div className="main-menu">
@@ -121,6 +135,8 @@ function MainMenu({ onNavigate }) {
             <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>Nivel de Inicio:</label>
             <select 
               id="startLevelSelect" 
+              value={startLevel}
+              onChange={(e) => setStartLevel(parseInt(e.target.value))}
               style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '2px solid var(--ocean-cyan)', fontSize: '1.1rem', fontFamily: 'var(--font-heading)', cursor: 'pointer' }}
             >
               {[...Array(19)].map((_, i) => (
@@ -129,9 +145,9 @@ function MainMenu({ onNavigate }) {
             </select>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
-            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 1, parseInt(document.getElementById('startLevelSelect').value))}>🟢 Dificultad Fácil</button>
-            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 2, parseInt(document.getElementById('startLevelSelect').value))} style={{ background: 'var(--panama-blue)' }}>🟡 Dificultad Media</button>
-            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 3, parseInt(document.getElementById('startLevelSelect').value))} style={{ background: 'var(--panama-red)' }}>🔴 Dificultad Difícil</button>
+            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 1, startLevel)}>🟢 Dificultad Fácil</button>
+            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 2, startLevel)} style={{ background: 'var(--panama-blue)' }}>🟡 Dificultad Media</button>
+            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 3, startLevel)} style={{ background: 'var(--panama-red)' }}>🔴 Dificultad Difícil</button>
           </div>
         </div>
         

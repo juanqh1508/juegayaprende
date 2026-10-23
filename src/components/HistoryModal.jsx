@@ -16,29 +16,47 @@ function HistoryModal({ isOpen, onClose, onOpenAuth, onContinueLevel }) {
   const { user, getProgress } = useAuth();
   const [progressList, setProgressList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedDiff, setSelectedDiff] = useState('all'); // 'all', 1, 2, 3
 
   useEffect(() => {
-    if (isOpen && user) {
+    if (isOpen) {
       setLoading(true);
-      getProgress().then((data) => {
-        setProgressList(data || []);
+      if (getProgress) {
+        getProgress().then((data) => {
+          setProgressList(data || []);
+          setLoading(false);
+        }).catch(() => {
+          setLoading(false);
+        });
+      } else {
         setLoading(false);
-      });
+      }
     }
   }, [isOpen, user]);
 
   if (!isOpen) return null;
 
   // Obtener progreso por dificultad
-  const easyProgress = progressList.find(p => p.difficulty === 1);
-  const mediumProgress = progressList.find(p => p.difficulty === 2);
-  const hardProgress = progressList.find(p => p.difficulty === 3);
+  const easyProgress = progressList.find(p => Number(p.difficulty) === 1);
+  const mediumProgress = progressList.find(p => Number(p.difficulty) === 2);
+  const hardProgress = progressList.find(p => Number(p.difficulty) === 3);
 
   const highestAnyDifficulty = Math.max(
-    easyProgress?.highest_level || 0,
-    mediumProgress?.highest_level || 0,
-    hardProgress?.highest_level || 0
+    Number(easyProgress?.highest_level) || 0,
+    Number(mediumProgress?.highest_level) || 0,
+    Number(hardProgress?.highest_level) || 0
   );
+
+  // Nivel activo según la dificultad seleccionada
+  const activeLevel = selectedDiff === 'all'
+    ? highestAnyDifficulty
+    : (selectedDiff === 1 ? (Number(easyProgress?.highest_level) || 0)
+      : (selectedDiff === 2 ? (Number(mediumProgress?.highest_level) || 0)
+        : (Number(hardProgress?.highest_level) || 0)));
+
+  const handleDiffCardClick = (diff) => {
+    setSelectedDiff(prev => (prev === diff ? 'all' : diff));
+  };
 
   return (
     <div className="history-overlay" onClick={onClose}>
@@ -47,118 +65,189 @@ function HistoryModal({ isOpen, onClose, onOpenAuth, onContinueLevel }) {
 
         <div className="history-header">
           <div className="history-icon-bubble">📊</div>
-          <h2>Historial de Actividades</h2>
+          <h2>Historial y Retos</h2>
           <p className="history-subtitle">
             {user 
-              ? `Progreso guardado de ${user.fullName || user.username}`
-              : 'Puedes jugar libremente sin cuenta o iniciar sesión para guardar tu historial'}
+              ? `Progreso de ${user.fullName || user.username}`
+              : 'Progreso guardado en este equipo'}
           </p>
         </div>
 
+        {/* Banner informativo de modo libre vs cuenta en la nube */}
         {!user ? (
-          /* MODO INVITADO / LIBRE */
-          <div className="guest-history-card">
-            <div className="guest-icon">🎮</div>
-            <h3>¡Estás jugando en Modo Libre!</h3>
-            <p>
-              En esta plataforma <strong>no es obligatorio iniciar sesión</strong>. Puedes realizar todas las actividades, retos y generar tu diploma sin una cuenta.
-            </p>
-            <div className="guest-benefits">
-              <h4>¿Por qué crear una cuenta o iniciar sesión?</h4>
-              <ul>
-                <li>⭐ Guardar los retos y niveles que vas completando.</li>
-                <li>📜 Registro permanente de tus diplomas obtenidos.</li>
-                <li>🚀 Continuar en el nivel donde te quedaste desde cualquier computadora.</li>
-              </ul>
+          <div style={{
+            background: '#eff6ff',
+            border: '1.5px solid #93c5fd',
+            borderRadius: '14px',
+            padding: '10px 14px',
+            marginBottom: '1.2rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '8px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem', color: '#1e40af' }}>
+              <span style={{ fontSize: '1.3rem' }}>🎮</span>
+              <div>
+                <strong>Modo Libre Activo:</strong>
+                <div style={{ fontSize: '0.8rem', color: '#3b82f6' }}>Tus niveles completados quedan guardados en este navegador.</div>
+              </div>
             </div>
-            <div className="guest-actions">
-              <button 
-                className="btn-login-prompt"
-                onClick={() => {
-                  onClose();
-                  onOpenAuth();
-                }}
-              >
-                🔐 Iniciar Sesión / Registrarse
-              </button>
-              <button className="btn-continue-guest" onClick={onClose}>
-                Seguir jugando como invitado
-              </button>
-            </div>
+            <button
+              onClick={() => { onClose(); onOpenAuth(); }}
+              style={{
+                background: 'var(--panama-blue)',
+                color: 'white',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '20px',
+                fontWeight: 'bold',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(21,101,192,0.2)'
+              }}
+            >
+              🔐 Iniciar Sesión (Nube)
+            </button>
           </div>
         ) : (
-          /* USUARIO AUTENTICADO */
-          <div className="user-history-content">
-            {loading ? (
-              <div className="history-loading">Cargando tu progreso desde PostgreSQL... ⏳</div>
-            ) : (
-              <>
-                {/* Tarjetas de Resumen por Dificultad */}
-                <div className="difficulty-summary-grid">
-                  <div className="diff-card easy">
-                    <span className="diff-badge">🟢 Fácil</span>
-                    <div className="diff-level">
-                      {easyProgress ? `Nivel ${easyProgress.highest_level} / 19` : 'Sin iniciar'}
-                    </div>
-                    {easyProgress?.completed && <span className="diff-completed">🏆 ¡Completado!</span>}
-                  </div>
-
-                  <div className="diff-card medium">
-                    <span className="diff-badge">🟡 Medio</span>
-                    <div className="diff-level">
-                      {mediumProgress ? `Nivel ${mediumProgress.highest_level} / 19` : 'Sin iniciar'}
-                    </div>
-                    {mediumProgress?.completed && <span className="diff-completed">🏆 ¡Completado!</span>}
-                  </div>
-
-                  <div className="diff-card hard">
-                    <span className="diff-badge">🔴 Difícil</span>
-                    <div className="diff-level">
-                      {hardProgress ? `Nivel ${hardProgress.highest_level} / 19` : 'Sin iniciar'}
-                    </div>
-                    {hardProgress?.completed && <span className="diff-completed">🏆 ¡Completado!</span>}
-                  </div>
-                </div>
-
-                {/* Desglose de secciones y lecciones */}
-                <h4 className="sections-title">Lecciones del Mouse:</h4>
-                <div className="sections-list">
-                  {SECTIONS_INFO.map((sec, idx) => {
-                    const isCompleted = sec.levels.every(lvl => highestAnyDifficulty >= lvl);
-                    const isCurrent = sec.levels.some(lvl => highestAnyDifficulty === lvl);
-
-                    return (
-                      <div key={idx} className={`section-item ${isCompleted ? 'done' : (isCurrent ? 'current' : 'locked')}`}>
-                        <div className="section-item-left">
-                          <span className="sec-icon">{sec.icon}</span>
-                          <div>
-                            <strong>{sec.name}</strong>
-                            <small>Retos {sec.levels[0]} al {sec.levels[sec.levels.length - 1]}</small>
-                          </div>
-                        </div>
-                        <span className="sec-status">
-                          {isCompleted ? '✅ Completado' : (isCurrent ? '⚡ En progreso' : '🔒 Pendiente')}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {highestAnyDifficulty > 0 && onContinueLevel && (
-                  <button 
-                    className="btn-resume-game"
-                    onClick={() => {
-                      onClose();
-                      onContinueLevel(1, Math.min(highestAnyDifficulty, 18));
-                    }}
-                  >
-                    ▶️ Continuar desde el Reto {Math.min(highestAnyDifficulty + 1, 19)}
-                  </button>
-                )}
-              </>
-            )}
+          <div style={{
+            background: '#f0fdf4',
+            border: '1px solid #86efac',
+            borderRadius: '12px',
+            padding: '8px 14px',
+            marginBottom: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '0.88rem',
+            color: '#166534'
+          }}>
+            <span>☁️</span>
+            <span>Progreso sincronizado en la nube para <strong>{user.fullName || user.username}</strong></span>
           </div>
         )}
+
+        <div className="user-history-content">
+          {loading ? (
+            <div className="history-loading">Cargando tu progreso... ⏳</div>
+          ) : (
+            <>
+              {/* Tarjetas de Resumen por Dificultad (interactivas) */}
+              <div className="difficulty-summary-grid">
+                <div 
+                  className={`diff-card easy ${selectedDiff === 1 ? 'selected' : ''}`}
+                  onClick={() => handleDiffCardClick(1)}
+                  style={{ cursor: 'pointer', transition: 'all 0.2s', transform: selectedDiff === 1 ? 'scale(1.03)' : 'none', boxShadow: selectedDiff === 1 ? '0 4px 10px rgba(0,0,0,0.1)' : 'none' }}
+                  title="Haz clic para ver retos de Fácil"
+                >
+                  <span className="diff-badge">🟢 Fácil</span>
+                  <div className="diff-level">
+                    {easyProgress && easyProgress.highest_level > 0 ? `Nivel ${easyProgress.highest_level} / 19` : 'Sin iniciar'}
+                  </div>
+                  {easyProgress?.completed && <span className="diff-completed">🏆 ¡Completado!</span>}
+                </div>
+
+                <div 
+                  className={`diff-card medium ${selectedDiff === 2 ? 'selected' : ''}`}
+                  onClick={() => handleDiffCardClick(2)}
+                  style={{ cursor: 'pointer', transition: 'all 0.2s', transform: selectedDiff === 2 ? 'scale(1.03)' : 'none', boxShadow: selectedDiff === 2 ? '0 4px 10px rgba(0,0,0,0.1)' : 'none' }}
+                  title="Haz clic para ver retos de Medio"
+                >
+                  <span className="diff-badge">🟡 Medio</span>
+                  <div className="diff-level">
+                    {mediumProgress && mediumProgress.highest_level > 0 ? `Nivel ${mediumProgress.highest_level} / 19` : 'Sin iniciar'}
+                  </div>
+                  {mediumProgress?.completed && <span className="diff-completed">🏆 ¡Completado!</span>}
+                </div>
+
+                <div 
+                  className={`diff-card hard ${selectedDiff === 3 ? 'selected' : ''}`}
+                  onClick={() => handleDiffCardClick(3)}
+                  style={{ cursor: 'pointer', transition: 'all 0.2s', transform: selectedDiff === 3 ? 'scale(1.03)' : 'none', boxShadow: selectedDiff === 3 ? '0 4px 10px rgba(0,0,0,0.1)' : 'none' }}
+                  title="Haz clic para ver retos de Difícil"
+                >
+                  <span className="diff-badge">🔴 Difícil</span>
+                  <div className="diff-level">
+                    {hardProgress && hardProgress.highest_level > 0 ? `Nivel ${hardProgress.highest_level} / 19` : 'Sin iniciar'}
+                  </div>
+                  {hardProgress?.completed && <span className="diff-completed">🏆 ¡Completado!</span>}
+                </div>
+              </div>
+
+              {selectedDiff !== 'all' && (
+                <div style={{ textAlign: 'right', marginTop: '-0.8rem', marginBottom: '0.8rem' }}>
+                  <button 
+                    onClick={() => setSelectedDiff('all')} 
+                    style={{ background: 'none', border: 'none', color: 'var(--panama-blue)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline', fontWeight: 'bold' }}
+                  >
+                    Ver progreso general (todas las dificultades) ↺
+                  </button>
+                </div>
+              )}
+
+              {/* Desglose de secciones y lecciones */}
+              <h4 className="sections-title">
+                Lecciones del Mouse {selectedDiff === 1 ? '(Fácil)' : (selectedDiff === 2 ? '(Medio)' : (selectedDiff === 3 ? '(Difícil)' : '(General)'))}:
+              </h4>
+              <div className="sections-list">
+                {SECTIONS_INFO.map((sec, idx) => {
+                  const completedInSec = sec.levels.filter(lvl => activeLevel >= lvl).length;
+                  const totalInSec = sec.levels.length;
+                  const isCompleted = completedInSec === totalInSec;
+
+                  // Desbloqueado si:
+                  // 1. Es la sección inicial (idx === 0), O
+                  // 2. El próximo reto por jugar pertenece a esta sección, O
+                  // 3. Ya se completó algún reto de esta sección
+                  const isCurrent = !isCompleted && (
+                    idx === 0 ||
+                    sec.levels.includes(activeLevel + 1) ||
+                    completedInSec > 0
+                  );
+
+                  return (
+                    <div key={idx} className={`section-item ${isCompleted ? 'done' : (isCurrent ? 'current' : 'locked')}`}>
+                      <div className="section-item-left">
+                        <span className="sec-icon">{sec.icon}</span>
+                        <div>
+                          <strong>{sec.name}</strong>
+                          <small>
+                            Retos {sec.levels[0]} al {sec.levels[sec.levels.length - 1]}
+                            {isCompleted 
+                              ? ` • ¡Completado! (${totalInSec}/${totalInSec})` 
+                              : (isCurrent 
+                                ? ` • En curso (${completedInSec}/${totalInSec} superados)` 
+                                : ` • Bloqueado (Supera el reto ${sec.levels[0] - 1} para desbloquear)`)}
+                          </small>
+                        </div>
+                      </div>
+                      <span className="sec-status">
+                        {isCompleted ? '✅ Completado' : (isCurrent ? '⚡ En progreso' : '🔒 Pendiente')}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {onContinueLevel && (
+                <button 
+                  className="btn-resume-game"
+                  onClick={() => {
+                    onClose();
+                    const targetDiff = selectedDiff !== 'all' ? selectedDiff : (hardProgress?.highest_level >= highestAnyDifficulty && highestAnyDifficulty > 0 ? 3 : (mediumProgress?.highest_level >= highestAnyDifficulty && highestAnyDifficulty > 0 ? 2 : 1));
+                    onContinueLevel(targetDiff, Math.min(activeLevel, 18));
+                  }}
+                >
+                  {activeLevel > 0 
+                    ? `▶️ Continuar desde el Reto ${Math.min(activeLevel + 1, 19)}` 
+                    : '▶️ Empezar desde el Reto 1'}
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

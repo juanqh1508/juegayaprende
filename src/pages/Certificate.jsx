@@ -28,8 +28,8 @@ function Certificate({ userName, difficulty = 1, onNavigate }) {
       sounds.levelComplete();
       setGenerated(true);
 
-      // Guardar diploma y progreso en PostgreSQL si el usuario está autenticado
-      if (user) {
+      // Guardar diploma y progreso
+      if (saveProgress) {
         saveProgress({
           gameKey: 'mouse-game',
           difficulty,
