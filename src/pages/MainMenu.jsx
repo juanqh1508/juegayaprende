@@ -1,91 +1,66 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, getLastSession } from '../context/AuthContext';
 import AuthModal from '../components/AuthModal';
 import HistoryModal from '../components/HistoryModal';
+import AdventureCircuit, { getLevelDetails } from '../components/AdventureCircuit';
+import { sounds } from '../utils/sounds';
 import './MainMenu.css';
 
 function MainMenu({ onNavigate }) {
   const { user, logout, getProgress } = useAuth();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [startLevel, setStartLevel] = useState(0);
+  const [difficulty, setDifficulty] = useState(() => {
+    const s = getLastSession();
+    return s?.difficulty ? Number(s.difficulty) : 1;
+  });
+  const [currentLevel, setCurrentLevel] = useState(() => {
+    const s = getLastSession();
+    return s?.level !== undefined ? Number(s.level) + 1 : 1;
+  });
+  const [highestCompleted, setHighestCompleted] = useState(0);
 
   useEffect(() => {
     if (getProgress) {
       getProgress().then(list => {
+        const session = getLastSession();
         if (list && list.length > 0) {
           const maxLevel = Math.max(...list.map(p => Number(p.highest_level) || 0));
+          setHighestCompleted(maxLevel);
           if (maxLevel > 0) {
-            setStartLevel(Math.min(maxLevel, 18));
+            setCurrentLevel(Math.min(maxLevel + 1, 19));
           }
+        } else if (session?.level !== undefined) {
+          setCurrentLevel(Math.min(Number(session.level) + 1, 19));
+        }
+        if (session?.difficulty) {
+          setDifficulty(Number(session.difficulty));
         }
       }).catch(() => {});
     }
   }, [isHistoryOpen, user]);
 
+  const activeLevelInfo = getLevelDetails(currentLevel);
+
   return (
     <div className="main-menu">
       {/* Barra superior de usuario / autenticación */}
-      <div style={{
-        width: '100%',
-        maxWidth: '900px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '0.5rem 1rem',
-        marginBottom: '0.5rem',
-        flexWrap: 'wrap',
-        gap: '10px'
-      }}>
-        {/* Botón de Historial (disponible para todos) */}
+      <div className="main-top-bar">
         <button
-          onClick={() => setIsHistoryOpen(true)}
-          style={{
-            background: 'white',
-            color: 'var(--tropical-green)',
-            border: '2px solid var(--tropical-green)',
-            padding: '8px 16px',
-            borderRadius: '50px',
-            fontFamily: 'var(--font-heading)',
-            fontSize: '1rem',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}
+          onClick={() => { sounds.click(); setIsHistoryOpen(true); }}
+          className="btn-history-top"
         >
           📊 Mi Historial y Retos
         </button>
 
         {user ? (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            background: 'white',
-            padding: '6px 14px',
-            borderRadius: '50px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            border: '2px solid var(--sun-yellow)'
-          }}>
+          <div className="user-profile-badge">
             <span style={{ fontWeight: 'bold', color: 'var(--panama-blue)', fontSize: '0.95rem' }}>
               🐭 ¡Hola, {user.fullName || user.username}!
             </span>
             <button
-              onClick={logout}
-              style={{
-                background: '#fee2e2',
-                color: '#b91c1c',
-                border: 'none',
-                padding: '4px 10px',
-                borderRadius: '20px',
-                fontSize: '0.82rem',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'background 0.2s'
-              }}
+              onClick={() => { sounds.click(); logout(); }}
+              className="btn-logout"
               title="Cerrar sesión"
             >
               Salir 🚪
@@ -97,22 +72,8 @@ function MainMenu({ onNavigate }) {
               🎮 Modo Libre
             </span>
             <button
-              onClick={() => setIsAuthOpen(true)}
-              style={{
-                background: 'white',
-                color: 'var(--panama-blue)',
-                border: '2px solid var(--panama-blue)',
-                padding: '8px 16px',
-                borderRadius: '50px',
-                fontFamily: 'var(--font-heading)',
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
+              onClick={() => { sounds.click(); setIsAuthOpen(true); }}
+              className="btn-login-top"
             >
               🔐 Iniciar Sesión / Registro
             </button>
@@ -120,49 +81,59 @@ function MainMenu({ onNavigate }) {
         )}
       </div>
 
-      <header className="menu-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <img src="/logo.png" alt="Juega y Aprende" className="main-logo animate-bounce" style={{ maxWidth: '340px', width: '90%', height: 'auto', marginBottom: '1rem' }} />
+      <header className="menu-header">
+        <img src="/logo.png" alt="Juega y Aprende" className="main-logo animate-bounce" style={{ maxWidth: '340px', width: '90%', height: 'auto', marginBottom: '0.5rem' }} />
         <p className="subtitle">¡Aprende a usar la computadora jugando!</p>
-
       </header>
 
-      <div className="games-grid">
-        <div className="game-card active">
-          <div className="card-icon">🖱️</div>
-          <h2>Aventura del Mouse</h2>
-          <p>Elige tu nivel inicial y dificultad:</p>
-          <div style={{ margin: '1rem 0' }}>
-            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>Nivel de Inicio:</label>
-            <select 
-              id="startLevelSelect" 
-              value={startLevel}
-              onChange={(e) => setStartLevel(parseInt(e.target.value))}
-              style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '2px solid var(--ocean-cyan)', fontSize: '1.1rem', fontFamily: 'var(--font-heading)', cursor: 'pointer' }}
-            >
-              {[...Array(19)].map((_, i) => (
-                <option key={i} value={i}>Reto {i + 1}</option>
-              ))}
-            </select>
+      {/* Hero Banner: Continuar desde donde se quedó */}
+      {highestCompleted > 0 && (
+        <div className="resume-hero-banner">
+          <div className="resume-hero-left">
+            <span className="resume-hero-mouse">🐭</span>
+            <div>
+              <div className="resume-hero-badge">Progreso Guardado</div>
+              <h3 className="resume-hero-title">
+                Te quedaste en el Reto {currentLevel}: {activeLevelInfo.name} {activeLevelInfo.icon}
+              </h3>
+              <p className="resume-hero-sub">
+                Dificultad: {difficulty === 1 ? '🟢 Fácil' : (difficulty === 2 ? '🟡 Media' : '🔴 Difícil')} • {highestCompleted} de 19 retos superados
+              </p>
+            </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
-            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 1, startLevel)}>🟢 Dificultad Fácil</button>
-            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 2, startLevel)} style={{ background: 'var(--panama-blue)' }}>🟡 Dificultad Media</button>
-            <button className="btn-primary" onClick={() => onNavigate('mouse-game', 3, startLevel)} style={{ background: 'var(--panama-red)' }}>🔴 Dificultad Difícil</button>
-          </div>
+          <button 
+            type="button"
+            className="btn-resume-hero"
+            onClick={() => {
+              sounds.click();
+              onNavigate('mouse-game', difficulty, currentLevel - 1);
+            }}
+          >
+            🚀 ¡Continuar Jugando!
+          </button>
         </div>
-        
+      )}
+
+      {/* CIRCUITO INTERACTIVO DE AVENTURA: El ratoncito se mueve por cada nivel */}
+      <AdventureCircuit 
+        currentLevel={currentLevel}
+        difficulty={difficulty}
+        onDifficultyChange={(newDiff) => setDifficulty(newDiff)}
+        onSelectLevel={(levelIdx, diff) => onNavigate('mouse-game', diff, levelIdx)}
+      />
+
+      {/* Otras Actividades / Próximamente */}
+      <div className="secondary-games-row">
         <div className="game-card locked">
           <div className="card-icon">⌨️</div>
           <h2>Misterio del Teclado</h2>
-          <p>Próximamente...</p>
-          <button className="btn-locked" disabled>Bloqueado</button>
+          <p>Próximamente nuevas aventuras para dominar el teclado...</p>
+          <button className="btn-locked" disabled>🔒 Próximamente</button>
         </div>
       </div>
 
-      {/* Modal de autenticación */}
+      {/* Modales */}
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
-
-      {/* Modal de historial de actividades */}
       <HistoryModal 
         isOpen={isHistoryOpen} 
         onClose={() => setIsHistoryOpen(false)} 

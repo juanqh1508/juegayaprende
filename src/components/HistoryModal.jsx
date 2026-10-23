@@ -134,6 +134,24 @@ function HistoryModal({ isOpen, onClose, onOpenAuth, onContinueLevel }) {
             <div className="history-loading">Cargando tu progreso... ⏳</div>
           ) : (
             <>
+              {/* Resumen del circuito y posición del ratoncito */}
+              <div style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '16px', padding: '10px 14px', marginBottom: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '1.8rem' }}>🐭</span>
+                  <div>
+                    <strong style={{ fontSize: '0.95rem', color: '#1e293b', display: 'block' }}>
+                      {activeLevel === 0 ? 'Listo para empezar: Reto 1' : `Posición en Circuito: Reto ${Math.min(activeLevel + 1, 19)}`}
+                    </strong>
+                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                      {activeLevel} de 19 retos superados
+                    </div>
+                  </div>
+                </div>
+                <span style={{ background: '#dcfce7', color: '#166534', padding: '4px 12px', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.82rem' }}>
+                  {Math.round((activeLevel / 19) * 100)}% del circuito
+                </span>
+              </div>
+
               {/* Tarjetas de Resumen por Dificultad (interactivas) */}
               <div className="difficulty-summary-grid">
                 <div 

@@ -1,0 +1,541 @@
+/* ==========================================================================
+   ADVENTURE CIRCUIT (CIRCUITO DE AVENTURAS DEL RATONCITO)
+   ========================================================================== */
+
+.adventure-circuit-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 28px;
+  padding: 1.8rem 1.5rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12), 0 0 0 4px var(--ocean-cyan);
+  width: 100%;
+  max-width: 960px;
+  margin: 1.5rem auto;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.circuit-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.circuit-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.circuit-title {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  color: var(--panama-blue);
+  margin: 0;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+.circuit-badge-progress {
+  background: linear-gradient(135deg, var(--sun-yellow), var(--mango-orange));
+  color: #2c1810;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 10px rgba(255, 109, 0, 0.25);
+}
+
+.circuit-subtitle {
+  color: #64748b;
+  font-size: 1rem;
+  margin: 0.4rem 0 0.8rem 0;
+}
+
+/* Barra de dificultad y acción rápida */
+.circuit-top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 10px 18px;
+  margin-bottom: 1.5rem;
+}
+
+.circuit-diff-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.circuit-diff-label {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.diff-pill-btn {
+  border: 2px solid transparent;
+  background: white;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+}
+
+.diff-pill-btn:hover {
+  transform: translateY(-2px);
+}
+
+.diff-pill-btn.active.easy {
+  border-color: #22c55e;
+  background: #f0fdf4;
+  color: #15803d;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+}
+
+.diff-pill-btn.active.medium {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.diff-pill-btn.active.hard {
+  border-color: #ef4444;
+  background: #fef2f2;
+  color: #b91c1c;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.btn-hero-continue {
+  background: linear-gradient(135deg, #ff6b35, #ff3366);
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(255, 51, 102, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  animation: pulseHero 2s infinite;
+}
+
+.btn-hero-continue:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 22px rgba(255, 51, 102, 0.45);
+}
+
+@keyframes pulseHero {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+/* EL CIRCUITO (PISTA DE NODOS) */
+.circuit-track-wrapper {
+  overflow-x: auto;
+  padding: 1.5rem 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ocean-cyan) #f1f5f9;
+}
+
+.circuit-track {
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+  position: relative;
+  min-width: 680px;
+}
+
+/* Mundos / Regiones */
+.circuit-world-block {
+  background: #ffffff;
+  border: 2px dashed #cbd5e1;
+  border-radius: 20px;
+  padding: 1.2rem 1.4rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.circuit-world-block.completed {
+  border-color: #86efac;
+  background: rgba(240, 253, 244, 0.6);
+}
+
+.circuit-world-block.active {
+  border-color: var(--ocean-cyan);
+  background: rgba(238, 250, 253, 0.8);
+  box-shadow: 0 6px 20px rgba(0, 188, 212, 0.15);
+}
+
+.circuit-world-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+.world-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.world-status-tag {
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.world-status-tag.done {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.world-status-tag.current {
+  background: #dbeafe;
+  color: #1e40af;
+  animation: pulseTag 1.5s infinite;
+}
+
+@keyframes pulseTag {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Fila de estaciones de un mundo */
+.circuit-stations-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+  gap: 15px;
+}
+
+/* Línea conectora entre estaciones */
+.circuit-stations-row::before {
+  content: '';
+  position: absolute;
+  top: 36px;
+  left: 30px;
+  right: 30px;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+/* Estación individual */
+.circuit-station {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+  width: 90px;
+  transition: transform 0.2s ease;
+}
+
+.circuit-station:hover {
+  transform: translateY(-4px);
+}
+
+.station-node {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 4px solid #cbd5e1;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.station-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.station-number {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.station-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #334155;
+  margin-top: 8px;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 95px;
+}
+
+/* Estado: Superado */
+.circuit-station.completed .station-node {
+  border-color: #22c55e;
+  background: #f0fdf4;
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.3);
+}
+
+.circuit-station.completed .station-number {
+  color: #166534;
+}
+
+.station-star-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ffd700;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Estado: En curso (Donde está el personaje) */
+.circuit-station.current .station-node {
+  border-color: #ff6b35;
+  background: #fff7ed;
+  box-shadow: 0 0 0 6px rgba(255, 107, 53, 0.25), 0 8px 20px rgba(255, 107, 53, 0.35);
+  animation: currentStationGlow 2s infinite ease-in-out;
+}
+
+.circuit-station.current .station-name {
+  color: #c2410c;
+  font-weight: 800;
+}
+
+@keyframes currentStationGlow {
+  0% { transform: scale(1); box-shadow: 0 0 0 6px rgba(255, 107, 53, 0.25); }
+  50% { transform: scale(1.06); box-shadow: 0 0 0 10px rgba(255, 107, 53, 0.15); }
+  100% { transform: scale(1); box-shadow: 0 0 0 6px rgba(255, 107, 53, 0.25); }
+}
+
+/* EL PERSONAJE (RATONCITO EN EL CIRCUITO) */
+.mascot-avatar-container {
+  position: absolute;
+  top: -65px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+  animation: mascotHop 1.2s infinite ease-in-out;
+}
+
+.mascot-speech-bubble {
+  background: #2563eb;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: bold;
+  white-space: nowrap;
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.mascot-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px 4px 0;
+  border-style: solid;
+  border-color: #2563eb transparent;
+  display: block;
+  width: 0;
+}
+
+.mascot-body {
+  width: 50px;
+  height: 50px;
+  filter: drop-shadow(0 6px 8px rgba(0,0,0,0.25));
+}
+
+@keyframes mascotHop {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-10px); }
+}
+
+/* Estado: Bloqueado */
+.circuit-station.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.circuit-station.locked:hover {
+  transform: none;
+}
+
+.circuit-station.locked .station-node {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.station-lock-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #64748b;
+  color: white;
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+}
+
+/* Leyenda del circuito */
+.circuit-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+  color: #64748b;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+/* Versión Compacta (para la pantalla de victoria entre niveles) */
+.circuit-mini-banner {
+  background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+  border: 2px solid #86efac;
+  border-radius: 20px;
+  padding: 1.2rem;
+  margin: 1rem auto;
+  max-width: 620px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.circuit-mini-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: var(--panama-blue);
+  margin-bottom: 0.8rem;
+}
+
+.circuit-mini-path {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  margin: 1.5rem 0 0.5rem 0;
+}
+
+.mini-node {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  background: white;
+  border: 3px solid #cbd5e1;
+  position: relative;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+.mini-node.completed {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.mini-node.current {
+  border-color: #ff6b35;
+  background: #fff7ed;
+  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.3);
+  transform: scale(1.1);
+}
+
+.mini-road {
+  flex: 1;
+  max-width: 120px;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, #3b82f6, #3b82f6 8px, transparent 8px, transparent 14px);
+  position: relative;
+}
+
+.mini-mouse-moving {
+  position: absolute;
+  top: -42px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: mouseRun 1s infinite alternate ease-in-out;
+}
+
+@keyframes mouseRun {
+  0% { transform: translateX(-50%) translateY(0) rotate(-6deg); }
+  100% { transform: translateX(-50%) translateY(-6px) rotate(6deg); }
+}
+
+@media (max-width: 768px) {
+  .circuit-title {
+    font-size: 1.5rem;
+  }
+  .circuit-top-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn-hero-continue {
+    justify-content: center;
+  }
+}

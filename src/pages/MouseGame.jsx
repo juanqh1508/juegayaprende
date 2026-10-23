@@ -8,6 +8,7 @@ import {
   EggBreakLevel, FolderOpenLevel,
   CartoonMouseMascot, MazeLevel
 } from '../components/LevelMechanics';
+import AdventureCircuit from '../components/AdventureCircuit';
 import MouseInfographic from '../components/MouseInfographic';
 import TutorialScreen from '../components/TutorialScreen';
 import { sounds } from '../utils/sounds';
@@ -171,8 +172,14 @@ function Confetti() {
 }
 
 function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlaying, onFinish }) {
-  const { user, saveProgress } = useAuth();
+  const { user, saveProgress, saveLastSession } = useAuth();
   const [currentLevelIndex, setCurrentLevelIndex] = useState(startLevel);
+  useEffect(() => {
+    if (saveLastSession) {
+      saveLastSession({ difficulty, level: currentLevelIndex });
+    }
+  }, [difficulty, currentLevelIndex, saveLastSession]);
+
   const [tasksCompleted, setTasksCompleted] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showInfographic, setShowInfographic] = useState(true);
@@ -616,6 +623,16 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
           <div className="message-box">
             <p>{level.msg}</p>
           </div>
+
+          {/* Mini-Circuito interactivo donde el personaje avanza al siguiente reto */}
+          {currentLevelIndex + 1 < levelData.length && (
+            <AdventureCircuit 
+              compact={true}
+              previousLevel={currentLevelIndex + 1}
+              currentLevel={currentLevelIndex + 2}
+            />
+          )}
+
           <div className="success-stats">
             <span>✅ {totalTasksPerLevel} {totalTasksPerLevel === 1 ? 'ejercicio completado' : 'ejercicios completados'}</span>
           </div>
@@ -624,7 +641,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
               🔁 Repetir Nivel
             </button>
             <button className="btn-primary btn-next" onClick={() => { sounds.click(); nextLevel(); }}>
-              {currentLevelIndex + 1 === levelData.length ? '🏅 Reclamar Diploma' : 'Siguiente Nivel ➡'}
+              {currentLevelIndex + 1 === levelData.length ? '🏅 Reclamar Diploma' : `Siguiente: Reto ${currentLevelIndex + 2} ➡`}
             </button>
           </div>
         </div>

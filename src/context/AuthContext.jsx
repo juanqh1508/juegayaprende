@@ -21,10 +21,10 @@ import {
 
 const AuthContext = createContext(null);
 
-
 const LOCAL_STORAGE_KEY = 'plataforma_juegos_progress';
+const LAST_SESSION_KEY = 'plataforma_juegos_last_session';
 
-function getLocalProgressList() {
+export function getLocalProgressList() {
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (!raw) return [];
@@ -36,7 +36,7 @@ function getLocalProgressList() {
   }
 }
 
-function saveLocalProgressItem(item) {
+export function saveLocalProgressItem(item) {
   try {
     const list = getLocalProgressList();
     const existingIndex = list.findIndex(
@@ -70,6 +70,26 @@ function saveLocalProgressItem(item) {
   }
 }
 
+export function getLastSession() {
+  try {
+    const raw = localStorage.getItem(LAST_SESSION_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+export function saveLastSession(sessionData) {
+  try {
+    localStorage.setItem(LAST_SESSION_KEY, JSON.stringify({
+      difficulty: Number(sessionData.difficulty) || 1,
+      level: Number(sessionData.level) || 0,
+      updated_at: new Date().toISOString()
+    }));
+  } catch (e) {}
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -79,7 +99,6 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // Intentar obtener datos extra guardados en Firestore (como el nombre personalizado)
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
           const userData = userDoc.exists() ? userDoc.data() : {};
 
@@ -92,7 +111,6 @@ export function AuthProvider({ children }) {
             avatarUrl: firebaseUser.photoURL
           });
         } catch (err) {
-          // Si Firestore aún no tiene reglas o hay error de red, usamos los datos directos de Auth
           setUser({
             id: firebaseUser.uid,
             uid: firebaseUser.uid,
@@ -102,6 +120,8 @@ export function AuthProvider({ children }) {
             avatarUrl: firebaseUser.photoURL
           });
         }
+        // Auto-sincronizar con Firestore
+        getProgress();
       } else {
         setUser(null);
       }
@@ -136,10 +156,8 @@ export function AuthProvider({ children }) {
       const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
       const displayName = fullName || username || cleanEmail.split('@')[0];
 
-      // Actualizar el nombre en Firebase Auth
       await updateProfile(cred.user, { displayName });
 
-      // Guardar información extendida en Cloud Firestore
       try {
         await setDoc(doc(db, 'users', cred.user.uid), {
           uid: cred.user.uid,
@@ -148,31 +166,30 @@ export function AuthProvider({ children }) {
           username: username || cleanEmail.split('@')[0],
           authProvider: 'password',
           createdAt: new Date().toISOString()
-        }, { merge: true });
+        });
       } catch (e) {
-        console.warn('Nota: Perfil guardado en Auth (Firestore pendiente de reglas):', e);
+        console.warn('Nota: Usuario registrado con correo:', e);
       }
 
       return { success: true, user: cred.user };
     } catch (err) {
-      let msg = 'Error al crear la cuenta.';
+      let msg = 'Error al registrar usuario.';
       if (err.code === 'auth/email-already-in-use') {
-        msg = 'Este correo electrónico ya está registrado. Inicia sesión.';
+        msg = 'Este correo electrónico ya está registrado. Por favor inicia sesión.';
       } else if (err.code === 'auth/weak-password') {
         msg = 'La contraseña debe tener al menos 6 caracteres.';
       } else if (err.code === 'auth/invalid-email') {
-        msg = 'El correo electrónico no es válido.';
+        msg = 'El formato del correo electrónico no es válido.';
       }
       return { success: false, error: msg };
     }
   };
 
-  // 3. Iniciar sesión con Google (Ventana emergente oficial)
+  // 3. Iniciar sesión con Google
   const loginWithGoogle = async () => {
     try {
       const cred = await signInWithPopup(auth, googleProvider);
-      
-      // Guardar/Actualizar en Cloud Firestore
+
       try {
         await setDoc(doc(db, 'users', cred.user.uid), {
           uid: cred.user.uid,
@@ -195,7 +212,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // 4. Iniciar sesión con Microsoft (Hotmail / Outlook)
+  // 4. Iniciar sesión con Microsoft
   const loginWithMicrosoft = async () => {
     try {
       const cred = await signInWithPopup(auth, microsoftProvider);
@@ -231,47 +248,99 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // 6. Guardar progreso de lecciones en Cloud Firestore
+  // 6. Guardar progreso de lecciones (Híbrido: SIEMPRE local + Firestore si hay sesión)
   const saveProgress = async (progressData) => {
-    if (!auth.currentUser) return null;
-    const uid = auth.currentUser.uid;
-    const docId = `${uid}_${progressData.gameKey}_${progressData.difficulty}`;
+    const gameKey = progressData.gameKey || 'mouse-game';
+    const difficulty = Number(progressData.difficulty) || 1;
+    const level = Number(progressData.level) || 0;
+    const completed = !!progressData.completed;
+    const certificateName = progressData.certificateName || null;
 
-    try {
-      const docRef = doc(db, 'progress', docId);
-      const existingSnap = await getDoc(docRef);
-      const prevLevel = existingSnap.exists() ? (existingSnap.data().highest_level || 0) : 0;
-      const prevCompleted = existingSnap.exists() ? existingSnap.data().completed : false;
+    // Actualizar última sesión
+    saveLastSession({ difficulty, level });
 
-      const dataToSave = {
-        user_id: uid,
-        game_key: progressData.gameKey,
-        difficulty: progressData.difficulty,
-        highest_level: Math.max(prevLevel, progressData.level || 0),
-        completed: prevCompleted || !!progressData.completed,
-        certificate_name: progressData.certificateName || existingSnap.data()?.certificate_name || null,
-        updated_at: new Date().toISOString()
-      };
+    // 1. Guardar SIEMPRE en localStorage (inmune a fallos de red o falta de sesión)
+    const localItem = {
+      game_key: gameKey,
+      difficulty,
+      highest_level: level,
+      completed,
+      certificate_name: certificateName
+    };
+    saveLocalProgressItem(localItem);
 
-      await setDoc(docRef, dataToSave, { merge: true });
-      return dataToSave;
-    } catch (err) {
-      console.warn('Aviso: No se pudo sincronizar progreso en Firestore:', err);
-      return null;
+    // 2. Si el usuario está autenticado con Firebase, sincronizar también en Cloud Firestore
+    if (auth.currentUser) {
+      const uid = auth.currentUser.uid;
+      const docId = `${uid}_${gameKey}_${difficulty}`;
+
+      try {
+        const docRef = doc(db, 'progress', docId);
+        const existingSnap = await getDoc(docRef);
+        const prevLevel = existingSnap.exists() ? (existingSnap.data().highest_level || 0) : 0;
+        const prevCompleted = existingSnap.exists() ? existingSnap.data().completed : false;
+
+        const dataToSave = {
+          user_id: uid,
+          game_key: gameKey,
+          difficulty,
+          highest_level: Math.max(prevLevel, level),
+          completed: prevCompleted || completed,
+          certificate_name: certificateName || existingSnap.data()?.certificate_name || null,
+          updated_at: new Date().toISOString()
+        };
+
+        await setDoc(docRef, dataToSave, { merge: true });
+        return dataToSave;
+      } catch (err) {
+        console.warn('Aviso: Guardado localmente. No se pudo sincronizar Firestore:', err);
+      }
     }
+
+    return localItem;
   };
 
-  // 7. Obtener historial de lecciones desde Cloud Firestore
+  // 7. Obtener historial de lecciones (combina almacenamiento local y Cloud Firestore)
   const getProgress = async () => {
-    if (!auth.currentUser) return [];
-    try {
-      const q = query(collection(db, 'progress'), where('user_id', '==', auth.currentUser.uid));
-      const snap = await getDocs(q);
-      return snap.docs.map(d => d.data());
-    } catch (err) {
-      console.warn('Aviso: No se pudo obtener historial de Firestore:', err);
-      return [];
+    let combined = getLocalProgressList();
+
+    if (auth.currentUser) {
+      try {
+        const q = query(collection(db, 'progress'), where('user_id', '==', auth.currentUser.uid));
+        const snap = await getDocs(q);
+        const firestoreList = snap.docs.map(d => d.data());
+
+        firestoreList.forEach(remoteItem => {
+          const localIndex = combined.findIndex(
+            p => p.game_key === remoteItem.game_key && Number(p.difficulty) === Number(remoteItem.difficulty)
+          );
+
+          if (localIndex >= 0) {
+            const local = combined[localIndex];
+            combined[localIndex] = {
+              ...local,
+              ...remoteItem,
+              highest_level: Math.max(Number(local.highest_level) || 0, Number(remoteItem.highest_level) || 0),
+              completed: local.completed || remoteItem.completed,
+              certificate_name: remoteItem.certificate_name || local.certificate_name || null
+            };
+          } else {
+            combined.push(remoteItem);
+          }
+        });
+
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(combined));
+
+        for (const item of combined) {
+          const docId = `${auth.currentUser.uid}_${item.game_key}_${item.difficulty}`;
+          setDoc(doc(db, 'progress', docId), { ...item, user_id: auth.currentUser.uid }, { merge: true }).catch(() => {});
+        }
+      } catch (err) {
+        console.warn('Aviso: Usando historial local (Firestore sin permisos o conexión):', err);
+      }
     }
+
+    return combined;
   };
 
   return (
@@ -284,7 +353,9 @@ export function AuthProvider({ children }) {
       loginWithMicrosoft,
       logout,
       saveProgress,
-      getProgress
+      getProgress,
+      getLastSession,
+      saveLastSession
     }}>
       {children}
     </AuthContext.Provider>
