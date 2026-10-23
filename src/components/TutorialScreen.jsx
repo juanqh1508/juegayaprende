@@ -39,10 +39,10 @@ function TutorialScreen({ mechanicType, onStart }) {
 
   return (
     <div className="tutorial-container">
-      <div className="tutorial-card">
+      <div className="tutorial-card" style={{ maxWidth: '680px', width: '92%' }}>
         <h2>{title}</h2>
         
-        <div className="tutorial-content-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '30px', marginBottom: '2rem', flexWrap: 'wrap' }}>
+        <div className="tutorial-content-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '30px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           <div className="tutorial-mascot-container">
             <CartoonMouseMascot size={120} />
           </div>
@@ -55,8 +55,31 @@ function TutorialScreen({ mechanicType, onStart }) {
             {mechanicType === 'drag' && <div className="drop-zone-icon">📥</div>}
           </div>
         </div>
+
+        {/* Instrucción Grande y Clara para Niños */}
+        <div style={{
+          background: 'linear-gradient(135deg, #fffbeb, #fef3c7)',
+          border: '3.5px solid #f59e0b',
+          borderRadius: '22px',
+          padding: '1.3rem 1.8rem',
+          marginBottom: '2rem',
+          boxShadow: '0 8px 20px rgba(245, 158, 11, 0.2)'
+        }}>
+          <p style={{
+            fontSize: '1.75rem',
+            fontWeight: 800,
+            color: '#1e293b',
+            margin: 0,
+            lineHeight: 1.45,
+            fontFamily: 'var(--font-heading)'
+          }}>
+            {description}
+          </p>
+        </div>
         
-        <button className="btn-primary" onClick={onStart}>¡Entendido, a jugar!</button>
+        <button className="btn-primary" onClick={onStart} style={{ fontSize: '1.5rem', padding: '14px 40px', borderRadius: '50px' }}>
+          ¡Entendido, a jugar! 🚀
+        </button>
       </div>
     </div>
   );

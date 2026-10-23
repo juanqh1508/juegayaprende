@@ -613,7 +613,7 @@ export function CheckboxLevel({ options, requiredCount, question, onComplete }) 
             onClick={() => toggleCheck(opt.id)}
           >
             <div className="checkbox-emoji">{opt.emoji}</div>
-            <span style={{fontWeight: 'bold', color: '#333'}}>{opt.label}</span>
+            <span style={{fontWeight: 800, color: '#1e293b', fontSize: '1.45rem', fontFamily: 'var(--font-heading)'}}>{opt.label}</span>
             <div className="checkbox-box">
               {checkedItems.includes(opt.id) ? '✓' : ''}
             </div>
@@ -661,7 +661,7 @@ export function RadioLevel({ options, correctId, question, onComplete }) {
             onClick={() => handleSelect(opt.id)}
           >
             <div className="checkbox-emoji" style={{fontSize: '3.5rem'}}>{opt.emoji}</div>
-            <span style={{fontWeight: 'bold', color: '#333'}}>{opt.label}</span>
+            <span style={{fontWeight: 800, color: '#1e293b', fontSize: '1.45rem', fontFamily: 'var(--font-heading)'}}>{opt.label}</span>
             <div className="radio-circle">
               <div className="radio-circle-inner" />
             </div>

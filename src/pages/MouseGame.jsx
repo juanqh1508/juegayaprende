@@ -481,6 +481,29 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
                     </div>
                   </div>
                   <p className="banner-text"><strong>¡Instrucción!</strong> {level.description}</p>
+                  <button
+                    type="button"
+                    onClick={() => speakInstruction(level.description)}
+                    className="btn-banner-audio"
+                    title="Escuchar instrucción"
+                    style={{
+                      background: '#fff',
+                      border: '2px solid #f59e0b',
+                      borderRadius: '50%',
+                      width: '40px',
+                      height: '40px',
+                      fontSize: '1.2rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                      marginLeft: '10px'
+                    }}
+                  >
+                    🔊
+                  </button>
                 </div>
               </div>
             )}
@@ -494,7 +517,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
 
           <div className="level-mechanic-box">
             {!isLevelStarted ? (
-              <div style={{ textAlign: 'center', background: 'rgba(255,255,255,0.95)', padding: '3rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)', maxWidth: '500px', animation: 'popIn 0.4s ease-out' }}>
+              <div style={{ textAlign: 'center', background: 'rgba(255,255,255,0.98)', padding: '2.5rem 2.8rem', borderRadius: '28px', boxShadow: '0 15px 40px rgba(0,0,0,0.18)', maxWidth: '680px', width: '94%', border: '4px solid var(--ocean-cyan)', animation: 'popIn 0.4s ease-out' }}>
                 <h2 style={{ fontSize: '2.5rem', marginBottom: '1rem', color: 'var(--panama-blue)' }}>{level.title}</h2>
                 
                 <div style={{ display: 'flex', justifyContent: 'center', margin: '1.5rem 0 2rem 0' }}>
@@ -597,7 +620,57 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
                   )}
                 </div>
 
-                <p style={{ fontSize: '1.3rem', marginBottom: '2rem', color: '#555' }}>{level.description}</p>
+                <div className="prelevel-instruction-card" style={{
+                  background: 'linear-gradient(135deg, #fffbeb, #fef3c7)',
+                  border: '3.5px solid #f59e0b',
+                  borderRadius: '24px',
+                  padding: '1.4rem 1.8rem',
+                  marginBottom: '2rem',
+                  boxShadow: '0 8px 24px rgba(245, 158, 11, 0.22)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '10px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '2rem' }}>📢</span>
+                    <span style={{ fontSize: '1.3rem', fontWeight: 900, color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Instrucción del Reto:
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => speakInstruction(level.description)}
+                      style={{
+                        background: 'white',
+                        border: '2px solid #f59e0b',
+                        borderRadius: '50%',
+                        width: '38px',
+                        height: '38px',
+                        cursor: 'pointer',
+                        fontSize: '1.2rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                        transition: 'transform 0.2s'
+                      }}
+                      title="Escuchar instrucción"
+                    >
+                      🔊
+                    </button>
+                  </div>
+                  <p style={{ 
+                    fontSize: '1.85rem', 
+                    fontWeight: 800, 
+                    color: '#1e293b', 
+                    margin: 0, 
+                    lineHeight: 1.45,
+                    fontFamily: 'var(--font-heading)'
+                  }}>
+                    {level.description}
+                  </p>
+                </div>
+
                 <button 
                   className="btn-primary" 
                   onClick={() => { 
@@ -605,9 +678,9 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
                     setIsLevelStarted(true); 
                     if (setIsMusicPlaying) setIsMusicPlaying(true);
                   }}
-                  style={{ fontSize: '1.5rem', padding: '15px 40px' }}
+                  style={{ fontSize: '1.65rem', padding: '16px 45px', borderRadius: '50px', boxShadow: '0 8px 25px rgba(0, 188, 212, 0.4)' }}
                 >
-                  ¡Empezar Nivel!
+                  🚀 ¡Empezar Nivel!
                 </button>
               </div>
             ) : (
