@@ -10,6 +10,7 @@ function App() {
   const [userName, setUserName] = useState('');
   const [difficulty, setDifficulty] = useState(1); // 1: Fácil, 2: Medio, 3: Difícil
   const [startLevel, setStartLevel] = useState(0);
+  const [menuSubView, setMenuSubView] = useState('cards'); // 'cards' o 'circuit'
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const audioRef = useRef(null);
 
@@ -21,15 +22,32 @@ function App() {
     }
   }, [isMusicPlaying]);
 
-  const navigateTo = (view, selectedDifficulty = 1, selectedLevel = 0) => {
+  const navigateTo = (view, selectedDifficulty = 1, selectedLevel = 0, subView = null) => {
     if (view === 'mouse-game') {
       setDifficulty(selectedDifficulty);
       setStartLevel(selectedLevel);
-      setIsMusicPlaying(false); // Do NOT auto-play music when game starts
-    } else if (view === 'menu' || view === 'certificate' || view === 'intro') {
+      setIsMusicPlaying(false);
+      setCurrentView('mouse-game');
+    } else if (view === 'circuit') {
+      setDifficulty(selectedDifficulty);
+      setStartLevel(selectedLevel);
+      setMenuSubView('circuit');
+      setCurrentView('menu');
+      setIsMusicPlaying(false);
+    } else if (view === 'menu') {
+      setMenuSubView(subView || 'cards');
+      setCurrentView('menu');
+      setIsMusicPlaying(false);
+    } else if (view === 'certificate') {
+      setCurrentView('certificate');
+      setIsMusicPlaying(false);
+    } else if (view === 'intro') {
+      setCurrentView('intro');
+      setIsMusicPlaying(false);
+    } else {
+      setCurrentView(view);
       setIsMusicPlaying(false);
     }
-    setCurrentView(view);
   };
 
   const toggleMusic = () => {
@@ -53,8 +71,21 @@ function App() {
         )}
 
         {currentView === 'intro' && <Intro onNavigate={navigateTo} />}
-        {currentView === 'menu' && <MainMenu onNavigate={navigateTo} />}
-        {currentView === 'mouse-game' && <MouseGame difficulty={difficulty} startLevel={startLevel} onNavigate={navigateTo} setIsMusicPlaying={setIsMusicPlaying} onFinish={(name) => { setUserName(name); navigateTo('certificate'); }} />}
+        {currentView === 'menu' && (
+          <MainMenu 
+            onNavigate={navigateTo} 
+            initialView={menuSubView} 
+          />
+        )}
+        {currentView === 'mouse-game' && (
+          <MouseGame 
+            difficulty={difficulty} 
+            startLevel={startLevel} 
+            onNavigate={navigateTo} 
+            setIsMusicPlaying={setIsMusicPlaying} 
+            onFinish={(name) => { setUserName(name); navigateTo('certificate'); }} 
+          />
+        )}
         {currentView === 'certificate' && <Certificate userName={userName} difficulty={difficulty} onNavigate={navigateTo} />}
       </div>
     </AuthProvider>

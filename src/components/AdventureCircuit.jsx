@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CartoonMouseMascot } from './LevelMechanics';
 import { sounds } from '../utils/sounds';
 import './AdventureCircuit.css';
@@ -74,7 +74,6 @@ export const CIRCUIT_WORLDS = [
   }
 ];
 
-// Helper para obtener datos de un nivel específico
 export function getLevelDetails(levelId) {
   for (const world of CIRCUIT_WORLDS) {
     const found = world.levels.find(l => l.id === levelId);
@@ -91,48 +90,137 @@ function AdventureCircuit({
   compact = false,
   previousLevel = null
 }) {
-  // Asegurar que currentLevel esté entre 1 y 19
   const activeLevel = Math.max(1, Math.min(Number(currentLevel) || 1, 19));
   const activeLevelInfo = getLevelDetails(activeLevel);
 
-  // Modo compacto (para mostrar entre niveles en la pantalla de victoria)
+  // MODO COMPACTO / PANTALLA DE VICTORIA: ANIMACIÓN DEL RATÓN AVANZANDO AL SIGUIENTE RETO
   if (compact) {
     const fromLevel = previousLevel || Math.max(1, activeLevel - 1);
     const toLevel = activeLevel;
+    const isGameFinished = fromLevel >= 19;
     const fromInfo = getLevelDetails(fromLevel);
-    const toInfo = getLevelDetails(toLevel);
+    const toInfo = isGameFinished 
+      ? { id: 20, name: '¡Gran Diploma!', icon: '🏅', hint: 'Completado' }
+      : getLevelDetails(toLevel);
+
+    const [animStage, setAnimStage] = useState(0); // 0: inicio, 1: caminando, 2: llegada
+    const [showFullMap, setShowFullMap] = useState(false);
+
+    useEffect(() => {
+      setAnimStage(0);
+      // Etapa 0 -> 1: El ratoncito empieza a caminar (a los 450ms)
+      const timer1 = setTimeout(() => {
+        setAnimStage(1);
+        try { sounds.hover(); } catch (e) {}
+      }, 450);
+
+      // Etapa 1 -> 2: El ratoncito llega a la nueva estación (a los 1750ms)
+      const timer2 = setTimeout(() => {
+        setAnimStage(2);
+        try { sounds.taskComplete(); } catch (e) {}
+      }, 1750);
+
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+      };
+    }, [fromLevel, toLevel]);
 
     return (
-      <div className="circuit-mini-banner">
-        <div className="circuit-mini-header">
-          <span>🗺️</span>
-          <span>¡El ratoncito avanza en el Circuito!</span>
+      <div className="circuit-advance-card">
+        <div className="circuit-advance-header">
+          <span className="advance-header-icon">🗺️</span>
+          <div>
+            <h3 className="advance-header-title">¡El ratoncito avanza en el circuito!</h3>
+            <p className="advance-header-sub">
+              {animStage < 2 ? 'Caminando hacia el siguiente nivel...' : '¡Ha llegado a su nuevo reto!'}
+            </p>
+          </div>
         </div>
-        <div className="circuit-mini-path">
-          <div className="mini-node completed" title={`Superado: Reto ${fromLevel}`}>
-            <span>{fromInfo.icon}</span>
-            <span style={{ position: 'absolute', bottom: '-20px', fontSize: '0.75rem', color: '#166534', fontWeight: 'bold' }}>Reto {fromLevel}</span>
+
+        {/* Pista de avance animada */}
+        <div className="advance-track-area">
+          {/* Estación de salida (Superada) */}
+          <div className="advance-station-box">
+            <div className="advance-station-circle completed">
+              <span className="advance-icon">{fromInfo.icon}</span>
+              <span className="advance-badge-star" title="¡Superado!">⭐</span>
+            </div>
+            <strong className="advance-station-name">Reto {fromLevel}</strong>
+            <small className="advance-station-sub">{fromInfo.name}</small>
+            <span className="advance-tag done">¡Superado!</span>
           </div>
 
-          <div className="mini-road">
-            <div className="mini-mouse-moving">
-              <span style={{ fontSize: '2rem' }}>🐭</span>
+          {/* Camino con el ratoncito corriendo de izquierda a derecha */}
+          <div className="advance-pathway">
+            <div className={`advance-road-fill stage-${animStage}`} />
+            <div className={`advance-mouse-runner stage-${animStage}`}>
+              <div className="runner-bubble">
+                {animStage === 0 && '¡Listo! 🐾'}
+                {animStage === 1 && '¡Avanzando! 💨'}
+                {animStage === 2 && '¡Llegamos! 🐭🎉'}
+              </div>
+              <div className="runner-mouse">
+                <CartoonMouseMascot size={52} />
+              </div>
             </div>
           </div>
 
-          <div className="mini-node current" title={`Siguiente: Reto ${toLevel}`}>
-            <span>{toInfo.icon}</span>
-            <span style={{ position: 'absolute', bottom: '-20px', fontSize: '0.75rem', color: '#c2410c', fontWeight: 'bold' }}>Reto {toLevel}</span>
+          {/* Estación de llegada (Desbloqueada) */}
+          <div className="advance-station-box">
+            <div className={`advance-station-circle ${animStage === 2 ? 'arrived' : ''}`}>
+              <span className="advance-icon">{toInfo.icon}</span>
+              {animStage === 2 && <span className="advance-badge-unlocked" title="¡Desbloqueado!">✨</span>}
+            </div>
+            <strong className="advance-station-name">
+              {isGameFinished ? 'Meta' : `Reto ${toLevel}`}
+            </strong>
+            <small className="advance-station-sub">{toInfo.name}</small>
+            <span className={`advance-tag ${animStage === 2 ? 'active' : 'pending'}`}>
+              {animStage === 2 ? '¡Desbloqueado!' : 'Siguiente'}
+            </span>
           </div>
         </div>
-        <p style={{ textAlign: 'center', fontSize: '0.92rem', color: '#475569', marginTop: '1.6rem', marginBottom: '0.2rem' }}>
-          ¡Excelente trabajo! Has completado el <strong>Reto {fromLevel}</strong> y desbloqueado el <strong>Reto {toLevel}: {toInfo.name}</strong>.
-        </p>
+
+        <div className="advance-celebration-banner">
+          {animStage === 2 ? (
+            <p className="advance-text">
+              🌟 ¡Fantástico! Has completado el <strong>Reto {fromLevel}: {fromInfo.name}</strong> y tu ratoncito avanzó al <strong>Reto {toLevel}: {toInfo.name}</strong>.
+            </p>
+          ) : (
+            <p className="advance-text-wait">
+              🐾 El ratoncito está caminando por el circuito hacia el siguiente reto...
+            </p>
+          )}
+        </div>
+
+        {/* Botón para expandir el mapa completo */}
+        <div style={{ marginTop: '0.8rem', textAlign: 'center' }}>
+          <button 
+            type="button"
+            className="btn-toggle-full-map"
+            onClick={() => setShowFullMap(!showFullMap)}
+          >
+            {showFullMap ? '🔼 Ocultar Mapa Completo' : '🗺️ Ver Mapa Completo del Circuito (19 Retos)'}
+          </button>
+        </div>
+
+        {showFullMap && (
+          <div style={{ marginTop: '1.2rem', textAlign: 'left' }}>
+            <AdventureCircuit 
+              currentLevel={toLevel}
+              difficulty={difficulty}
+              onSelectLevel={onSelectLevel}
+              onDifficultyChange={onDifficultyChange}
+              compact={false}
+            />
+          </div>
+        )}
       </div>
     );
   }
 
-  // Modo completo (para el menú principal)
+  // MODO COMPLETO (PANTALLA DEL CIRCUITO EN EL MENÚ)
   return (
     <div className="adventure-circuit-container">
       <div className="circuit-header">
@@ -182,7 +270,7 @@ function AdventureCircuit({
             onSelectLevel && onSelectLevel(activeLevel - 1, difficulty);
           }}
         >
-          <span>🚀 Continuar Reto {activeLevel}: {activeLevelInfo.name}</span>
+          <span>🚀 Jugar Reto {activeLevel}: {activeLevelInfo.name}</span>
           <span style={{ fontSize: '1.2rem' }}>➡</span>
         </button>
       </div>

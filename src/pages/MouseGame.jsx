@@ -426,7 +426,7 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
     <div className={containerClass}>
       <header className="game-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <button onClick={() => { sounds.click(); onNavigate('menu'); }} className="btn-back">⬅ Menú</button>
+          <button onClick={() => { sounds.click(); onNavigate('circuit'); }} className="btn-back">⬅ Circuito</button>
           <img src="/logo.png" alt="Juega y Aprende Logo" className="header-logo" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
         </div>
 
@@ -625,20 +625,27 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
           </div>
 
           {/* Mini-Circuito interactivo donde el personaje avanza al siguiente reto */}
-          {currentLevelIndex + 1 < levelData.length && (
-            <AdventureCircuit 
-              compact={true}
-              previousLevel={currentLevelIndex + 1}
-              currentLevel={currentLevelIndex + 2}
-            />
-          )}
+          <AdventureCircuit 
+            key={`advance-${currentLevelIndex}`}
+            compact={true}
+            previousLevel={currentLevelIndex + 1}
+            currentLevel={currentLevelIndex + 2}
+          />
 
           <div className="success-stats">
             <span>✅ {totalTasksPerLevel} {totalTasksPerLevel === 1 ? 'ejercicio completado' : 'ejercicios completados'}</span>
           </div>
-          <div className="success-buttons" style={{ display: 'flex', gap: '20px', marginTop: '20px', justifyContent: 'center' }}>
-            <button className="btn-secondary" onClick={() => { sounds.click(); setShowSuccess(false); setTasksCompleted(0); setIsLevelStarted(false); }} style={{ fontSize: '1.2rem', padding: '12px 28px', borderRadius: '50px', border: '3px solid var(--violet)', background: 'white', color: 'var(--violet)', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', transition: 'all 0.3s' }}>
-              🔁 Repetir Nivel
+          <div className="success-buttons" style={{ display: 'flex', gap: '15px', marginTop: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="btn-secondary" onClick={() => { sounds.click(); setShowSuccess(false); setTasksCompleted(0); setIsLevelStarted(false); }} style={{ fontSize: '1.1rem', padding: '12px 24px', borderRadius: '50px', border: '3px solid var(--violet)', background: 'white', color: 'var(--violet)', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', transition: 'all 0.3s' }}>
+              🔁 Repetir Reto
+            </button>
+            <button 
+              type="button"
+              className="btn-circuit-link"
+              onClick={() => { sounds.click(); onNavigate('circuit'); }}
+              style={{ fontSize: '1.1rem', padding: '12px 24px', borderRadius: '50px', border: '3px solid var(--ocean-cyan)', background: 'white', color: 'var(--panama-blue)', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', transition: 'all 0.3s' }}
+            >
+              🗺️ Ver Circuito
             </button>
             <button className="btn-primary btn-next" onClick={() => { sounds.click(); nextLevel(); }}>
               {currentLevelIndex + 1 === levelData.length ? '🏅 Reclamar Diploma' : `Siguiente: Reto ${currentLevelIndex + 2} ➡`}

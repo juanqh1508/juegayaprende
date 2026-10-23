@@ -6,8 +6,9 @@ import AdventureCircuit, { getLevelDetails } from '../components/AdventureCircui
 import { sounds } from '../utils/sounds';
 import './MainMenu.css';
 
-function MainMenu({ onNavigate }) {
+function MainMenu({ onNavigate, initialView = 'cards' }) {
   const { user, logout, getProgress } = useAuth();
+  const [menuView, setMenuView] = useState(initialView); // 'cards' o 'circuit'
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [difficulty, setDifficulty] = useState(() => {
@@ -19,6 +20,12 @@ function MainMenu({ onNavigate }) {
     return s?.level !== undefined ? Number(s.level) + 1 : 1;
   });
   const [highestCompleted, setHighestCompleted] = useState(0);
+
+  useEffect(() => {
+    if (initialView) {
+      setMenuView(initialView);
+    }
+  }, [initialView]);
 
   useEffect(() => {
     if (getProgress) {
@@ -46,91 +53,207 @@ function MainMenu({ onNavigate }) {
     <div className="main-menu">
       {/* Barra superior de usuario / autenticación */}
       <div className="main-top-bar">
-        <button
-          onClick={() => { sounds.click(); setIsHistoryOpen(true); }}
-          className="btn-history-top"
-        >
-          📊 Mi Historial y Retos
-        </button>
-
-        {user ? (
-          <div className="user-profile-badge">
-            <span style={{ fontWeight: 'bold', color: 'var(--panama-blue)', fontSize: '0.95rem' }}>
-              🐭 ¡Hola, {user.fullName || user.username}!
-            </span>
-            <button
-              onClick={() => { sounds.click(); logout(); }}
-              className="btn-logout"
-              title="Cerrar sesión"
-            >
-              Salir 🚪
-            </button>
-          </div>
+        {menuView === 'circuit' ? (
+          <button
+            onClick={() => { sounds.click(); setMenuView('cards'); }}
+            className="btn-back-menu"
+          >
+            ⬅ Volver a Juegos
+          </button>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: 'bold', background: '#f1f5f9', padding: '6px 12px', borderRadius: '20px' }}>
-              🎮 Modo Libre
-            </span>
-            <button
-              onClick={() => { sounds.click(); setIsAuthOpen(true); }}
-              className="btn-login-top"
-            >
-              🔐 Iniciar Sesión / Registro
-            </button>
-          </div>
+          <button
+            onClick={() => { sounds.click(); setIsHistoryOpen(true); }}
+            className="btn-history-top"
+          >
+            📊 Mi Historial y Retos
+          </button>
         )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {menuView === 'circuit' && (
+            <button
+              onClick={() => { sounds.click(); setIsHistoryOpen(true); }}
+              className="btn-history-top"
+            >
+              📊 Mi Historial y Retos
+            </button>
+          )}
+
+          {user ? (
+            <div className="user-profile-badge">
+              <span style={{ fontWeight: 'bold', color: 'var(--panama-blue)', fontSize: '0.95rem' }}>
+                🐭 ¡Hola, {user.fullName || user.username}!
+              </span>
+              <button
+                onClick={() => { sounds.click(); logout(); }}
+                className="btn-logout"
+                title="Cerrar sesión"
+              >
+                Salir 🚪
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: 'bold', background: '#f1f5f9', padding: '6px 12px', borderRadius: '20px' }}>
+                🎮 Modo Libre
+              </span>
+              <button
+                onClick={() => { sounds.click(); setIsAuthOpen(true); }}
+                className="btn-login-top"
+              >
+                🔐 Iniciar Sesión / Registro
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      <header className="menu-header">
-        <img src="/logo.png" alt="Juega y Aprende" className="main-logo animate-bounce" style={{ maxWidth: '340px', width: '90%', height: 'auto', marginBottom: '0.5rem' }} />
-        <p className="subtitle">¡Aprende a usar la computadora jugando!</p>
-      </header>
+      {/* VISTA 1: MENÚ DE TARJETAS DE SELECCIÓN DE JUEGO */}
+      {menuView === 'cards' && (
+        <>
+          <header className="menu-header">
+            <img 
+              src="/logo.png" 
+              alt="Juega y Aprende" 
+              className="main-logo animate-bounce" 
+              style={{ maxWidth: '340px', width: '90%', height: 'auto', marginBottom: '0.5rem' }} 
+            />
+            <p className="subtitle">¡Aprende a usar la computadora jugando!</p>
+          </header>
 
-      {/* Hero Banner: Continuar desde donde se quedó */}
-      {highestCompleted > 0 && (
-        <div className="resume-hero-banner">
-          <div className="resume-hero-left">
-            <span className="resume-hero-mouse">🐭</span>
-            <div>
-              <div className="resume-hero-badge">Progreso Guardado</div>
-              <h3 className="resume-hero-title">
-                Te quedaste en el Reto {currentLevel}: {activeLevelInfo.name} {activeLevelInfo.icon}
-              </h3>
-              <p className="resume-hero-sub">
-                Dificultad: {difficulty === 1 ? '🟢 Fácil' : (difficulty === 2 ? '🟡 Media' : '🔴 Difícil')} • {highestCompleted} de 19 retos superados
-              </p>
+          {/* Banner rápido si tiene partida guardada */}
+          {highestCompleted > 0 && (
+            <div className="resume-hero-banner">
+              <div className="resume-hero-left">
+                <span className="resume-hero-mouse">🐭</span>
+                <div>
+                  <div className="resume-hero-badge">Progreso Guardado</div>
+                  <h3 className="resume-hero-title">
+                    Te quedaste en el Reto {currentLevel}: {activeLevelInfo.name} {activeLevelInfo.icon}
+                  </h3>
+                  <p className="resume-hero-sub">
+                    Dificultad: {difficulty === 1 ? '🟢 Fácil' : (difficulty === 2 ? '🟡 Media' : '🔴 Difícil')} • {highestCompleted} de 19 retos superados
+                  </p>
+                </div>
+              </div>
+              <button 
+                type="button"
+                className="btn-resume-hero"
+                onClick={() => {
+                  sounds.click();
+                  onNavigate('mouse-game', difficulty, currentLevel - 1);
+                }}
+              >
+                🚀 ¡Continuar Jugando!
+              </button>
+            </div>
+          )}
+
+          {/* Tarjetas de Selección de Juego */}
+          <div className="games-grid">
+            {/* Tarjeta Aventura del Mouse */}
+            <div 
+              className="game-card active mouse-card"
+              onClick={() => {
+                sounds.click();
+                setMenuView('circuit');
+              }}
+            >
+              <div className="card-icon">🖱️</div>
+              <h2>Aventura del Mouse</h2>
+              <span className="card-tag">🌟 19 Retos con Circuito Interactivo</span>
+              
+              {highestCompleted > 0 ? (
+                <div className="card-progress-pill">
+                  <span>🐭 Reto actual: Reto {currentLevel} ({activeLevelInfo.name})</span>
+                </div>
+              ) : (
+                <p>
+                  Aprende a mover el cursor, hacer clic, doble clic, arrastrar y soltar, rueda de scroll y botones de selección guiando al ratoncito por todo el circuito.
+                </p>
+              )}
+
+              <button 
+                type="button" 
+                className="btn-enter-circuit"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  sounds.click();
+                  setMenuView('circuit');
+                }}
+              >
+                🗺️ ¡Entrar a la Aventura del Mouse! ➡
+              </button>
+            </div>
+
+            {/* Tarjeta Misterio del Teclado (Próximamente) */}
+            <div className="game-card locked">
+              <div className="card-icon">⌨️</div>
+              <h2>Misterio del Teclado</h2>
+              <span className="card-tag" style={{ background: '#f1f5f9', color: '#64748b' }}>
+                Próximamente
+              </span>
+              <p>Nuevas misiones y aventuras divertidas para aprender a escribir y dominar las teclas mágicas.</p>
+              <button className="btn-locked" disabled>🔒 Próximamente</button>
             </div>
           </div>
-          <button 
-            type="button"
-            className="btn-resume-hero"
-            onClick={() => {
-              sounds.click();
-              onNavigate('mouse-game', difficulty, currentLevel - 1);
-            }}
-          >
-            🚀 ¡Continuar Jugando!
-          </button>
-        </div>
+        </>
       )}
 
-      {/* CIRCUITO INTERACTIVO DE AVENTURA: El ratoncito se mueve por cada nivel */}
-      <AdventureCircuit 
-        currentLevel={currentLevel}
-        difficulty={difficulty}
-        onDifficultyChange={(newDiff) => setDifficulty(newDiff)}
-        onSelectLevel={(levelIdx, diff) => onNavigate('mouse-game', diff, levelIdx)}
-      />
+      {/* VISTA 2: CIRCUITO INTERACTIVO (Accedido al hacer clic en Aventura del Mouse) */}
+      {menuView === 'circuit' && (
+        <div className="circuit-view-wrapper" style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <header className="menu-header circuit-page-header" style={{ marginBottom: '1rem' }}>
+            <img 
+              src="/logo.png" 
+              alt="Juega y Aprende" 
+              style={{ maxWidth: '220px', width: '70%', height: 'auto', marginBottom: '0.4rem' }} 
+            />
+            <h2 style={{ color: 'var(--panama-blue)', margin: 0, fontFamily: 'var(--font-heading)', fontSize: '1.9rem' }}>
+              🗺️ Circuito de la Aventura del Mouse
+            </h2>
+            <p className="subtitle" style={{ fontSize: '1rem', marginTop: '2px' }}>
+              ¡Acompaña al ratoncito por las 19 estaciones de aprendizaje!
+            </p>
+          </header>
 
-      {/* Otras Actividades / Próximamente */}
-      <div className="secondary-games-row">
-        <div className="game-card locked">
-          <div className="card-icon">⌨️</div>
-          <h2>Misterio del Teclado</h2>
-          <p>Próximamente nuevas aventuras para dominar el teclado...</p>
-          <button className="btn-locked" disabled>🔒 Próximamente</button>
+          {/* Banner de reanudación si tiene partida guardada */}
+          {highestCompleted > 0 && (
+            <div className="resume-hero-banner" style={{ maxWidth: '960px' }}>
+              <div className="resume-hero-left">
+                <span className="resume-hero-mouse">🐭</span>
+                <div>
+                  <div className="resume-hero-badge">Progreso Guardado</div>
+                  <h3 className="resume-hero-title">
+                    Te quedaste en el Reto {currentLevel}: {activeLevelInfo.name} {activeLevelInfo.icon}
+                  </h3>
+                  <p className="resume-hero-sub">
+                    Dificultad: {difficulty === 1 ? '🟢 Fácil' : (difficulty === 2 ? '🟡 Media' : '🔴 Difícil')} • {highestCompleted} de 19 retos superados
+                  </p>
+                </div>
+              </div>
+              <button 
+                type="button"
+                className="btn-resume-hero"
+                onClick={() => {
+                  sounds.click();
+                  onNavigate('mouse-game', difficulty, currentLevel - 1);
+                }}
+              >
+                🚀 ¡Continuar Jugando!
+              </button>
+            </div>
+          )}
+
+          {/* El circuito interactivo con sus 19 estaciones */}
+          <AdventureCircuit 
+            currentLevel={currentLevel}
+            difficulty={difficulty}
+            onDifficultyChange={(newDiff) => setDifficulty(newDiff)}
+            onSelectLevel={(levelIdx, diff) => onNavigate('mouse-game', diff, levelIdx)}
+          />
         </div>
-      </div>
+      )}
 
       {/* Modales */}
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />

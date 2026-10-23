@@ -3,13 +3,13 @@
    ========================================================================== */
 
 .adventure-circuit-container {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   border-radius: 28px;
   padding: 1.8rem 1.5rem;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12), 0 0 0 4px var(--ocean-cyan);
   width: 100%;
   max-width: 960px;
-  margin: 1.5rem auto;
+  margin: 1rem auto;
   position: relative;
   box-sizing: border-box;
 }
@@ -51,7 +51,7 @@
   margin: 0.4rem 0 0.8rem 0;
 }
 
-/* Barra de dificultad y acción rápida */
+/* Barra de controles: dificultad y acción continuar */
 .circuit-top-controls {
   display: flex;
   justify-content: space-between;
@@ -138,13 +138,7 @@
   box-shadow: 0 8px 22px rgba(255, 51, 102, 0.45);
 }
 
-@keyframes pulseHero {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.03); }
-  100% { transform: scale(1); }
-}
-
-/* EL CIRCUITO (PISTA DE NODOS) */
+/* PISTA DE ESTACIONES */
 .circuit-track-wrapper {
   overflow-x: auto;
   padding: 1.5rem 0.5rem;
@@ -160,7 +154,6 @@
   min-width: 680px;
 }
 
-/* Mundos / Regiones */
 .circuit-world-block {
   background: #ffffff;
   border: 2px dashed #cbd5e1;
@@ -217,13 +210,6 @@
   animation: pulseTag 1.5s infinite;
 }
 
-@keyframes pulseTag {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-/* Fila de estaciones de un mundo */
 .circuit-stations-row {
   display: flex;
   justify-content: space-around;
@@ -232,7 +218,6 @@
   gap: 15px;
 }
 
-/* Línea conectora entre estaciones */
 .circuit-stations-row::before {
   content: '';
   position: absolute;
@@ -245,7 +230,6 @@
   z-index: 1;
 }
 
-/* Estación individual */
 .circuit-station {
   display: flex;
   flex-direction: column;
@@ -298,7 +282,6 @@
   max-width: 95px;
 }
 
-/* Estado: Superado */
 .circuit-station.completed .station-node {
   border-color: #22c55e;
   background: #f0fdf4;
@@ -325,7 +308,6 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* Estado: En curso (Donde está el personaje) */
 .circuit-station.current .station-node {
   border-color: #ff6b35;
   background: #fff7ed;
@@ -338,13 +320,7 @@
   font-weight: 800;
 }
 
-@keyframes currentStationGlow {
-  0% { transform: scale(1); box-shadow: 0 0 0 6px rgba(255, 107, 53, 0.25); }
-  50% { transform: scale(1.06); box-shadow: 0 0 0 10px rgba(255, 107, 53, 0.15); }
-  100% { transform: scale(1); box-shadow: 0 0 0 6px rgba(255, 107, 53, 0.25); }
-}
-
-/* EL PERSONAJE (RATONCITO EN EL CIRCUITO) */
+/* PERSONAJE: RATONCITO EN ESTACIÓN */
 .mascot-avatar-container {
   position: absolute;
   top: -65px;
@@ -390,12 +366,6 @@
   filter: drop-shadow(0 6px 8px rgba(0,0,0,0.25));
 }
 
-@keyframes mascotHop {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(-10px); }
-}
-
-/* Estado: Bloqueado */
 .circuit-station.locked {
   opacity: 0.5;
   cursor: not-allowed;
@@ -426,7 +396,6 @@
   font-size: 0.75rem;
 }
 
-/* Leyenda del circuito */
 .circuit-legend {
   display: flex;
   justify-content: center;
@@ -447,95 +416,354 @@
   font-weight: 600;
 }
 
-/* Versión Compacta (para la pantalla de victoria entre niveles) */
-.circuit-mini-banner {
-  background: linear-gradient(135deg, #eff6ff, #f0fdf4);
-  border: 2px solid #86efac;
-  border-radius: 20px;
-  padding: 1.2rem;
-  margin: 1rem auto;
-  max-width: 620px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+/* ==========================================================================
+   PANTALLA DE AVANCE DEL RATONCITO (ENTRE NIVELES / VICTORIA)
+   ========================================================================== */
+
+.circuit-advance-card {
+  background: linear-gradient(135deg, #ffffff, #f0fdf4);
+  border: 3px solid #86efac;
+  border-radius: 24px;
+  padding: 1.5rem 1.8rem;
+  margin: 1.2rem auto;
+  max-width: 720px;
+  width: 95%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  animation: fadeInCard 0.4s ease-out;
 }
 
-.circuit-mini-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-family: var(--font-heading);
-  font-size: 1.3rem;
-  color: var(--panama-blue);
-  margin-bottom: 0.8rem;
-}
-
-.circuit-mini-path {
+.circuit-advance-header {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  position: relative;
-  margin: 1.5rem 0 0.5rem 0;
+  margin-bottom: 1.4rem;
+  text-align: left;
 }
 
-.mini-node {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
+.advance-header-icon {
+  font-size: 2.5rem;
+}
+
+.advance-header-title {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  color: var(--panama-blue);
+  margin: 0;
+}
+
+.advance-header-sub {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+/* Pista de avance */
+.advance-track-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 2.2rem 1rem 1.4rem 1rem;
+  position: relative;
+  gap: 15px;
+}
+
+.advance-station-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  background: white;
-  border: 3px solid #cbd5e1;
+  text-align: center;
+  width: 120px;
   position: relative;
-  font-size: 1.3rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  z-index: 2;
 }
 
-.mini-node.completed {
+.advance-station-circle {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 4px solid #cbd5e1;
+  position: relative;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.advance-station-circle.completed {
   border-color: #22c55e;
   background: #f0fdf4;
+  box-shadow: 0 6px 18px rgba(34, 197, 94, 0.35);
 }
 
-.mini-node.current {
+.advance-station-circle.arrived {
   border-color: #ff6b35;
   background: #fff7ed;
-  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.3);
-  transform: scale(1.1);
+  box-shadow: 0 0 0 8px rgba(255, 107, 53, 0.25), 0 8px 24px rgba(255, 107, 53, 0.4);
+  transform: scale(1.12);
+  animation: pulseArrived 1.5s infinite;
 }
 
-.mini-road {
+@keyframes pulseArrived {
+  0% { transform: scale(1.12); }
+  50% { transform: scale(1.18); }
+  100% { transform: scale(1.12); }
+}
+
+.advance-icon {
+  font-size: 2.2rem;
+}
+
+.advance-badge-star {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ffd700;
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.advance-badge-unlocked {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff6b35;
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.advance-station-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-top: 8px;
+}
+
+.advance-station-sub {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.advance-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-top: 6px;
+}
+
+.advance-tag.done {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.advance-tag.active {
+  background: #ffedd5;
+  color: #c2410c;
+  font-weight: 900;
+}
+
+.advance-tag.pending {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* CAMINO DE AVANCE CON EL RATÓN CORRIENDO */
+.advance-pathway {
   flex: 1;
-  max-width: 120px;
-  height: 6px;
-  background: repeating-linear-gradient(90deg, #3b82f6, #3b82f6 8px, transparent 8px, transparent 14px);
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 6px;
+  position: relative;
+  margin: 0 10px;
+  overflow: visible;
+}
+
+.advance-road-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #ff6b35);
+  border-radius: 6px;
+  width: 0%;
+  transition: width 1.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.advance-road-fill.stage-1 {
+  width: 50%;
+}
+
+.advance-road-fill.stage-2 {
+  width: 100%;
+}
+
+/* El ratón corredor */
+.advance-mouse-runner {
+  position: absolute;
+  top: -55px;
+  left: 0%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: left 1.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.advance-mouse-runner.stage-0 {
+  left: 0%;
+}
+
+.advance-mouse-runner.stage-1 {
+  left: 50%;
+  animation: runningHop 0.25s infinite alternate ease-in-out;
+}
+
+.advance-mouse-runner.stage-2 {
+  left: 100%;
+  animation: celebrateHop 1s infinite alternate ease-in-out;
+}
+
+@keyframes runningHop {
+  0% { transform: translateX(-50%) translateY(0) rotate(-6deg); }
+  100% { transform: translateX(-50%) translateY(-10px) rotate(6deg); }
+}
+
+@keyframes celebrateHop {
+  0% { transform: translateX(-50%) translateY(0) scale(1); }
+  50% { transform: translateX(-50%) translateY(-12px) scale(1.1); }
+  100% { transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+.runner-bubble {
+  background: #ff6b35;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 3px 8px rgba(255, 107, 53, 0.35);
+  margin-bottom: 2px;
   position: relative;
 }
 
-.mini-mouse-moving {
+.runner-bubble::after {
+  content: '';
   position: absolute;
-  top: -42px;
+  bottom: -4px;
   left: 50%;
   transform: translateX(-50%);
-  animation: mouseRun 1s infinite alternate ease-in-out;
+  border-width: 4px 4px 0;
+  border-style: solid;
+  border-color: #ff6b35 transparent;
+  display: block;
+  width: 0;
 }
 
-@keyframes mouseRun {
-  0% { transform: translateX(-50%) translateY(0) rotate(-6deg); }
-  100% { transform: translateX(-50%) translateY(-6px) rotate(6deg); }
+.runner-mouse {
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
 }
 
-@media (max-width: 768px) {
-  .circuit-title {
-    font-size: 1.5rem;
+.advance-celebration-banner {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 12px 18px;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.advance-text {
+  font-size: 1.05rem;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.advance-text-wait {
+  font-size: 0.95rem;
+  color: #64748b;
+  font-style: italic;
+  margin: 0;
+}
+
+.btn-toggle-full-map {
+  background: none;
+  border: none;
+  color: var(--panama-blue);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 6px 12px;
+  transition: color 0.2s;
+}
+
+.btn-toggle-full-map:hover {
+  color: var(--panama-red);
+}
+
+@keyframes fadeInCard {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); }
+  80% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+
+@media (max-width: 600px) {
+  .circuit-advance-card {
+    padding: 1rem 0.8rem;
   }
-  .circuit-top-controls {
-    flex-direction: column;
-    align-items: stretch;
+  .advance-track-area {
+    margin: 1.5rem 0.2rem 1rem 0.2rem;
+    gap: 6px;
   }
-  .btn-hero-continue {
-    justify-content: center;
+  .advance-station-box {
+    width: 85px;
+  }
+  .advance-station-circle {
+    width: 58px;
+    height: 58px;
+  }
+  .advance-icon {
+    font-size: 1.6rem;
+  }
+  .advance-station-name {
+    font-size: 0.82rem;
+  }
+  .advance-station-sub {
+    font-size: 0.72rem;
+  }
+  .runner-mouse {
+    transform: scale(0.8);
+  }
+  .runner-bubble {
+    font-size: 0.68rem;
+    padding: 2px 6px;
   }
 }
