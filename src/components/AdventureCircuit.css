@@ -210,6 +210,11 @@
   animation: pulseTag 1.5s infinite;
 }
 
+.world-status-tag.open {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
 .circuit-stations-row {
   display: flex;
   justify-content: space-around;

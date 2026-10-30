@@ -8,7 +8,7 @@ import {
   EggBreakLevel, FolderOpenLevel,
   CartoonMouseMascot, MazeLevel
 } from '../components/LevelMechanics';
-import AdventureCircuit from '../components/AdventureCircuit';
+import AdventureCircuit, { getLevelDetails } from '../components/AdventureCircuit';
 import MouseInfographic from '../components/MouseInfographic';
 import TutorialScreen from '../components/TutorialScreen';
 import { sounds } from '../utils/sounds';
@@ -191,14 +191,35 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
 
   const activeSection = sections.find(s => s.startLevelIndex === currentLevelIndex);
 
+  const handleJumpToLevel = (newIndex) => {
+    if (newIndex < 0 || newIndex >= levelData.length) return;
+    try { sounds.click(); } catch (e) {}
+    if (voiceAudioRef.current) {
+      voiceAudioRef.current.pause();
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsTalking(false);
+    setShowSuccess(false);
+    setTasksCompleted(0);
+    setIsLevelStarted(false);
+    setCurrentTarget(null);
+    setCurrentLevelIndex(newIndex);
+  };
+
   useEffect(() => {
     if (setIsMusicPlaying) {
       setIsMusicPlaying(false);
     }
     if (activeSection) {
       setShowSectionIntro(true);
-      setIsLevelStarted(false);
+    } else {
+      setShowSectionIntro(false);
     }
+    setIsLevelStarted(false);
+    setTasksCompleted(0);
+    setShowSuccess(false);
   }, [currentLevelIndex]);
 
   const speakInstruction = (text) => {
@@ -430,10 +451,50 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
           <img src="/logo.png" alt="Juega y Aprende Logo" className="header-logo" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
         </div>
 
-        <div className="header-progress">
-          <div className="progress-label">Nivel {currentLevelIndex + 1} / {levelData.length}</div>
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
+        <div className="header-level-controls">
+          <div className="header-progress">
+            <div className="progress-label">Reto {currentLevelIndex + 1} / {levelData.length}</div>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
+            </div>
+          </div>
+
+          <div className="level-jump-wrapper">
+            <span className="level-jump-tag">🚀 Probar Reto:</span>
+            <button 
+              type="button" 
+              className="btn-step-level" 
+              disabled={currentLevelIndex === 0}
+              onClick={() => handleJumpToLevel(currentLevelIndex - 1)}
+              title="Reto anterior"
+            >
+              ◀
+            </button>
+            <select
+              id="level-select-nav"
+              className="level-select-dropdown"
+              value={currentLevelIndex}
+              onChange={(e) => handleJumpToLevel(Number(e.target.value))}
+              title="Seleccionar cualquier reto libremente"
+            >
+              {levelData.map((lvl, idx) => {
+                const details = getLevelDetails(idx + 1);
+                return (
+                  <option key={idx} value={idx}>
+                    {details.icon} Reto {idx + 1}: {details.name}
+                  </option>
+                );
+              })}
+            </select>
+            <button 
+              type="button" 
+              className="btn-step-level" 
+              disabled={currentLevelIndex === levelData.length - 1}
+              onClick={() => handleJumpToLevel(currentLevelIndex + 1)}
+              title="Siguiente reto"
+            >
+              ▶
+            </button>
           </div>
         </div>
         
@@ -703,6 +764,8 @@ function MouseGame({ difficulty = 1, startLevel = 0, onNavigate, setIsMusicPlayi
             compact={true}
             previousLevel={currentLevelIndex + 1}
             currentLevel={currentLevelIndex + 2}
+            difficulty={difficulty}
+            onSelectLevel={(levelIdx) => handleJumpToLevel(levelIdx)}
           />
 
           <div className="success-stats">

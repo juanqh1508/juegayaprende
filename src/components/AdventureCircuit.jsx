@@ -227,11 +227,11 @@ function AdventureCircuit({
         <div className="circuit-title-row">
           <h2 className="circuit-title">🗺️ Circuito de la Aventura</h2>
           <span className="circuit-badge-progress">
-            Reto {activeLevel} de 19
+            🔓 Todos los Retos Desbloqueados (1-19)
           </span>
         </div>
         <p className="circuit-subtitle">
-          El ratoncito camina contigo en cada nivel. ¡Haz clic en tu reto actual o en los niveles superados para jugar!
+          El ratoncito camina contigo en cada nivel. ¡Haz clic en cualquiera de los 19 retos para jugar o revisarlo libremente!
         </p>
       </div>
 
@@ -292,8 +292,8 @@ function AdventureCircuit({
                     <span>{world.icon}</span>
                     <span>{world.name}</span>
                   </div>
-                  <span className={`world-status-tag ${worldCompleted ? 'done' : (worldActive ? 'current' : '')}`}>
-                    {worldCompleted ? '✅ Mundo Superado' : (worldActive ? '⚡ En curso' : '🔒 Bloqueado')}
+                  <span className={`world-status-tag ${worldCompleted ? 'done' : (worldActive ? 'current' : 'open')}`}>
+                    {worldCompleted ? '✅ Mundo Superado' : (worldActive ? '⚡ En curso' : '🔓 Disponible')}
                   </span>
                 </div>
 
@@ -301,13 +301,8 @@ function AdventureCircuit({
                   {world.levels.map((lvl) => {
                     const isCompleted = lvl.id < activeLevel;
                     const isCurrent = lvl.id === activeLevel;
-                    const isLocked = lvl.id > activeLevel;
 
                     const handleClick = () => {
-                      if (isLocked) {
-                        sounds.error();
-                        return;
-                      }
                       sounds.click();
                       onSelectLevel && onSelectLevel(lvl.id - 1, difficulty);
                     };
@@ -315,10 +310,10 @@ function AdventureCircuit({
                     return (
                       <div 
                         key={lvl.id}
-                        className={`circuit-station ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}`}
+                        className={`circuit-station ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}`}
                         onClick={handleClick}
-                        onMouseEnter={() => { if (!isLocked) sounds.hover(); }}
-                        title={isLocked ? `Supera el Reto ${lvl.id - 1} para desbloquear` : `Jugar Reto ${lvl.id}: ${lvl.name}`}
+                        onMouseEnter={() => { sounds.hover(); }}
+                        title={`Jugar Reto ${lvl.id}: ${lvl.name}`}
                       >
                         {/* PERSONAJE: El ratoncito animado se posiciona sobre el reto actual */}
                         {isCurrent && (
@@ -340,13 +335,6 @@ function AdventureCircuit({
                           {isCompleted && (
                             <div className="station-star-badge" title="Reto completado">
                               ⭐
-                            </div>
-                          )}
-
-                          {/* Candado si aún está bloqueado */}
-                          {isLocked && (
-                            <div className="station-lock-badge" title="Bloqueado">
-                              🔒
                             </div>
                           )}
                         </div>
@@ -372,11 +360,11 @@ function AdventureCircuit({
         </div>
         <div className="legend-item">
           <span>🐭</span>
-          <span>Tu posición actual</span>
+          <span>Tu posición en la historia</span>
         </div>
         <div className="legend-item">
-          <span>🔒</span>
-          <span>Reto por desbloquear</span>
+          <span>🔓</span>
+          <span>Selección libre de retos activa</span>
         </div>
       </div>
     </div>
